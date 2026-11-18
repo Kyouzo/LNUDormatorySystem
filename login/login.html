@@ -1,41 +1,71 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Login</title>
-</head>
-<body>
-
-    <form action="login.php" method="POST">
-
-        <h1>LOGIN</h1>
-
-        <!-- Username / Email -->
-        <label for="username">Username</label>
-        <input
-            type="text"
-            id="username"
-            name="username"
-            placeholder="Enter your email"
-            required
-        >
-
-        <!-- Password -->
-        <label for="password">Password</label>
-        <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Enter your password"
-            required
-        >
-
-        <!-- Login Button -->
-        <button type="submit">Login</button>
-
-    </form>
-
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta name="theme-color" content="#f5f8fc" />
+    <title>Sign in | Leyte National University</title>
+    <link rel="stylesheet" href="../assets/css/portal.css" />
+  </head>
+  <body class="auth-page">
+    <main class="auth-layout">
+      <aside class="auth-aside">
+        <div class="brand">
+          <img
+            class="brand-mark"
+            src="../assets/images/lnu-logo.png"
+            alt="Leyte National University logo"
+          /><span>Leyte National University<br />Dormitory portal</span>
+        </div>
+        <div>
+          <h1>Everything for dorm life, in one place.</h1>
+          <p>
+            Check attendance, upload payment proof, and view your records
+            without the paperwork.
+          </p>
+        </div>
+        <p>Leyte National University</p>
+      </aside>
+      <section class="auth-main" aria-labelledby="login-title">
+        <h2 id="login-title">Welcome back</h2>
+        <p>Sign in with the email registered to your dormitory account.</p>
+        <form action="login.php" method="POST">
+          <div class="form-grid">
+            <label class="field full" for="username"
+              >Email address
+              <input
+                type="email"
+                id="username"
+                name="username"
+                placeholder="name@university.edu"
+                autocomplete="username"
+                autocapitalize="none"
+                required
+              />
+            </label>
+            <label class="field full" for="password"
+              >Password
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              />
+            </label>
+          </div>
+          <button class="button primary full" type="submit">Sign in</button>
+        </form>
+        <p class="auth-footer">
+          New to the dormitory?
+          <a href="../registration/register.html">Create your student record</a>
+        </p>
+      </section>
+    </main>
+    <script src="../assets/js/portal.js"></script>
+  </body>
 </html>

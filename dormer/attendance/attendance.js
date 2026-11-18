@@ -113,7 +113,7 @@ function openModal(action) {
         return;
     }
 
-    document.getElementById("qrModal").style.display = "block";
+    document.getElementById("qrModal").hidden = false;
 
     document.getElementById("actionTitle").textContent = action;
 
@@ -153,7 +153,7 @@ function openModal(action) {
 
 // Close QR modal
 function closeModal() {
-    document.getElementById("qrModal").style.display = "none";
+    document.getElementById("qrModal").hidden = true;
 }
 
 // Close modal when clicking outside

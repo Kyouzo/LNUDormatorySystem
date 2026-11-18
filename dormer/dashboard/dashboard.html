@@ -1,69 +1,22 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Dorm Management System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#102f3d">
+    <title>Dashboard | Leyte National University</title>
+    <link rel="stylesheet" href="../../assets/css/portal.css">
 </head>
-<body >
-
-    <center>
-        <h3>
-            <font color="black">
-                (LOGO OR PICTURE)<br>
-                HANG DORM<br>
-                BUILDING
-            </font>
-        </h3>
-
-        <h2>
-            <font color="black">
-                DORM<br>
-                MANAGEMENT<br>
-                SYSTEM
-            </font>
-        </h2>
-
-        <hr>
-
-        <h3>
-            <a href="dashboard.html">
-                <font color="black">HOME</font>
-            </a>
-        </h3>
-
-        <h3>
-            <a href="profile.php">
-                <font color="black">PROFILE</font>
-            </a>
-        </h3>
-
-        <h3>
-            <a href="../attendance/attendance.html">
-                <font color="black">ATTENDANCE</font>
-            </a>
-        </h3>
-
-        <h3>
-            <a href="../payment_receipt/paymentReceipt.html">
-                <font color="black">PAYMENT</font>
-            </a>
-        </h3>
-
-        <h3>
-            <a href="../violation/violation.html">
-                <font color="black">VIOLATIONS</font>
-            </a>
-        </h3>
-
-        <br><br><br>
-
-        <h3>
-            <a href="settings.php">
-                <font color="black">SETTINGS</font>
-            </a>
-        </h3>
-
-    </center>
-
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="app-shell">
+  <aside class="sidebar"><div class="brand"><img class="brand-mark" src="../../assets/images/lnu-logo.png" alt="Leyte National University logo"><span>Leyte National University<br>Dormitory portal</span></div>
+    <nav class="nav" aria-label="Student navigation"><a href="dashboard.html" aria-current="page">Overview</a><a href="../attendance/attendance.html">Attendance</a><a href="../payment_receipt/paymentReceipt.html">Payments</a><a href="../violation/violation.html">Violations</a></nav>
+    <div class="sidebar-footer">Student workspace<br>© <span data-current-year></span> Leyte National University</div></aside>
+  <main class="main-content" id="main-content"><header class="topbar"><div class="page-heading"><h1>Good to see you</h1><p>Your dormitory information and records are all in one place.</p></div></header>
+    <div class="content-stack"><section class="panel status-panel"><div class="identity"><span class="status-chip">Account active</span><strong>Manage the essentials, without the paperwork.</strong><p>Check your attendance record, provide payment proof, and review any dormitory notices.</p></div><a class="button secondary" href="../attendance/attendance.html">Open attendance</a></section>
+    <section class="summary-grid" aria-label="Quick actions"><a class="panel" href="../attendance/attendance.html"><h2>Attendance</h2><p>Generate your QR pass and view your latest activity.</p><span class="stat-value">→</span></a><a class="panel" href="../payment_receipt/paymentReceipt.html"><h2>Payments</h2><p>Upload and keep a record of payment receipts.</p><span class="stat-value">→</span></a><a class="panel" href="../violation/violation.html"><h2>Violations</h2><p>Review your offense, absence, and curfew records.</p><span class="stat-value">→</span></a></section></div>
+  </main></div><script src="../../assets/js/portal.js"></script>
 </body>
 </html>

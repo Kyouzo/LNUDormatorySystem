@@ -3,92 +3,100 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Registration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="theme-color" content="#f5f8fc">
+    <title>Register | Leyte National University</title>
+    <link rel="stylesheet" href="../assets/css/portal.css">
 </head>
-<body>
-
-    <form action="register.php" method="POST" enctype="multipart/form-data">
-
-        <h1>REGISTER</h1>
-        <p>AS STUDENT</p>
+<body class="auth-page">
+    <main class="auth-layout">
+        <aside class="auth-aside">
+            <div class="brand"><img class="brand-mark" src="../assets/images/lnu-logo.png" alt="Leyte National University logo"><span>Leyte National University<br>Dormitory portal</span></div>
+            <div><h1>Set up your student record.</h1><p>Share your verified details so the dormitory team can prepare your access and room information.</p></div>
+            <p>Leyte National University</p>
+        </aside>
+        <section class="auth-main" aria-labelledby="register-title">
+        <h2 id="register-title">Student registration</h2>
+        <p>Complete the details below. Required fields are marked by your browser.</p>
+        <form action="register.php" method="POST" enctype="multipart/form-data">
+        <div class="form-grid">
 
         <!-- Fullname -->
-        <label for="last_name">Last name</label>
+        <label class="field" for="last_name">Last name
         <input 
             type="text" 
             id="last_name" 
             name="last_name" 
             placeholder="Last name"
             required
-        >
-        <label for="first_name">First name</label>
+        ></label>
+        <label class="field" for="first_name">First name
         <input 
             type="text" 
             id="first_name" 
             name="first_name" 
             placeholder="first name"
             required
-        >
-        <label for="middle_name">Middle Name</label>
+        ></label>
+        <label class="field full" for="middle_name">Middle name
         <input
             type="text"
             id="middle_name"
             name="middle_name"
             placeholder="Enter middle name"
-        >
+        ></label>
 
         <!-- Age -->
-        <label for="age">Age</label>
+        <label class="field" for="age">Age
         <input 
             type="number" 
             id="age" 
             name="age" 
             placeholder="Enter age"
             required
-        >
+        ></label>
 
         <!-- Gender -->
-        <label for="gender">Gender</label>
+        <label class="field" for="gender">Gender
         <select id="gender" name="gender" required>
             <option value="">Select gender</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
-        </select>
+        </select></label>
 
         <!-- Student ID -->
-        <label for="student_id">Student ID</label>
+        <label class="field" for="student_id">Student ID
         <input 
             type="text" 
             id="student_id" 
             name="student_id"
             required
-        >
+        ></label>
 
         <!-- Email Contact -->
-        <label for="email">Email Contact</label>
+        <label class="field" for="email">University email
         <input 
             type="email" 
             id="email" 
             name="email"
             required
-        >
+        ></label>
 
         <!-- Permanent Address -->
-        <label for="address">Permanent Address</label>
+        <label class="field full" for="address">Permanent address
         <input 
             type="text" 
             id="address" 
             name="address"
             required
-        >
-
-    
-
-        <!-- Register Button -->
-        <button type="submit">REGISTER &gt;</button>
-
-    </form>
+        ></label>
+        </div>
+        <button class="button primary full" type="submit">Submit registration</button>
+        </form>
+        <p class="auth-footer">Already registered? <a href="../login/login.html">Sign in</a></p>
+        </section>
+    </main>
+    <script src="../assets/js/portal.js"></script>
 
 </body>
 </html>
