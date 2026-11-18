@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Students Violations</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap">
+<style>
+/* ---------- Tokens (taken from the Canva design) ---------- */
+:root {
+  --bg: #dcdcfb;
+  --panel: #c9c9ee;
+  --header: #e4e4fb;
+  --grad-top: #c4c7f2;
+  --grad-bottom: #8c98d8;
+  --ink: #1d1b3a;
+  --muted: #5a5885;
+  --white: #ffffff;
+  --accent: #bfe3ff;
+  --major: #c0392b;
+  --minor: #d98c1f;
+  --ok: #2e8b57;
+  --radius: 22px;
+  --font: "Quicksand", "Segoe UI", system-ui, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; }
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+/* ---------- App shell ---------- */
+.app {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--grad-top), var(--grad-bottom));
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--header);
+  box-shadow: 0 6px 14px rgba(60, 60, 130, .25);
+}
+.topbar h1 { flex: 1; font-size: 1.4rem; font-weight: 600; }
+.icon-btn {
+  background: none; border: 0; cursor: pointer;
+  color: var(--ink); display: grid; place-items: center; padding: 4px;
+}
+.icon-btn svg { width: 28px; height: 28px; }
+
+/* ---------- Search + filters ---------- */
+.search {
+  display: flex; align-items: center; gap: 10px;
+  margin: 22px 20px 12px;
+}
+.search label { font-size: 1rem; font-weight: 500; }
+.search input {
+  flex: 1; min-width: 0;
+  border: 0; border-radius: 999px;
+  padding: 10px 16px;
+  font: inherit; background: var(--white);
+}
+.filters { display: flex; gap: 8px; margin: 0 20px 14px; flex-wrap: wrap; }
+.chip {
+  border: 2px solid var(--ink); background: transparent;
+  border-radius: 999px; padding: 4px 12px;
+  font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer;
+}
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--white); }
+
+/* ---------- Student list ---------- */
+.list {
+  margin: 0 20px 24px;
+  background: rgba(220, 220, 250, .75);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+.row {
+  display: grid;
+  grid-template-columns: 1.4fr .9fr .8fr auto;
+  gap: 8px; align-items: center;
+  padding: 10px 0;
+}
+.row + .row { border-top: 1px solid rgba(29, 27, 58, .15); }
+.row.head { font-weight: 700; padding-top: 2px; }
+.row small { display: block; color: var(--muted); font-weight: 500; }
+.badge {
+  display: inline-block; min-width: 20px; text-align: center;
+  border-radius: 999px; padding: 0 8px; margin-top: 2px;
+  font-size: .75rem; font-weight: 700; color: var(--white);
+}
+.badge.major { background: var(--major); }
+.badge.minor { background: var(--minor); }
+.badge.none  { background: var(--ok); }
+.btn {
+  font: inherit; font-weight: 700; cursor: pointer;
+  border: 2px solid var(--ink); border-radius: 999px;
+  background: var(--accent); color: var(--ink);
+  padding: 6px 18px;
+}
+.btn:hover { background: #a7d6fa; }
+.empty { padding: 28px 8px; text-align: center; color: var(--muted); }
+
+/* ---------- Modal ---------- */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(29, 27, 58, .45);
+  display: none; align-items: center; justify-content: center;
+  padding: 16px; z-index: 10;
+}
+.overlay.open { display: flex; }
+.modal {
+  width: 100%; max-width: 640px; max-height: 94vh; overflow-y: auto;
+  background: var(--panel);
+  border-radius: 28px;
+  padding: 24px 28px 28px;
+  position: relative;
+}
+.modal h2 { text-align: center; font-size: 1.7rem; font-weight: 600; margin-bottom: 14px; }
+.close { position: absolute; top: 14px; right: 16px; font-size: 1.6rem; line-height: 1; }
+.info p { font-size: 1.05rem; margin-bottom: 4px; }
+.field { margin-top: 16px; }
+.field > span, legend { display: block; font-weight: 600; margin-bottom: 6px; padding: 0; }
+.field-inline { display: flex; align-items: center; gap: 24px; margin-top: 16px; }
+.field-inline legend { margin: 0; min-width: 100px; }
+fieldset { border: 0; padding: 0; }
+.radios { display: flex; gap: 18px; }
+.radios label { display: flex; align-items: center; gap: 6px; font-weight: 600; cursor: pointer; }
+.radios input { accent-color: var(--ink); width: 18px; height: 18px; }
+select, textarea {
+  width: 100%; border: 0; border-radius: 16px;
+  padding: 12px 14px; font: inherit; background: var(--white); color: var(--ink);
+}
+textarea { min-height: 110px; resize: vertical; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.modal .btn { margin-top: 18px; }
+
+/* Previous violations inside the modal */
+.history { margin-top: 22px; }
+.history h3 { font-size: 1rem; margin-bottom: 8px; }
+.history ul { list-style: none; padding: 0; display: grid; gap: 8px; }
+.history li {
+  background: rgba(255, 255, 255, .6); border-radius: 14px;
+  padding: 10px 14px; font-size: .92rem;
+}
+.history li b { font-weight: 700; }
+.history time { color: var(--muted); font-size: .8rem; display: block; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--ink); color: var(--white);
+  padding: 10px 20px; border-radius: 999px; font-weight: 600;
+  opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 20;
+}
+.toast.show { opacity: 1; }
+
+/* ---------- Larger screens: show list wider ---------- */
+@media (min-width: 720px) {
+  .app { max-width: 820px; }
+  .row { grid-template-columns: 1.6fr 1fr 1fr 90px auto; }
+}
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+</head>
+<body>
+
+<main class="app">
+  <header class="topbar">
+    <button class="icon-btn" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    <h1>Students Violations</h1>
+    <button class="icon-btn" aria-label="Notifications">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 0 0-5-6.7V3a2 2 0 0 0-4 0v1.3A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2Z"/></svg>
+    </button>
+  </header>
+
+  <div class="search">
+    <label for="q">Search students:</label>
+    <input id="q" type="search" placeholder="Name or room">
+  </div>
+
+  <div class="filters" role="group" aria-label="Filter by violation type">
+    <button class="chip" aria-pressed="true" data-filter="all">All</button>
+    <button class="chip" aria-pressed="false" data-filter="Major offense">Major</button>
+    <button class="chip" aria-pressed="false" data-filter="Minor offense">Minor</button>
+    <button class="chip" aria-pressed="false" data-filter="Curfew">Curfew</button>
+    <button class="chip" aria-pressed="false" data-filter="Missed cleanup">Cleanup</button>
+    <button class="chip" aria-pressed="false" data-filter="Payment overdue">Payment</button>
+  </div>
+
+  <section class="list" aria-label="Student list">
+    <div class="row head">
+      <span>Name</span><span>Year level</span><span>Floor and room</span><span></span>
+    </div>
+    <div id="rows"></div>
+  </section>
+</main>
+
+<!-- Student violation modal -->
+<div class="overlay" id="overlay" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="icon-btn close" id="close" aria-label="Close">&times;</button>
+    <h2 id="modal-title">Student violation</h2>
+
+    <div class="info">
+      <p id="m-name"></p>
+      <p id="m-room"></p>
+    </div>
+
+    <form id="form">
+      <fieldset class="field-inline">
+        <legend>Absent</legend>
+        <div class="radios">
+          <label><input type="radio" name="absent" value="Y"> Y</label>
+          <label><input type="radio" name="absent" value="N" checked> N</label>
+        </div>
+      </fieldset>
+
+      <label class="field">
+        <span>Violation type</span>
+        <select id="type" required>
+          <option value="">Select a type</option>
+          <option>Major offense</option>
+          <option>Minor offense</option>
+          <option>Curfew</option>
+          <option>Missed cleanup</option>
+          <option>Payment overdue</option>
+          <option>Others</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Dormer offenses</span>
+        <textarea id="details" placeholder="Describe what happened" required></textarea>
+      </label>
+
+      <button class="btn" type="submit">Submit</button>
+    </form>
+
+    <div class="history">
+      <h3>Previous violations</h3>
+      <ul id="history"></ul>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* Sample data. Replace with your backend (fetch from your API/database). */
+const students = [
+  { id: 1, name: "Juan dela Cruz", year: "2nd year", room: "3-16", log: [
+      { type: "Curfew", details: "Arrived 10:45 PM, curfew is 10:00 PM.", date: "Nov 12, 2026" } ] },
+  { id: 2, name: "Maria Santos", year: "1st year", room: "2-04", log: [] },
+  { id: 3, name: "Pedro Reyes", year: "3rd year", room: "3-09", log: [
+      { type: "Major offense", details: "Caught smoking inside the dorm.", date: "Nov 3, 2026" },
+      { type: "Missed cleanup", details: "Skipped weekly cleanup.", date: "Nov 10, 2026" } ] },
+  { id: 4, name: "Ana Villanueva", year: "4th year", room: "1-12", log: [
+      { type: "Payment overdue", details: "November dorm fee unpaid.", date: "Nov 15, 2026" } ] }
+];
+const MAJOR = ["Major offense"];
+const state = { filter: "all", query: "", current: null };
+const $ = (id) => document.getElementById(id);
+
+function badge(s) {
+  const major = s.log.filter(v => MAJOR.includes(v.type)).length;
+  const other = s.log.length - major;
+  if (!s.log.length) return '<span class="badge none">Clear</span>';
+  return (major ? `<span class="badge major">${major} major</span> ` : "") +
+         (other ? `<span class="badge minor">${other} other</span>` : "");
+}
+
+function renderList() {
+  const q = state.query.toLowerCase();
+  const items = students.filter(s =>
+    (s.name + " " + s.room).toLowerCase().includes(q) &&
+    (state.filter === "all" || s.log.some(v => v.type === state.filter)));
+  $("rows").innerHTML = items.length ? items.map(s => `
+    <div class="row">
+      <span>${s.name}<small>${badge(s)}</small></span>
+      <span>${s.year}</span>
+      <span>${s.room}</span>
+      <button class="btn" data-id="${s.id}">View</button>
+    </div>`).join("") : '<p class="empty">No students match your search.</p>';
+}
+
+function renderHistory() {
+  const log = state.current.log;
+  $("history").innerHTML = log.length ? log.slice().reverse().map(v =>
+    `<li><b>${v.type}</b><time>${v.date}</time>${v.details}</li>`).join("")
+    : "<li>No violations recorded.</li>";
+}
+
+function openModal(id) {
+  state.current = students.find(s => s.id === id);
+  $("m-name").textContent = "Name: " + state.current.name;
+  $("m-room").textContent = "Floor and room: " + state.current.room;
+  $("form").reset();
+  renderHistory();
+  $("overlay").classList.add("open");
+  $("overlay").setAttribute("aria-hidden", "false");
+  $("type").focus();
+}
+function closeModal() {
+  $("overlay").classList.remove("open");
+  $("overlay").setAttribute("aria-hidden", "true");
+}
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+$("rows").addEventListener("click", e => {
+  const b = e.target.closest("button[data-id]");
+  if (b) openModal(Number(b.dataset.id));
+});
+$("q").addEventListener("input", e => { state.query = e.target.value; renderList(); });
+document.querySelector(".filters").addEventListener("click", e => {
+  const c = e.target.closest(".chip"); if (!c) return;
+  document.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", x === c));
+  state.filter = c.dataset.filter; renderList();
+});
+$("close").addEventListener("click", closeModal);
+$("overlay").addEventListener("click", e => { if (e.target === $("overlay")) closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+$("form").addEventListener("submit", e => {
+  e.preventDefault();
+  const absent = document.querySelector('input[name="absent"]:checked').value;
+  const type = absent === "Y" && !$("type").value ? "Missed cleanup" : $("type").value;
+  state.current.log.push({
+    type,
+    details: $("details").value.trim() + (absent === "Y" ? " (Marked absent)" : ""),
+    date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+  });
+  /* TODO: send to your backend, e.g. fetch("/api/violations", { method: "POST", body: ... }) */
+  renderList(); closeModal(); toast("Violation submitted");
+});
+
+renderList();
+</script>
+</body>
+</html>
