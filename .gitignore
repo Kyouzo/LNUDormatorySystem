@@ -1,0 +1,5 @@
+# Local secrets and runtime files
+connection/.env
+logs/*
+!logs/.htaccess
+node_modules/

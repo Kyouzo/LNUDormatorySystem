@@ -1,4 +1,9 @@
-<!DOCTYPE html>
+<?php
+// Staff-only page: redirect to the login page unless a staff member is signed in.
+require_once __DIR__ . '/../../connection/bootstrap.php';
+require_once __DIR__ . '/../../connection/auth.php';
+require_staff(false);
+?><!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">

@@ -1,61 +1,53 @@
-
 <?php
-session_start();
+/**
+ * GET /dormer/violation/violation.php   (student)
+ * The logged-in student's violation records, newest first.
+ *
+ * Original keys are kept: offenses (latest record's text), absent, records[]
+ * with violation_id / offenses / absent / curfew. Additions: absent is now the
+ * TOTAL number of absences recorded (each record carries absent 0/1), and every
+ * record also has violation_type and created_at.
+ */
 
-header("Content-Type: application/json; charset=UTF-8");
-
+require_once __DIR__ . '/../../connection/bootstrap.php';
 require_once __DIR__ . '/../../connection/db_connect.php';
+require_once __DIR__ . '/../../connection/auth.php';
 
-// Check student login
-$student_id = $_SESSION['student_id'] ?? null;
+require_method('GET');
 
-if ($student_id === null) {
-    http_response_code(401);
+$student_id = require_student(true);
 
-    echo json_encode([
-        "success" => false,
-        "message" => "Please log in first."
-    ]);
+$stmt = db_prepare(
+    'SELECT violation_id, violation_type, offenses, absent, curfew, created_at
+       FROM dormer_violation
+      WHERE student_id = ?
+      ORDER BY violation_id DESC'
+);
+$stmt->bind_param('i', $student_id);
 
-    exit();
+if (!db_execute($stmt, 'violations list')) {
+    $stmt->close();
+    json_error('Unable to load violations.', 500);
 }
 
-// Retrieve violation records
-$sql = "SELECT violation_id, offenses, absent, curfew
-        FROM dormer_violation
-        WHERE student_id = ?
-        ORDER BY violation_id DESC";
-
-$stmt = $conn->prepare($sql);
-
-if (!$stmt) {
-    http_response_code(500);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Database query failed."
-    ]);
-
-    exit();
-}
-
-$stmt->bind_param("i", $student_id);
-$stmt->execute();
-
-$result = $stmt->get_result();
-
-$records = $result->fetch_all(MYSQLI_ASSOC);
-
-$offenses = $records[0]['offenses'] ?? 'No offenses';
-$absent = $records[0]['absent'] ?? 0;
-
-echo json_encode([
-    "success" => true,
-    "offenses" => $offenses,
-    "absent" => $absent,
-    "records" => $records
-]);
+$records = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
 $stmt->close();
 $conn->close();
-?>
+
+$absentTotal = 0;
+foreach ($records as $i => $record) {
+    $records[$i]['violation_id'] = (int) $record['violation_id'];
+    $records[$i]['absent']       = (int) $record['absent'];
+    $absentTotal += (int) $record['absent'];
+}
+
+$latest   = $records[0]['offenses'] ?? null;
+$offenses = ($latest !== null && $latest !== '') ? $latest : 'No offenses';
+
+json_response([
+    'success'  => true,
+    'offenses' => $offenses,
+    'absent'   => $absentTotal,
+    'records'  => $records,
+]);

@@ -1,62 +1,41 @@
-
 <?php
-session_start();
+/**
+ * GET /dormer/attendance/attendance_logs.php   (student)
+ * The logged-in student's 10 most recent attendance scans.
+ */
 
-header("Content-Type: application/json; charset=UTF-8");
-
+require_once __DIR__ . '/../../connection/bootstrap.php';
 require_once __DIR__ . '/../../connection/db_connect.php';
+require_once __DIR__ . '/../../connection/auth.php';
 
-// Check student login
-if (!isset($_SESSION['student_id'])) {
-    http_response_code(401);
+require_method('GET');
 
-    echo json_encode([
-        "success" => false,
-        "message" => "Student not logged in."
-    ]);
+$student_id = require_student(true);
 
-    exit();
+$stmt = db_prepare(
+    'SELECT attendance_type, scan_datetime
+       FROM attendance_logs
+      WHERE student_id = ?
+      ORDER BY scan_datetime DESC, id DESC
+      LIMIT 10'
+);
+$stmt->bind_param('i', $student_id);
+
+if (!db_execute($stmt, 'attendance history')) {
+    $stmt->close();
+    json_error('Unable to load attendance history.', 500);
 }
-
-// Get logged-in student ID
-$student_id = $_SESSION['student_id'];
-
-// Get attendance history
-$sql = "SELECT attendance_type, scan_datetime
-        FROM attendance_logs
-        WHERE student_id = ?
-        ORDER BY scan_datetime DESC
-        LIMIT 10";
-
-$stmt = $conn->prepare($sql);
-
-if (!$stmt) {
-    http_response_code(500);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Database query failed."
-    ]);
-
-    exit();
-}
-
-$stmt->bind_param("s", $student_id);
-$stmt->execute();
-
-$result = $stmt->get_result();
 
 $history = [];
-
+$result  = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
-    $history[] = $row;
+    $history[] = [
+        'attendance_type' => $row['attendance_type'],
+        'scan_datetime'   => $row['scan_datetime'],
+    ];
 }
-
-echo json_encode([
-    "success" => true,
-    "history" => $history
-]);
 
 $stmt->close();
 $conn->close();
-?>
+
+json_response(['success' => true, 'history' => $history]);

@@ -1,58 +1,50 @@
-
 <?php
+/**
+ * GET /dormer/payment_receipt/paymentDisplay.php   (student)
+ * The logged-in student's uploaded payment proofs, newest first.
+ *
+ * Keeps the original keys (proof_image, date, time) and adds id, status and
+ * uploaded_at.
+ */
 
-session_start();
-
-header("Content-Type: application/json");
-
+require_once __DIR__ . '/../../connection/bootstrap.php';
 require_once __DIR__ . '/../../connection/db_connect.php';
+require_once __DIR__ . '/../../connection/auth.php';
 
-// Check student session
-if (!isset($_SESSION['student_id'])) {
-    http_response_code(401);
+require_method('GET');
 
-    echo json_encode([
-        "success" => false,
-        "message" => "Please log in first."
-    ]);
+$student_id = require_student(true);
 
-    exit();
+$stmt = db_prepare(
+    'SELECT id, proof_image, upload_datetime, status
+       FROM payment_proofs
+      WHERE student_id = ?
+      ORDER BY upload_datetime DESC, id DESC'
+);
+$stmt->bind_param('i', $student_id);
+
+if (!db_execute($stmt, 'payment history')) {
+    $stmt->close();
+    json_error('Unable to load payment history.', 500);
 }
 
-$student_id = $_SESSION['student_id'];
-
-// Get only this student's payment proofs
-$sql = "SELECT proof_image, upload_datetime
-        FROM payment_proofs
-        WHERE student_id = ?
-        ORDER BY upload_datetime DESC";
-
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $student_id);
-$stmt->execute();
-
-$result = $stmt->get_result();
-
 $payments = [];
+$result   = $stmt->get_result();
 
 while ($row = $result->fetch_assoc()) {
-
     $timestamp = strtotime($row['upload_datetime']);
 
     $payments[] = [
-        "proof_image" => $row['proof_image'],
-        "date" => date("F d, Y", $timestamp),
-        "time" => date("h:i:s A", $timestamp)
+        'id'          => (int) $row['id'],
+        'proof_image' => $row['proof_image'],
+        'date'        => date('F d, Y', $timestamp),
+        'time'        => date('h:i:s A', $timestamp),
+        'uploaded_at' => $row['upload_datetime'],
+        'status'      => $row['status'],
     ];
-
 }
-
-echo json_encode([
-    "success" => true,
-    "payments" => $payments
-]);
 
 $stmt->close();
 $conn->close();
 
-?>
+json_response(['success' => true, 'payments' => $payments]);

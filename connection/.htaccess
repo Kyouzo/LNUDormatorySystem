@@ -1,0 +1,5 @@
+# Internal PHP includes and secrets must not be requested directly.
+# (csrf_token.php and me.php are public endpoints and stay reachable.)
+<FilesMatch "^(\.env.*|bootstrap\.php|db_connect\.php|auth\.php|csrf\.php|violation_types\.php)$">
+    Require all denied
+</FilesMatch>

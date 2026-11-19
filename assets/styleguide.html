@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#00006e">
+  <title>Style guide | LNU Dormitory Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/portal.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+  <script src="js/portal.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><img class="brand-mark" src="images/lnu-logo.png" alt="Leyte Normal University logo"><span>Leyte Normal University<br>Dormitory portal</span></div>
+    <nav class="nav" aria-label="Style guide navigation">
+      <a href="#main-content" aria-current="page">Overview</a><a href="#buttons">Buttons</a><a href="#cards">Cards</a><a href="#data">Data</a><a href="#feedback">Feedback</a>
+    </nav>
+    <div class="sidebar-footer">Design system<br>© <span data-current-year></span> Leyte Normal University</div>
+  </aside>
+  <main class="main-content" id="main-content">
+    <section class="hero-band" data-hero>
+      <span class="eyebrow">Dormitory portal</span>
+      <h1>Rise with integrity, live with excellence.</h1>
+      <p>Attendance, payments and records for every LNU dormer, in one calm place.</p>
+      <div class="actions"><a class="button secondary" href="#cards">Open dashboard</a><a class="button ghost" href="#data">View records</a></div>
+      <p class="tagline" style="margin-top:2rem">Integrity | Excellence | Service</p>
+    </section>
+
+    <div class="content-stack" style="margin-top:2rem">
+      <section class="panel status-panel"><div class="identity"><span class="status-chip">Account active</span><strong>Status panel on navy</strong><p>Secondary and ghost buttons invert automatically.</p></div><div class="actions"><a class="button secondary" href="#">Secondary</a><a class="button ghost" href="#">Ghost</a></div></section>
+      <section class="summary-grid" aria-label="Stats">
+        <article class="panel"><span class="stat-label">Nights logged</span><span class="stat-value" data-count="128">128</span></article>
+        <article class="panel"><span class="stat-label">Payments</span><span class="stat-value" data-count="12450.50" data-count-prefix="₱">₱12,450.50</span></article>
+        <article class="panel"><span class="stat-label">Violations</span><span class="stat-value" data-count="0">0</span></article>
+      </section>
+    </div>
+
+    <section class="band white" id="buttons" style="margin-top:2rem;border-radius:20px">
+      <div class="section-heading" data-reveal><span class="eyebrow">Components</span><h2>Buttons and badges</h2><p>Pill-shaped, uppercase tracking, press scale .97.</p></div>
+      <div class="actions" data-reveal>
+        <button class="button primary" type="button">Primary</button>
+        <button class="button navy" type="button">Navy</button>
+        <button class="button gold" type="button" onclick="Portal.toast('Payment proof submitted', {type:'success'})">Gold · toast</button>
+        <button class="button secondary" type="button">Secondary</button>
+        <button class="button outline" type="button" data-dialog-open="demo-dialog">Outline · dialog</button>
+        <button class="button ghost" type="button">Ghost</button>
+        <button class="button primary small" type="button">Small</button>
+        <button class="button primary" type="button" disabled>Disabled</button>
+      </div>
+      <div class="actions" style="margin-top:1rem" data-reveal>
+        <span class="badge">Neutral</span><span class="badge badge-success">Paid</span><span class="badge badge-warning">Pending</span><span class="badge badge-danger">Overdue</span><span class="badge badge-info">Info</span><span class="badge badge-navy">Navy</span><span class="badge badge-gold">Gold</span><span class="badge badge-outline">Outline</span>
+      </div>
+    </section>
+
+    <section id="cards" style="margin-top:2.5rem">
+      <div class="section-heading"><span class="eyebrow">Announcements</span><h2>Feature cards</h2></div>
+      <div class="card-grid">
+        <article class="feature-card"><div class="feature-card-media"><img src="images/lnu-logo.png" alt="" style="object-fit:contain;padding:1.5rem"></div><div class="feature-card-body"><div class="meta"><time>Nov 20, 2026</time><span>Dormitory</span></div><h3><a class="stretched" href="#">Curfew schedule for finals week</a></h3><p>Curfew moves to 11:00 PM from Dec 1 to Dec 12.</p></div></article>
+        <article class="feature-card"><div class="feature-card-media"></div><div class="feature-card-body"><div class="meta"><time>Nov 18, 2026</time><span>Payments</span></div><h3>December fees open</h3><p>Upload your receipt before the 5th.</p></div></article>
+        <article class="feature-card"><div class="feature-card-media"></div><div class="feature-card-body"><div class="meta"><time>Nov 12, 2026</time><span>Events</span></div><h3>Cleanup drive</h3><p>Every floor, Saturday 8:00 AM.</p></div></article>
+      </div>
+      <div class="callout" style="margin-top:1.5rem" data-reveal><h3>Callout panel</h3><p>Light-blue to white gradient for notices and guidance.</p></div>
+    </section>
+
+    <section id="data" class="content-stack" style="margin-top:2.5rem">
+      <section class="panel"><h2>Data table</h2><p>Wrap in .data-table for the bordered variant.</p>
+        <div class="data-table table-wrap" style="margin-top:1rem"><table><thead><tr><th scope="col">Date</th><th scope="col">Record</th><th scope="col">Status</th><th scope="col" class="num">Amount</th></tr></thead>
+        <tbody><tr><td>Nov 18, 2026</td><td>December fee</td><td><span class="badge badge-success">Paid</span></td><td class="num">₱1,500.00</td></tr><tr><td>Nov 03, 2026</td><td>Curfew</td><td><span class="badge badge-warning">Logged</span></td><td class="num">—</td></tr><tr><td colspan="4" class="empty-state">Table empty-state cell</td></tr></tbody></table></div>
+      </section>
+      <section class="panel" id="feedback"><h2>Loading skeleton</h2>
+        <div style="margin-top:1rem"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text short"></span></div>
+      </section>
+      <div class="empty-state"><span class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></span><h3>No violations recorded</h3><p>Records will appear here when the dormitory staff log an event.</p></div>
+      <form class="panel"><h2>Form fields</h2><div class="form-grid" style="margin-top:1rem"><label class="field">Student ID<input placeholder="2024-00001"></label><label class="field">Room<select><option>3-16</option></select></label><label class="field full">Notes<textarea placeholder="Optional"></textarea><span class="field-hint">Visible to dormitory staff only.</span></label></div></form>
+    </section>
+  </main>
+</div>
+
+<dialog class="dialog" id="demo-dialog" aria-labelledby="demo-dialog-title">
+  <div class="dialog-header"><h2 id="demo-dialog-title">Submit payment proof?</h2><button class="icon-button" type="button" data-dialog-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="dialog-body"><p>The dormitory office reviews receipts within two working days.</p></div>
+  <div class="dialog-actions"><button class="button ghost" type="button" data-dialog-close>Cancel</button><button class="button primary" type="button" data-dialog-close>Submit</button></div>
+</dialog>
+</body>
+</html>
