@@ -1,0 +1,143 @@
+/orchestrate FINISH EVEYRHINT HERE FROM UI TO BACKEND DO WHATS BEST FOR IT AND JUST CONTINUE THE CURRENT WORK FLOW THEN DEPLOY SO I CAN TEST check out leyte normal univ page /site and use the same color scheme use these resources as much as possible for front end GSAP: https\://github.com/greensock/GSAP\
+Lenis: https\://github.com/darkroomengineering/lenis\
+React Bits: https\://github.com/DavidHDev/react-bits
+https://github.com/emilkowalski/skills
+https://github.com/pbakaus/impeccable
+https://github.com/leonxlnx/taste-skill
+
+Fetching LNU’s site was blocked (403), so I’m opening it in your Chrome to read the real brand colors.
+
+Chrome isn’t connected, so I’m using the built-in browser pane to open the LNU site instead.
+
+Address
+https://lnu.edu.ph/
+{
+  "serverId": "preview-local_858f5b79-07bc-4929-93d7-aaf94404d65f",
+  "tabId": "seed",
+  "reused": false,
+  "type": "browser",
+  "navOk": true
+}
+Browser pane opened.
+- Note: the page in this tab was served with HTTP status 403.
+lnu.edu.ph is behind a Cloudflare bot check that I can't pass (I won't bypass it). How should I get the LNU color scheme?
+screenshot
+The backend is PHP + MySQL, which Vercel can't run natively. Where should I deploy it for you to test?
+Local XAMPP-style run
+
+I’ve read through the repo but haven’t changed or delegated anything yet. I need the LNU screenshot first.
+
+Repo: It’s a small PHP and MySQL dorm portal. It has login, registration, attendance with QR, payment receipts and violations pages, plus a staff page. There’s no database schema file, and assets/css/portal.css is the one shared stylesheet.
+LNU colors: lnu.edu.ph is behind a Cloudflare bot check, so I couldn’t read it and I won’t bypass it. You chose a screenshot, so please send one or two (home page and header). I’ll take the exact colors from that.
+Deploy: You picked a local XAMPP-style run. I’ll add a MySQL schema and seed data and a short run guide so you can test on this PC. Nothing goes to a cloud host.
+Next: Once I have the screenshot, I’ll hand the work to agents in parallel:
+Front end (Opus): restyle the pages in the LNU palette, using GSAP, Lenis, React Bits-style effects and the design skills you listed.
+Back end (Sonnet): the schema and seed, plus fixes such as the plain-text password check in login/login.php.
+Review: a fresh reviewer checks each piece before I call it done.
+I've read the repo: a small PHP/MySQL dorm portal with no schema file and a shared portal.css. LNU's site is blocked by a Cloudflare check, so I have no brand colors yet. Nothing is changed or delegated. Deploy target is set to local XAMPP-style.
+Can you send the LNU site screenshot now?
+
+Two agents are working in the background, and nothing has been reviewed or run yet.
+
+Design system (Opus): The agent is rewriting assets/css/portal.css and assets/js/portal.js to match the LNU look from your screenshots. That means navy and indigo, a gold accent, pill buttons and rounded cards. It adds Lenis smooth scroll and GSAP entrance animations, and it also writes a short design doc for the page agents.
+Backend (Sonnet):
+Database: The agent writes the MySQL schema and demo seed data.
+Security fixes: Password hashing, session and CSRF protection, login guards on every endpoint, and safe payment-proof uploads.
+Docs: An API reference and a local XAMPP run guide.
+Caveat: PHP isn’t installed on this machine, so the PHP code can’t be executed here.
+
+When both finish, I’ll start two more agents to restyle the pages. One takes login, registration and the dashboard. The other takes attendance, payments, violations and the staff page. A fresh reviewer then checks each piece, and I’ll send any fixes back to the agent that wrote it. You’ll get the final local run steps once everything passes.
+
+Backend work is written, but none of it has been run. PHP is not installed here, so no php -l and no MySQL import. I checked brace, paren and bracket balance on all 21 PHP files with a script and read each file for syntax and bind_param type strings.
+
+Files created or changed
+
+Created:
+
+Database and docs: database/schema.sql, database/seed.sql, database/API.md, README-LOCAL.md, .gitignore
+Shared helpers: connection/bootstrap.php, connection/auth.php, connection/csrf.php, connection/csrf_token.php, connection/me.php, connection/violation_types.php, connection/.env.example, connection/.htaccess
+Other protections: logs/.htaccess, dormer/payment_receipt/uploads/.htaccess
+New endpoints: login/logout.php, staff/api/students.php, staff/api/violation_add.php, staff/api/registrations.php, staff/api/registration_review.php
+
+Rewritten:
+
+connection/db_connect.php, login/login.php, registration/register.php
+dormer/attendance/{attendance,attendance_logs,process_scan}.php
+dormer/payment_receipt/{payment_receipt,paymentDisplay}.php, dormer/violation/violation.php
+
+Edited:
+
+dormer/attendance/scan_qr.php: I only prepended a PHP block that calls require_staff(false). If the front-end agents rewrite that file from a stale copy, the guard disappears, so please check it is still there at the end.
+
+I touched no .html, .css, front-end .js, assets/ or .agents/.
+
+What was half-done in "Unfinished refactoring" and is now fixed
+registration/register.php required connection/db_connect.php with the wrong relative path. It also inserted into validation_dormers while login reads validated_dormers. I treated that as a pending/approved flow: register writes a pending row, and staff approval creates the real account.
+The attendance QR encodes student_id (in attendance.js), but process_scan.php looks up qr_token. attendance.php now returns a qr_token and creates one if the row has none. The scanner accepts the token, and also the plain student ID while QR_ALLOW_STUDENT_ID=1.
+process_scan.php had no authentication at all. It is now staff-only.
+attendance.php returned debug_data, the whole database row including the password. I removed it.
+staff/violations.html runs on hard-coded sample data. I added the endpoints it needs.
+Security
+Passwords: password_hash / password_verify. Legacy plaintext rows are accepted once and re-saved as a hash. Wrong email and wrong password now give the same message.
+Login throttling (my addition): 5 failures per account or 25 per IP in 15 minutes, tracked in a login_attempts table.
+Sessions: session_regenerate_id on login, HttpOnly, SameSite=Lax, Secure on HTTPS, strict mode, 2-hour idle timeout.
+Auth guards: require_student(bool $json) and require_staff(bool $json). They return 401 or 403 as JSON for fetch endpoints and redirect to the login page for page loads. Every dormer and staff endpoint uses them.
+CSRF: csrf_require() is lenient by default. It rejects a foreign Origin or Referer, requires a valid token if one is sent, and accepts requests with no token unless CSRF_ENFORCE=1. Details are in API.md.
+Payment upload: finfo MIME check plus getimagesize, 5 MB cap, random filenames, and .htaccess that disables PHP and allows only jpg/png.
+Config and errors: DB settings come from DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME, either as environment variables or connection/.env, defaulting to localhost/root/empty. Errors go to logs/php-error.log, never to the browser. die() is replaced by JSON or a small HTML result page.
+Prepared statements: the existing queries already used them, and all new ones do.
+Endpoint contract changes
+
+Full tables are in database/API.md.
+
+attendance.php: debug_data removed. Added first_name, full_name, year_level, qr_token.
+violation.php: absent is now the sum of absences across records. Before, it was the latest record's value. Each record also gains violation_type and created_at.
+paymentDisplay.php: items gain id, uploaded_at, status.
+process_scan.php: needs a staff session, and failures now use real HTTP status codes (the body is still {success:false, message}).
+login.php and register.php: failures and success pages are now small HTML result pages instead of bare text. Send Accept: application/json to get JSON.
+payment_receipt.php: errors now show an alert and redirect, the same way success did.
+A staff login also works through the same login form and redirects to staff/violations.html.
+Front-end changes required or recommended
+attendance.js: encode student.qr_token instead of student_id in the QR code, then set QR_ALLOW_STUDENT_ID=0.
+staff/violations.html:
+Load students from GET /staff/api/students.php. The response shape matches the sample data.
+Submit the modal form to POST /staff/api/violation_add.php with student_id, type, details, absent as "Y" or "N".
+Add a logout link to login/logout.php.
+Static .html pages cannot be guarded by PHP. Have them call /connection/me.php, or treat any 401, and redirect to the login page.
+Optional: send CSRF tokens (header X-CSRF-Token or field csrf_token, from /connection/csrf_token.php), then set CSRF_ENFORCE=1.
+Optional: login, register and payment pages could post with Accept: application/json and show messages inline.
+register.html has no password or year-level field. The backend accepts both optionally. Without a password, staff approval generates a temporary password and returns it once.
+Ambiguities and assumptions
+Table and column names are inferred from the SQL in the PHP files. student_id is INT UNSIGNED and is the primary key of validated_dormers, so leading zeros are lost.
+validated_dormers gains year_level, qr_token and is_active. dormer_violation gains violation_type, recorded_by and created_at. payment_proofs gains status. The schema file ends with ALTER statements for upgrading an old database.
+If an old database has validated_dormers.password shorter than 60 characters, the hash upgrade fails silently with only a log entry. Run the MODIFY password VARCHAR(255) statement from the schema footer.
+I added Others as the stored type when absent is Y and no type is chosen. The sample page used "Missed cleanup" for that case.
+There is still no endpoint to change a password, which matters for the temporary passwords. There is also no staff endpoint to review payment proofs. Neither is used by the current UI.
+Apache needs AllowOverride set to All for the .htaccess files. XAMPP's default does this. php -S ignores them, which README-LOCAL.md notes.
+The demo credentials are only in README-LOCAL.md. They are student student@lnu.edu.ph / Dormer#2026 and staff staff@lnu.edu.ph / Staff#2026. The seed holds bcrypt hashes only. I generated them with bcryptjs from a temp folder and rewrote the prefix to $2y$.
+
+The backend agent has finished. The design-system agent is still running, and the page restyles depend on its design doc, so I’m waiting for it before dispatching them.
+
+Background agent completed
+· PHP backend, schema, local run
+· took 9m 23s
+
+The backend agent has finished, but the front-end work hasn’t started and nothing has been run.
+
+Backend: The agent wrote the MySQL schema and demo seed data, and switched passwords to hashing. It added login guards on every endpoint, CSRF and upload checks, new staff endpoints, an API reference and a local run guide. PHP isn’t installed on this machine, so none of the PHP has been executed. I’ll have a reviewer check it, and the first real test will be your XAMPP run.
+Design system: That agent is still working, and the page restyles depend on its design doc. After it finishes I’ll dispatch the two page-restyle agents. They will also cover the front-end changes the backend report asks for:
+the attendance QR code switching to the new token;
+the staff violations page loading real data;
+a logout link;
+redirecting to login on a 401.
+Review: A fresh reviewer checks each piece before I report back.
+
+The design system is finished, and two page-restyle agents are working in parallel.
+
+Design system: It uses the LNU navy and gold palette, pill buttons, cards and badges. Lenis smooth scroll and GSAP entrance animations are built in, and animations switch off for reduced-motion users. It was checked at phone and desktop widths with no console errors from the design system itself.
+Auth, dashboard and staff pages: One agent is restyling login, registration, the dashboard and the staff violations page. The login and registration forms will show errors inline. The staff page loads real students from the new endpoints and gets a pending-registrations approval list.
+Attendance, payments and violations: The other agent is restyling these three student pages and the QR scanner view. It also makes the QR code use the new token and adds drag-and-drop receipt upload.
+
+When both finish, a fresh reviewer checks each piece. After that I’ll hand you the local XAMPP test steps and demo logins. That is still a local setup, not a hosted site.
+
+2 background tasks stopped
