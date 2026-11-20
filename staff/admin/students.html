@@ -232,14 +232,6 @@
       </main>
     </div>
 
-    <datalist id="year-levels">
-      <option value="1st year"></option>
-      <option value="2nd year"></option>
-      <option value="3rd year"></option>
-      <option value="4th year"></option>
-      <option value="5th year"></option>
-    </datalist>
-
     <dialog class="dialog wide" id="student-dialog" aria-labelledby="sd-title">
       <div class="dialog-header">
         <div>
@@ -345,12 +337,17 @@
                 autocomplete="off"
             /></label>
             <label class="field" for="m-year"
-              >Year level<input
-                id="m-year"
-                maxlength="20"
-                list="year-levels"
-                autocomplete="off"
-            /></label>
+              >Year level
+              <select id="m-year">
+                <option value="">Select year level</option>
+                <option value="1st year">1st year</option>
+                <option value="2nd year">2nd year</option>
+                <option value="3rd year">3rd year</option>
+                <option value="4th year">4th year</option>
+                <option value="5th year">5th year</option>
+                <option value="Graduate">Graduate</option>
+              </select>
+            </label>
             <label class="field" for="m-email" style="grid-column: 1/-1"
               >Email<input
                 id="m-email"

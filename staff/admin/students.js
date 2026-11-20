@@ -8,6 +8,18 @@
   const { $, esc } = Admin;
 
   const COLS = { unenrolled: 3, enrolled: 4 };
+  function setYearLevel(value) {
+    const select = $("m-year");
+    const year = value || "";
+    if (
+      year &&
+      !Array.from(select.options).some((option) => option.value === year)
+    ) {
+      select.add(new Option(year, year));
+    }
+    select.value = year;
+  }
+
   const state = {
     unenrolled: [],
     enrolled: [],
@@ -189,7 +201,7 @@
       $("m-first").value = s.first_name || "";
       $("m-last").value = s.last_name || "";
       $("m-middle").value = s.middle_name || "";
-      $("m-year").value = s.year_level || "";
+      setYearLevel(s.year_level);
       $("m-email").value = s.email || "";
       $("m-floor").value = String(s.floor || 1);
       fillRooms($("m-room"), s.floor || 1, s);
