@@ -35,7 +35,7 @@ mariadb-install-db $DB_OPTS --skip-test-db --auth-root-authentication-method=soc
 
 # shellcheck disable=SC2086
 mariadbd $DB_OPTS --socket="$SOCK" --pid-file=/run/mysqld/mysqld.pid \
-  --bind-address=127.0.0.1 --port=3306 &
+  --skip-networking &
 DB_PID=$!
 
 i=0
@@ -71,7 +71,7 @@ mariadb --socket="$SOCK" -uroot < "$APP/database/seed.sql"
 
 # bootstrap.php reads connection/.env (and real env vars, which win).
 cat > "$APP/connection/.env" <<ENV
-DB_HOST=127.0.0.1
+DB_HOST=localhost
 DB_PORT=3306
 DB_USER=$DB_USER
 DB_PASS=$DB_PASS
