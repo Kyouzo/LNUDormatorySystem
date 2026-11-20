@@ -96,7 +96,7 @@ locally).
 
 The Blueprint selects the Free plan, generates `DB_PASS`, and sets `CSRF_ENFORCE=0` and `QR_ALLOW_STUDENT_ID=0`.
 The entrypoint creates the database user, rebuilds the database from the schema and seed files, and starts Apache.
-After deployment, visit `https://<service-name>.onrender.com/login/login.html`.
+After deployment, visit `https://<service-name>.onrender.com/login/login.html`, `https://lnudormatorysystem.onrender.com/`
 
 **Data is ephemeral:** every container start recreates the database from the seed. User-created accounts, registrations,
 payment records, announcements, and uploaded files are not durable. Free services may spin down while idle, so the first
