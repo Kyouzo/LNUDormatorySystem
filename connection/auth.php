@@ -49,13 +49,13 @@ function role_home_path($role)
 {
     switch ($role) {
         case 'student':
-            return 'dormer/dashboard/dashboard.html';
+            return 'dormer/dashboard/dashboard';
         case 'security':
-            return 'staff/security/home.html';
+            return 'staff/security/home';
         case 'admin':
-            return 'staff/admin/home.html';
+            return 'staff/admin/home';
     }
-    return 'login/login.html';
+    return 'login/login';
 }
 
 function auth_fail($json, $status, $message)

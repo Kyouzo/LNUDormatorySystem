@@ -1,7 +1,11 @@
 RewriteEngine On
 
 RewriteCond %{THE_REQUEST} \s/+(.+?)\.html(?:[?\s]) [NC]
-RewriteRule ^(.+)\.html$ /$1 [R=301,L,NE]
+RewriteCond %{HTTP:X-Forwarded-Proto} =https
+RewriteRule ^(.+)\.html$ https://%{HTTP_HOST}/$1 [R=302,L,NE]
+
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.html(?:[?\s]) [NC]
+RewriteRule ^(.+)\.html$ http://%{HTTP_HOST}/$1 [R=302,L,NE]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

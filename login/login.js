@@ -50,9 +50,9 @@
 
   // Landing page per role (project-root-relative, resolved with LNU.url). The one place to change a role's home.
   const FALLBACK = {
-    student: "dormer/dashboard/dashboard.html",
-    admin: "staff/admin/home.html",
-    security: "staff/security/home.html",
+    student: "dormer/dashboard/dashboard",
+    admin: "staff/admin/home",
+    security: "staff/security/home",
   };
 
   function setFieldError(input, message) {
