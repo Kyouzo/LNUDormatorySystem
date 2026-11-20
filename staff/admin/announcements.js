@@ -23,7 +23,15 @@
       (a.title ? "<h3>" + esc(a.title) + "</h3>" : "") +
       "<p>" +
       esc(a.body) +
-      "</p></article>"
+      "</p>" +
+      (a.expires_at_display
+        ? '<p class="muted">Expires ' + esc(a.expires_at_display) + "</p>"
+        : "") +
+      '<button class="button outline small" type="button" data-delete-announcement="' +
+      esc(a.id) +
+      '" aria-label="Delete announcement' +
+      (a.title ? ": " + esc(a.title) : "") +
+      '">Delete</button></article>'
     );
   }
 
@@ -77,6 +85,7 @@
     try {
       const payload = { body: text };
       if ($("a-title").value.trim()) payload.title = $("a-title").value.trim();
+      if ($("a-expires-at").value) payload.expires_at = $("a-expires-at").value;
       const res = await LNU.post("staff/api/announcements_create.php", payload);
       LNU.toast(res.message || "Announcement posted.", "success");
       $("announce-form").reset();
@@ -93,7 +102,33 @@
     }
   });
   document.addEventListener("click", (e) => {
-    if (e.target.closest("[data-retry]")) load();
+    const target = e.target instanceof Element ? e.target : null;
+    if (!target) return;
+    if (target.closest("[data-retry]")) {
+      load();
+      return;
+    }
+
+    const deleteButton = target.closest("[data-delete-announcement]");
+    if (!deleteButton) return;
+    const id = deleteButton.getAttribute("data-delete-announcement");
+    const announcement = items.find((item) => String(item.id) === id);
+    if (!announcement || !window.confirm("Delete this announcement? This cannot be undone.")) return;
+
+    deleteButton.disabled = true;
+    LNU.request("staff/api/announcements_delete.php", {
+      method: "DELETE",
+      body: { id },
+    })
+      .then(() => {
+        items = items.filter((item) => String(item.id) !== id);
+        render();
+        LNU.toast("Announcement deleted.", "success");
+      })
+      .catch((err) => {
+        deleteButton.disabled = false;
+        Admin.fail(err, "The announcement was not deleted.");
+      });
   });
 
   Admin.ready.then(load).catch(() => {});

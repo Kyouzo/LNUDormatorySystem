@@ -99,6 +99,21 @@
                 >
                 <span class="field-error" id="a-body-error"></span>
               </label>
+              <label class="field" for="a-expires-at"
+                >Expires on
+                <span class="field-hint">(optional)</span>
+                <input
+                  id="a-expires-at"
+                  name="expires_at"
+                  type="datetime-local"
+                  aria-describedby="a-expires-hint"
+                />
+                <span class="field-hint" id="a-expires-hint"
+                  >Leave blank to keep until an admin deletes it. Uses the
+                  configured app timezone. Expired posts are removed the next
+                  time a feed is requested.</span
+                >
+              </label>
               <div class="actions" style="grid-column: 1/-1">
                 <button class="button primary" type="submit" id="a-submit">
                   Submit announcements

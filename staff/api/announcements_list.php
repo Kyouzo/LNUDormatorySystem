@@ -2,8 +2,8 @@
 /**
  * GET /staff/api/announcements_list.php?limit=50&offset=0   (admin or security)
  * Same payload as GET /connection/announcements.php (kept for the staff pages):
- * {success, announcements:[{id, title, body, posted_by, posted_by_id, created_at, date, time,
- *  is_new}], unseen_count}. Default limit here is 50 (max 100).
+ * Items also include expires_at (UTC|null) and expires_at_display (configured app timezone|null).
+ * Default limit here is 50 (max 100); expired rows are pruned on request.
  */
 
 require_once __DIR__ . '/../../connection/bootstrap.php';

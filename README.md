@@ -18,11 +18,13 @@ For local development, the intended setup is XAMPP (Apache + MySQL), served at
    C:\xampp\mysql\bin\mysql -u root < database\schema.sql
    C:\xampp\mysql\bin\mysql -u root < database\seed.sql
    ```
-4. Database settings (optional): copy `connection/.env.example` to `connection/.env`, or set environment variables.
+4. If updating an existing database created before announcement expiry was added, run
+   `database/migrations/20261121_add_announcement_expiry.sql` once. Fresh databases get the column from `schema.sql`.
+5. Database settings (optional): copy `connection/.env.example` to `connection/.env`, or set environment variables.
    Defaults: `DB_HOST=localhost`, `DB_PORT=3306`, `DB_USER=root`, `DB_PASS=` (empty), `DB_NAME=lnudormatorysystem`.
    The same file holds `CURFEW_TIME` (22:00), `CURFEW_END` (04:00), `ROOM_CAPACITY` (4), `ENTRANCE_SLIP_REQUIRED` (0),
    `QR_ALLOW_STUDENT_ID` (0), `CSRF_ENFORCE` (0), `SESSION_IDLE_SECONDS` (7200).
-5. Open `http://localhost/LNUDormatorySystem/login/login.html` and sign in with a demo account below.
+6. Open `http://localhost/LNUDormatorySystem/login/login.html` and sign in with a demo account below.
 
 ## 2. Alternative: PHP's built-in server
 

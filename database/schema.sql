@@ -205,8 +205,10 @@ CREATE TABLE IF NOT EXISTS `announcements` (
   `body`       TEXT NOT NULL,
   `posted_by`  INT UNSIGNED NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `expires_at` DATETIME NULL COMMENT 'UTC; NULL means no automatic expiry',
   PRIMARY KEY (`id`),
   KEY `idx_announcements_created` (`created_at`),
+  KEY `idx_announcements_expires` (`expires_at`),
   CONSTRAINT `fk_announcements_staff` FOREIGN KEY (`posted_by`)
     REFERENCES `staff_accounts` (`staff_id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

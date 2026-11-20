@@ -4,8 +4,8 @@
  * Latest announcements, newest first, each flagged is_new relative to the
  * caller's last "mark seen" moment, plus the bell count.
  *
- * Response: {success, announcements:[{id, title, body, posted_by, posted_by_id,
- *            created_at, date, time, is_new}], unseen_count}
+ * Response items also include expires_at (UTC|null) and expires_at_display
+ * (configured application timezone|null). Expired announcements are deleted on request.
  */
 
 require_once __DIR__ . '/bootstrap.php';

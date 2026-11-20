@@ -43,7 +43,7 @@ Multipart endpoints: `register.php` (optional `entrance_slip`), `payment_receipt
 
 ## CSRF
 
-State-changing POSTs call `csrf_require()`. Default is **lenient**:
+State-changing requests call `csrf_require()`. Default is **lenient**:
 
 | Request carries                                                  | Result                                 |
 | ---------------------------------------------------------------- | -------------------------------------- |
@@ -57,6 +57,8 @@ signing in (the login JSON response also returns it).
 ## Date / time formats used in responses
 
 `created_at`, `uploaded_at`, `last_scan_at` etc. = `"YYYY-MM-DD HH:MM:SS"` (server time, Asia/Manila).
+Announcement `expires_at` is `"YYYY-MM-DD HH:MM:SS"` in UTC; `expires_at_display` is formatted in the configured
+application timezone.
 `date` = `"YYYY-MM-DD"`. `date_label` = `"November 20, 2026"`. Fields called `time`, `time_in`, `time_out`,
 `scan_time` = 12-hour text such as `"03:04 PM"`. Announcement items also carry `date` = `"Nov 20, 2026"`.
 
@@ -258,8 +260,11 @@ a student with no upload is "unrecorded" with `has_proof:false` (empty state).
 
 | Method | Path                                  | Params                                                            | Response                                                                                                        |
 | ------ | ------------------------------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| POST   | `/staff/api/announcements_create.php` | form or JSON: `body` (required, <= 2000), `title?` (<= 150), csrf | 201 `{success, message, announcement:A}` (`posted_by` = the logged-in admin; any client `posted_by` is ignored) |
-| GET    | `/staff/api/announcements_list.php`   | see Security table                                                | `{success, announcements:[A], unseen_count}`                                                                    |
+| POST   | `/staff/api/announcements_create.php` | form or JSON: `body` (required, <= 2000), `title?` (<= 150), `expires_at?` (`YYYY-MM-DDTHH:MM` in app timezone; must be future), csrf | 201 `{success, message, announcement:A}` (`posted_by` = the logged-in admin; any client `posted_by` is ignored; omitted expiry means no automatic expiration) |
+| DELETE | `/staff/api/announcements_delete.php` | admin only; JSON: `id`, csrf                                  | `{success, message, id}`; 404 if missing                                                                            |
+| GET    | `/staff/api/announcements_list.php`   | see Security table                                                | `{success, announcements:[A], unseen_count}`; expired rows are deleted when a feed is requested                    |
+
+Announcement `A` includes `expires_at` (UTC datetime or null) and `expires_at_display` (configured app timezone or null).
 
 ### Attendance tab (admin)
 
