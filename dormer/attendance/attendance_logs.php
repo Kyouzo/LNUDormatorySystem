@@ -1,12 +1,15 @@
 <?php
 /**
  * GET /dormer/attendance/attendance_logs.php   (student)
- * The logged-in student's 10 most recent attendance scans.
+ * The logged-in student's 10 most recent attendance scans, plus today's state:
+ * today = {date, status ('Not yet in'|'IN'|'OUT'), time, time_in, time_out, last_scan_at}
+ * (time values like "03:04 PM"; status is derived from the last scan today).
  */
 
 require_once __DIR__ . '/../../connection/bootstrap.php';
 require_once __DIR__ . '/../../connection/db_connect.php';
 require_once __DIR__ . '/../../connection/auth.php';
+require_once __DIR__ . '/../../connection/lib_attendance.php';
 
 require_method('GET');
 
@@ -46,6 +49,7 @@ if (db_execute($stmt, 'attendance total')) {
     $total = (int) ($row['total'] ?? $total);
 }
 $stmt->close();
+$today = attendance_today_for($student_id);
 $conn->close();
 
-json_response(['success' => true, 'history' => $history, 'total' => $total]);
+json_response(['success' => true, 'history' => $history, 'total' => $total, 'today' => $today]);

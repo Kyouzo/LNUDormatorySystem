@@ -1,6 +1,6 @@
 <?php
 /**
- * GET /staff/api/students.php   (staff)
+ * GET /staff/api/students.php   (admin)
  * Optional query: q = text matched against name, student ID or room.
  *
  * Shape mirrors the sample data in staff/violations.html:
@@ -14,7 +14,7 @@ require_once __DIR__ . '/../../connection/auth.php';
 require_once __DIR__ . '/../../connection/violation_types.php';
 
 require_method('GET');
-require_staff(true);
+require_role('admin');
 
 $q = trim((string) ($_GET['q'] ?? ''));
 if (strlen($q) > 100) {
@@ -23,7 +23,7 @@ if (strlen($q) > 100) {
 
 if ($q === '') {
     $stmt = db_prepare(
-        'SELECT student_id, first_name, last_name, year_level, room_assignment
+        'SELECT student_id, first_name, last_name, year_level, room_assignment, floor_no, room_no
            FROM validated_dormers
           WHERE is_active = 1
           ORDER BY last_name, first_name
@@ -32,7 +32,7 @@ if ($q === '') {
 } else {
     $like = '%' . addcslashes($q, '%_\\') . '%';
     $stmt = db_prepare(
-        "SELECT student_id, first_name, last_name, year_level, room_assignment
+        "SELECT student_id, first_name, last_name, year_level, room_assignment, floor_no, room_no
            FROM validated_dormers
           WHERE is_active = 1
             AND (CONCAT(first_name, ' ', last_name) LIKE ?
@@ -64,6 +64,8 @@ while ($row = $result->fetch_assoc()) {
         'last_name'  => $row['last_name'],
         'year'       => $row['year_level'],
         'room'       => $row['room_assignment'],
+        'floor'      => ($row['floor_no'] === null) ? null : (int) $row['floor_no'],
+        'room_no'    => ($row['room_no'] === null) ? null : (int) $row['room_no'],
         'log'        => [],
     ];
     $byId[$id] = count($students) - 1;

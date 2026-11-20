@@ -1,6 +1,6 @@
 <?php
 /**
- * POST /dormer/attendance/process_scan.php   (staff only)
+ * POST /dormer/attendance/process_scan.php   (security or admin)
  * Body (JSON): {"token": "<QR content>"}
  *
  * The QR content is the dormer's qr_token. The legacy plain student ID
@@ -18,7 +18,7 @@ require_once __DIR__ . '/../../connection/csrf.php';
 
 require_method('POST');
 
-require_staff(true);
+require_role('security', 'admin');
 csrf_require();
 
 const SCAN_COOLDOWN_SECONDS = 30;
@@ -39,7 +39,7 @@ $conn->begin_transaction();
 
 // Find the dormer by QR token (row is locked so two scans cannot interleave).
 $stmt = db_prepare(
-    'SELECT student_id, first_name, last_name, room_assignment
+    'SELECT student_id, first_name, last_name, room_assignment, year_level
        FROM validated_dormers
       WHERE qr_token = ? AND is_active = 1
       FOR UPDATE'
@@ -54,7 +54,7 @@ $stmt->close();
 if (!$dormer && $allowStudentId && ctype_digit($token) && strlen($token) <= 10) {
     $legacyId = (int) $token;
     $stmt = db_prepare(
-        'SELECT student_id, first_name, last_name, room_assignment
+        'SELECT student_id, first_name, last_name, room_assignment, year_level
            FROM validated_dormers
           WHERE student_id = ? AND is_active = 1
           FOR UPDATE'
@@ -117,5 +117,7 @@ json_response([
     'name'            => trim($dormer['first_name'] . ' ' . $dormer['last_name']),
     'student_id'      => $student_id,
     'room'            => $dormer['room_assignment'],
+    'year_level'      => $dormer['year_level'],
+    'scan_time'       => date('h:i A'),
     'attendance_type' => $attendance_type,
 ]);

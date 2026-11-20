@@ -5,8 +5,10 @@
  * - Students (validated_dormers) and staff (staff_accounts) share this form.
  * - Passwords are verified with password_verify(); legacy plaintext rows are
  *   accepted once and transparently re-saved as a bcrypt hash.
- * - Successful form login: redirect to the student dashboard / staff page.
- *   Successful JSON login (Accept: application/json): {"success":true,...}.
+ * - Successful form login: redirect to the role's landing page (student dashboard,
+ *   admin: staff/violations.html, security: staff/security/home.html).
+ *   Successful JSON login (Accept: application/json): {success, role, account_type, redirect, csrf_token}
+ *   where role is 'student' | 'admin' | 'security'.
  * - Failures: HTML result page, or JSON when the caller asks for JSON.
  */
 
@@ -14,6 +16,7 @@ require_once __DIR__ . '/../connection/bootstrap.php';
 require_once __DIR__ . '/../connection/db_connect.php';
 require_once __DIR__ . '/../connection/auth.php';
 require_once __DIR__ . '/../connection/csrf.php';
+require_once __DIR__ . '/../connection/lib_password.php';
 
 const LOGIN_MAX_FAILS_PER_ACCOUNT = 5;
 const LOGIN_MAX_FAILS_PER_IP      = 25;
@@ -93,44 +96,6 @@ function login_clear_failures($identifier)
     $stmt->close();
 }
 
-/** Does the stored value look like a password_hash() output? */
-function password_is_hashed($stored)
-{
-    return preg_match('/^\$(2[abxy]|argon2id|argon2i)\$/', (string) $stored) === 1;
-}
-
-/**
- * Check $plain against $stored. Returns [ok, needsUpgrade].
- * Legacy plaintext values are compared in constant time.
- */
-function password_check($plain, $stored)
-{
-    $stored = (string) $stored;
-    if (password_is_hashed($stored)) {
-        $ok = password_verify($plain, $stored);
-        return [$ok, $ok && password_needs_rehash($stored, PASSWORD_DEFAULT)];
-    }
-    $ok = ($stored !== '') && hash_equals($stored, $plain);
-    return [$ok, $ok];
-}
-
-/** Re-save the password as a bcrypt hash. Failures are logged, never fatal. */
-function password_upgrade($kind, $id, $plain)
-{
-    $hash = password_hash($plain, PASSWORD_DEFAULT);
-    if ($hash === false) {
-        return;
-    }
-    if ($kind === 'staff') {
-        $stmt = db_prepare('UPDATE staff_accounts SET password = ? WHERE staff_id = ?');
-    } else {
-        $stmt = db_prepare('UPDATE validated_dormers SET password = ? WHERE student_id = ?');
-    }
-    $stmt->bind_param('si', $hash, $id);
-    db_execute($stmt, 'password upgrade (' . $kind . ')');
-    $stmt->close();
-}
-
 if (login_is_throttled($identifier, $ip)) {
     respond_error(
         'Too many failed sign-in attempts. Please wait ' . LOGIN_WINDOW_MINUTES . ' minutes and try again.',
@@ -192,9 +157,11 @@ if ($needsUpgrade) {
 login_clear_failures($identifier);
 
 if ($kind === 'staff') {
+    $role = normalize_staff_role($account['role']);
+
     login_session('staff', [
         'staff_id'     => (int) $account['staff_id'],
-        'staff_role'   => (string) $account['role'],
+        'staff_role'   => $role,
         'display_name' => (trim((string) $account['full_name']) !== '') ? trim((string) $account['full_name']) : $email,
     ]);
 
@@ -204,8 +171,7 @@ if ($kind === 'staff') {
     db_execute($stmt, 'staff last_login');
     $stmt->close();
 
-    $target = app_url('staff/violations.html');
-    $role   = 'staff';
+    $target = app_url(role_home_path($role));
 } else {
     login_session('student', [
         'student_id'   => (int) $account['student_id'],
@@ -214,8 +180,8 @@ if ($kind === 'staff') {
             : $email,
     ]);
 
-    $target = app_url('dormer/dashboard/dashboard.html');
     $role   = 'student';
+    $target = app_url(role_home_path($role));
 }
 
 $conn->close();
@@ -224,6 +190,7 @@ if (wants_json()) {
     json_response([
         'success'    => true,
         'role'       => $role,
+        'account_type' => ($role === 'student') ? 'student' : 'staff',
         'redirect'   => $target,
         'csrf_token' => csrf_token(),
     ]);

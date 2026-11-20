@@ -4,6 +4,9 @@
  *
  * Fields: last_name, first_name, middle_name?, age, gender, student_id, email,
  *         address, year_level?, password? (optional; 8+ chars)
+ * File:   entrance_slip? (multipart; JPG/PNG/PDF, max 5 MB; mandatory only when
+ *         ENTRANCE_SLIP_REQUIRED=1). Stored in registration/uploads/entrance_slips/
+ *         and only readable by admins through staff/api/entrance_slip_file.php.
  *
  * Writes a PENDING row into validation_dormers. Staff approve it later
  * (staff/api/registration_review.php), which creates the real account in
@@ -13,6 +16,8 @@
 require_once __DIR__ . '/../connection/bootstrap.php';
 require_once __DIR__ . '/../connection/db_connect.php';
 require_once __DIR__ . '/../connection/csrf.php';
+require_once __DIR__ . '/../connection/lib_upload.php';
+require_once __DIR__ . '/../connection/lib_throttle.php';
 
 $formPage = app_url('registration/register.html');
 
@@ -26,6 +31,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 }
 
 csrf_require();
+
+if (form_throttled('register-student', 15, 15)) {
+    respond_error('Too many registrations from this connection. Please wait a few minutes and try again.', 429, $formPage, 'Back to registration');
+}
+form_record_attempt('register-student');
 
 $in = request_input();
 
@@ -70,6 +80,14 @@ if ($password !== '' && (strlen($password) < 8 || strlen($password) > 1024)) {
     $errors[] = 'Password must be at least 8 characters.';
 }
 
+$slipRequired = filter_var(env_value('ENTRANCE_SLIP_REQUIRED', '0'), FILTER_VALIDATE_BOOLEAN);
+$slipFile     = $_FILES['entrance_slip'] ?? null;
+$slipGiven    = is_array($slipFile) && isset($slipFile['error']) && !is_array($slipFile['error'])
+    && (int) $slipFile['error'] !== UPLOAD_ERR_NO_FILE;
+if ($slipRequired && !$slipGiven) {
+    $errors[] = 'Upload your entrance slip.';
+}
+
 if ($errors) {
     respond_error(implode(' ', $errors), 422, $formPage, 'Back to registration');
 }
@@ -80,9 +98,14 @@ $middle     = ($middle_name === '') ? null : $middle_name;
 $year       = ($year_level === '') ? null : $year_level;
 $pwHash     = ($password === '') ? null : password_hash($password, PASSWORD_DEFAULT);
 
-// Already an active account?
-$stmt = db_prepare('SELECT 1 FROM validated_dormers WHERE student_id = ? OR email = ? LIMIT 1');
-$stmt->bind_param('is', $student_id, $email);
+// Already an active account (student or staff) or a waiting personnel registration with this email?
+$stmt = db_prepare(
+    "SELECT 1 FROM validated_dormers WHERE student_id = ? OR email = ?
+     UNION ALL SELECT 1 FROM staff_accounts WHERE email = ?
+     UNION ALL SELECT 1 FROM staff_registrations WHERE email = ? AND status = 'pending'
+     LIMIT 1"
+);
+$stmt->bind_param('isss', $student_id, $email, $email, $email);
 db_execute($stmt, 'registration duplicate check');
 $exists = $stmt->get_result()->num_rows > 0;
 $stmt->close();
@@ -96,13 +119,29 @@ if ($exists) {
     );
 }
 
+// Entrance slip (optional unless required): validated by content, stored under a random name.
+$slipName = null;
+if ($slipGiven) {
+    $saved = upload_save(
+        $slipFile,
+        ['image/jpeg' => 'jpg', 'image/png' => 'png', 'application/pdf' => 'pdf'],
+        5 * 1024 * 1024,
+        __DIR__ . '/uploads/entrance_slips',
+        'slip_'
+    );
+    if (!$saved['ok']) {
+        respond_error('Entrance slip: ' . $saved['message'] . ' Use a JPG, PNG or PDF up to 5 MB.', $saved['status'], $formPage, 'Back to registration');
+    }
+    $slipName = $saved['filename'];
+}
+
 $stmt = db_prepare(
     'INSERT INTO validation_dormers
-        (last_name, first_name, middle_name, age, gender, student_id, email, address, year_level, password_hash)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        (last_name, first_name, middle_name, age, gender, student_id, email, address, year_level, password_hash, entrance_slip)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 );
 $stmt->bind_param(
-    'sssisissss',
+    'sssisisssss',
     $last_name,
     $first_name,
     $middle,
@@ -112,13 +151,17 @@ $stmt->bind_param(
     $email,
     $address,
     $year,
-    $pwHash
+    $pwHash,
+    $slipName
 );
 
 if (!$stmt->execute()) {
     $errno = $stmt->errno;
     app_log('Registration insert failed: [' . $errno . '] ' . $stmt->error);
     $stmt->close();
+    if ($slipName !== null) {
+        @unlink(__DIR__ . '/uploads/entrance_slips/' . $slipName); // no orphan files
+    }
     if ($errno === 1062) {
         respond_error(
             'A registration with this student ID or email is already waiting for validation.',

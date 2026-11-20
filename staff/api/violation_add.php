@@ -1,6 +1,6 @@
 <?php
 /**
- * POST /staff/api/violation_add.php   (staff)
+ * POST /staff/api/violation_add.php   (admin)
  * Body (JSON or form): student_id, type, details, absent ("Y"/"N"),
  *                      csrf_token (optional while enforcement is off)
  *
@@ -16,7 +16,7 @@ require_once __DIR__ . '/../../connection/csrf.php';
 require_once __DIR__ . '/../../connection/violation_types.php';
 
 require_method('POST');
-$staff_id = require_staff(true);
+$staff_id = require_role('admin');
 csrf_require();
 
 $in = request_input();

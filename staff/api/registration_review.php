@@ -1,8 +1,9 @@
 <?php
 /**
- * POST /staff/api/registration_review.php   (staff)
+ * POST /staff/api/registration_review.php   (admin)
  * Body (JSON or form): id (validation_dormers.id), action ("approve"|"reject"),
- *                      room_assignment? (approve only), csrf_token?
+ *                      room_assignment? (approve only, "floor-room" such as "3-5"; the room
+ *                      must exist and have space, otherwise 409), csrf_token?
  *
  * Approve: copies the row into validated_dormers (the real account) and marks
  * it approved. If the registrant did not choose a password, a temporary one is
@@ -14,9 +15,10 @@ require_once __DIR__ . '/../../connection/bootstrap.php';
 require_once __DIR__ . '/../../connection/db_connect.php';
 require_once __DIR__ . '/../../connection/auth.php';
 require_once __DIR__ . '/../../connection/csrf.php';
+require_once __DIR__ . '/../../connection/lib_rooms.php';
 
 require_method('POST');
-$staff_id = require_staff(true);
+$staff_id = require_role('admin');
 csrf_require();
 
 $in     = request_input();
@@ -30,8 +32,16 @@ if (preg_match('/^\d{1,10}$/', $idRaw) !== 1) {
 if (!in_array($action, ['approve', 'reject'], true)) {
     json_error('Action must be "approve" or "reject".', 422);
 }
-if (strlen($room) > 30) {
-    json_error('Room assignment is too long.', 422);
+$roomFloor = 0;
+$roomNo    = 0;
+if ($room !== '') {
+    $parts = explode('-', $room);
+    $err   = (count($parts) === 2)
+        ? room_read_params(['floor' => trim($parts[0]), 'room' => trim($parts[1])], $roomFloor, $roomNo)
+        : 'bad';
+    if ($err !== null) {
+        json_error('Room assignment must look like floor-room, for example 3-5 (floors 1-3, rooms 1-10).', 422);
+    }
 }
 $regId = (int) $idRaw;
 
@@ -89,12 +99,12 @@ if ($action === 'approve') {
     }
 
     $qrToken = bin2hex(random_bytes(16));
-    $roomVal = ($room === '') ? null : $room;
+    $slip    = ($reg['entrance_slip'] === null || $reg['entrance_slip'] === '') ? null : $reg['entrance_slip'];
 
     $stmt = db_prepare(
         'INSERT INTO validated_dormers
             (student_id, last_name, first_name, middle_name, age, gender, email, address,
-             year_level, room_assignment, password, qr_token)
+             year_level, password, qr_token, entrance_slip)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     );
     $age = (int) $reg['age'];
@@ -109,9 +119,9 @@ if ($action === 'approve') {
         $reg['email'],
         $reg['address'],
         $reg['year_level'],
-        $roomVal,
         $hash,
-        $qrToken
+        $qrToken,
+        $slip
     );
     $inserted = db_execute($stmt, 'approve insert');
     $stmt->close();
@@ -139,6 +149,17 @@ if (!$updated) {
 }
 
 $conn->commit();
+
+// Optional room: assigned after the account exists (capacity-checked, separate transaction).
+$roomInfo = null;
+$roomNote = null;
+if ($action === 'approve' && $roomFloor > 0) {
+    list($roomOk, $roomMsg, , $roomInfo) = room_assign_student((int) $reg['student_id'], $roomFloor, $roomNo, true);
+    if (!$roomOk) {
+        $roomNote = $roomMsg;
+    }
+}
+
 $conn->close();
 
 $response = [
@@ -146,6 +167,12 @@ $response = [
     'message' => ($action === 'approve') ? 'Registration approved.' : 'Registration rejected.',
     'status'  => $newStatus,
 ];
+if ($roomInfo !== null) {
+    $response['room_assignment'] = $roomInfo['room_label'];
+}
+if ($roomNote !== null) {
+    $response['room_error'] = $roomNote; // account approved, but the room could not be assigned
+}
 if ($temporary !== null) {
     $response['temporary_password'] = $temporary;
 }

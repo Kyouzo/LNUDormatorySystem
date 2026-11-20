@@ -3,3 +3,7 @@ connection/.env
 logs/*
 !logs/.htaccess
 node_modules/
+
+# Uploaded private files (keep the folder rules)
+registration/uploads/entrance_slips/*
+!registration/uploads/entrance_slips/.htaccess

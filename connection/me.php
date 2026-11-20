@@ -3,6 +3,8 @@
  * GET /connection/me.php
  * Who is logged in? Always HTTP 200; check `authenticated`.
  * Handy for static pages that need to redirect when logged out.
+ * role is 'student' | 'admin' | 'security' | null; account_type is 'student' | 'staff'.
+ * home = project-root-relative landing page for the role.
  * `name` comes from the session, with a database lookup as fallback.
  */
 
@@ -14,7 +16,7 @@ require_method('GET');
 $role = current_role();
 
 if ($role === null) {
-    json_response(['success' => true, 'authenticated' => false, 'role' => null]);
+    json_response(['success' => true, 'authenticated' => false, 'role' => null, 'account_type' => null]);
 }
 
 $name = trim((string) ($_SESSION['display_name'] ?? ''));
@@ -22,7 +24,7 @@ $name = trim((string) ($_SESSION['display_name'] ?? ''));
 if ($name === '') {
     require_once __DIR__ . '/db_connect.php';
 
-    if ($role === 'staff') {
+    if ($role !== 'student') {
         $id   = (int) $_SESSION['staff_id'];
         $stmt = db_prepare('SELECT full_name AS n, email FROM staff_accounts WHERE staff_id = ?');
     } else {
@@ -49,20 +51,24 @@ if ($name === '') {
     }
 }
 
-if ($role === 'staff') {
+if ($role === 'student') {
     json_response([
         'success'       => true,
         'authenticated' => true,
-        'role'          => 'staff',
-        'staff_id'      => (int) $_SESSION['staff_id'],
+        'role'          => 'student',
+        'account_type'  => 'student',
+        'student_id'    => (int) $_SESSION['student_id'],
         'name'          => $name,
+        'home'          => role_home_path('student'),
     ]);
 }
 
 json_response([
     'success'       => true,
     'authenticated' => true,
-    'role'          => 'student',
-    'student_id'    => (int) $_SESSION['student_id'],
+    'role'          => $role,
+    'account_type'  => 'staff',
+    'staff_id'      => (int) $_SESSION['staff_id'],
     'name'          => $name,
+    'home'          => role_home_path($role),
 ]);

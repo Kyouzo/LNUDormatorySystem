@@ -6,7 +6,8 @@
  * Original keys are kept: offenses (latest record's text), absent, records[]
  * with violation_id / offenses / absent / curfew. Additions: absent is now the
  * TOTAL number of absences recorded (each record carries absent 0/1), and every
- * record also has violation_type and created_at.
+ * record also has violation_type and created_at, plus warning_no (int|null, curfew warnings:
+ * 1 = 1st warning).
  */
 
 require_once __DIR__ . '/../../connection/bootstrap.php';
@@ -18,7 +19,7 @@ require_method('GET');
 $student_id = require_student(true);
 
 $stmt = db_prepare(
-    'SELECT violation_id, violation_type, offenses, absent, curfew, created_at
+    'SELECT violation_id, violation_type, offenses, absent, curfew, warning_no, created_at
        FROM dormer_violation
       WHERE student_id = ?
       ORDER BY violation_id DESC'
@@ -39,6 +40,7 @@ $absentTotal = 0;
 foreach ($records as $i => $record) {
     $records[$i]['violation_id'] = (int) $record['violation_id'];
     $records[$i]['absent']       = (int) $record['absent'];
+    $records[$i]['warning_no']   = ($record['warning_no'] === null) ? null : (int) $record['warning_no'];
     $absentTotal += (int) $record['absent'];
 }
 
