@@ -34,11 +34,11 @@ sessions, role checks, and server-side validation protect actions and records.
 
 ### Features by role
 
-| Role | Main features |
-| --- | --- |
-| **Student** | View a dashboard with room and account status, announcements, attendance and payment summaries; open a QR gate pass; review attendance history, payment submissions, violations, and profile details; update permitted contact information; change password. |
+| Role                   | Main features                                                                                                                                                                                                                                                                |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Student**            | View a dashboard with room and account status, announcements, attendance and payment summaries; open a QR gate pass; review attendance history, payment submissions, violations, and profile details; update permitted contact information; change password.                 |
 | **Dorm Administrator** | Review student and personnel registrations; manage student records, enrollment, and room assignments; check rooms; review attendance and curfew records; verify payment proofs; record violations; publish, expire, and delete announcements; manage their account settings. |
-| **Security Personnel** | View dorm announcements and the day's attendance; scan student QR passes for IN/OUT attendance and curfew checks; review attendance and curfew logs; manage their account settings. |
+| **Security Personnel** | View dorm announcements and the day's attendance; scan student QR passes for IN/OUT attendance and curfew checks; review attendance and curfew logs; manage their account settings.                                                                                          |
 
 This repository is a working proposal/demo of those workflows, not a connection to an official university system. Seeded
 accounts and records are sample data; the Render demo resets its database on container restart. See the [API reference](./database/API.md)

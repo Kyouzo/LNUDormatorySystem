@@ -113,7 +113,11 @@
     if (!deleteButton) return;
     const id = deleteButton.getAttribute("data-delete-announcement");
     const announcement = items.find((item) => String(item.id) === id);
-    if (!announcement || !window.confirm("Delete this announcement? This cannot be undone.")) return;
+    if (
+      !announcement ||
+      !window.confirm("Delete this announcement? This cannot be undone.")
+    )
+      return;
 
     deleteButton.disabled = true;
     LNU.request("staff/api/announcements_delete.php", {

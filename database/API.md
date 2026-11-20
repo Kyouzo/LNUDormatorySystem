@@ -258,11 +258,11 @@ a student with no upload is "unrecorded" with `has_proof:false` (empty state).
 
 ### Announcements
 
-| Method | Path                                  | Params                                                            | Response                                                                                                        |
-| ------ | ------------------------------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Method | Path                                  | Params                                                                                                                                | Response                                                                                                                                                      |
+| ------ | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | POST   | `/staff/api/announcements_create.php` | form or JSON: `body` (required, <= 2000), `title?` (<= 150), `expires_at?` (`YYYY-MM-DDTHH:MM` in app timezone; must be future), csrf | 201 `{success, message, announcement:A}` (`posted_by` = the logged-in admin; any client `posted_by` is ignored; omitted expiry means no automatic expiration) |
-| DELETE | `/staff/api/announcements_delete.php` | admin only; JSON: `id`, csrf                                  | `{success, message, id}`; 404 if missing                                                                            |
-| GET    | `/staff/api/announcements_list.php`   | see Security table                                                | `{success, announcements:[A], unseen_count}`; expired rows are deleted when a feed is requested                    |
+| DELETE | `/staff/api/announcements_delete.php` | admin only; JSON: `id`, csrf                                                                                                          | `{success, message, id}`; 404 if missing                                                                                                                      |
+| GET    | `/staff/api/announcements_list.php`   | see Security table                                                                                                                    | `{success, announcements:[A], unseen_count}`; expired rows are deleted when a feed is requested                                                               |
 
 Announcement `A` includes `expires_at` (UTC datetime or null) and `expires_at_display` (configured app timezone or null).
 
