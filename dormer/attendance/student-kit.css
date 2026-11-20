@@ -13,7 +13,7 @@
 /* ---------- Faint campus backdrop behind the top of the page ---------- */
 .main-content { position: relative; isolation: isolate; }
 .main-content::before { content: ""; position: absolute; z-index: -1; inset: 0 0 auto 0; height: 560px; background: url("../../assets/images/loginbg_light-Dow2JmjG.png") center top / cover no-repeat; opacity: .07; pointer-events: none; -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent); mask-image: linear-gradient(180deg, #000 30%, transparent); }
-:root[data-theme="dark"] .main-content::before { filter: invert(1); }
+:root[data-theme="dark"] .main-content::before { filter: invert(1) brightness(4); }
 
 /* ---------- Compact hero for app pages ---------- */
 .dorm-hero { padding: clamp(2rem, 5vw, 3.6rem) clamp(1.25rem, 4.5vw, 3.2rem); border-bottom: 3px solid var(--gold); margin-bottom: 1.5rem; }

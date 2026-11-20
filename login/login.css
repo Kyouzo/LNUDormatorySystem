@@ -19,7 +19,7 @@
 }
 /* Dark: same line art, inverted and faint on near-black (fixed layer, so no attachment jank). */
 :root[data-theme="dark"] .login-page { position: relative; isolation: isolate; background-image: none; }
-:root[data-theme="dark"] .login-page::before { content: ""; position: fixed; inset: 0; z-index: -1; background: url("../assets/images/loginbg_light-Dow2JmjG.png") center / cover no-repeat; filter: invert(1); opacity: .1; pointer-events: none; }
+:root[data-theme="dark"] .login-page::before { content: ""; position: fixed; inset: 0; z-index: -1; background: url("../assets/images/loginbg_light-Dow2JmjG.png") center / cover no-repeat; filter: invert(1) brightness(4); opacity: .16; pointer-events: none; }
 /* Fixed backgrounds jank on touch browsers; only pin them on larger screens. */
 @media (min-width: 721px) and (hover: hover) {
   .login-page { background-attachment: fixed; }
