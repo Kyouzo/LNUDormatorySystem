@@ -29,18 +29,18 @@ if (!db_execute($stmt, 'payment history')) {
 }
 
 $payments = [];
-$result   = $stmt->get_result();
+$result = $stmt->get_result();
 
 while ($row = $result->fetch_assoc()) {
     $timestamp = strtotime($row['upload_datetime']);
 
     $payments[] = [
-        'id'          => (int) $row['id'],
+        'id' => (int) $row['id'],
         'proof_image' => $row['proof_image'],
-        'date'        => date('F d, Y', $timestamp),
-        'time'        => date('h:i:s A', $timestamp),
+        'date' => date('F d, Y', $timestamp),
+        'time' => date('h:i:s A', $timestamp),
         'uploaded_at' => $row['upload_datetime'],
-        'status'      => $row['status'],
+        'status' => $row['status'],
     ];
 }
 

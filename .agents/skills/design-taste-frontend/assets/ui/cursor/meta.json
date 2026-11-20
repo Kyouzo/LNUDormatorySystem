@@ -10,10 +10,7 @@
     "publishing",
     "workflows"
   ],
-  "size": [
-    360,
-    262
-  ],
+  "size": [360, 262],
   "js": true,
   "place": "at-over only: laid over the lower-right edge of a window fragment (--bx 24px, --by 24px; in a split or hero frame --by -40px runs it out through the bottom, its button still in view). Never alone: not centred on a ground, not cut through its buttons (the click is its point)",
   "edit": "The dialog is HTML. The busy and done words sit beside the text they replace: data-busy and data-done on the button, data-done on the state chip and on the line under the item; without them a text stays as written.",

@@ -45,16 +45,16 @@ function reg_text($in, $key, $max)
     return function_exists('mb_substr') ? mb_substr($value, 0, $max, 'UTF-8') : substr($value, 0, $max);
 }
 
-$last_name   = reg_text($in, 'last_name', 80);
-$first_name  = reg_text($in, 'first_name', 80);
+$last_name = reg_text($in, 'last_name', 80);
+$first_name = reg_text($in, 'first_name', 80);
 $middle_name = reg_text($in, 'middle_name', 80);
-$gender      = reg_text($in, 'gender', 20);
-$email       = strtolower(reg_text($in, 'email', 190));
-$address     = reg_text($in, 'address', 255);
-$year_level  = reg_text($in, 'year_level', 20);
+$gender = reg_text($in, 'gender', 20);
+$email = strtolower(reg_text($in, 'email', 190));
+$address = reg_text($in, 'address', 255);
+$year_level = reg_text($in, 'year_level', 20);
 $student_raw = trim((string) ($in['student_id'] ?? ''));
-$age_raw     = trim((string) ($in['age'] ?? ''));
-$password    = (string) ($in['password'] ?? '');
+$age_raw = trim((string) ($in['age'] ?? ''));
+$password = (string) ($in['password'] ?? '');
 
 $errors = [];
 
@@ -81,8 +81,8 @@ if ($password !== '' && (strlen($password) < 8 || strlen($password) > 1024)) {
 }
 
 $slipRequired = filter_var(env_value('ENTRANCE_SLIP_REQUIRED', '0'), FILTER_VALIDATE_BOOLEAN);
-$slipFile     = $_FILES['entrance_slip'] ?? null;
-$slipGiven    = is_array($slipFile) && isset($slipFile['error']) && !is_array($slipFile['error'])
+$slipFile = $_FILES['entrance_slip'] ?? null;
+$slipGiven = is_array($slipFile) && isset($slipFile['error']) && !is_array($slipFile['error'])
     && (int) $slipFile['error'] !== UPLOAD_ERR_NO_FILE;
 if ($slipRequired && !$slipGiven) {
     $errors[] = 'Upload your entrance slip.';
@@ -93,10 +93,10 @@ if ($errors) {
 }
 
 $student_id = (int) $student_raw;
-$age        = (int) $age_raw;
-$middle     = ($middle_name === '') ? null : $middle_name;
-$year       = ($year_level === '') ? null : $year_level;
-$pwHash     = ($password === '') ? null : password_hash($password, PASSWORD_DEFAULT);
+$age = (int) $age_raw;
+$middle = ($middle_name === '') ? null : $middle_name;
+$year = ($year_level === '') ? null : $year_level;
+$pwHash = ($password === '') ? null : password_hash($password, PASSWORD_DEFAULT);
 
 // Already an active account (student or staff) or a waiting personnel registration with this email?
 $stmt = db_prepare(

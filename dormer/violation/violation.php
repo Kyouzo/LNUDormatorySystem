@@ -39,8 +39,8 @@ $conn->close();
 $absentTotal = 0;
 foreach ($records as $i => $record) {
     $records[$i]['violation_id'] = (int) $record['violation_id'];
-    $records[$i]['absent']       = (int) $record['absent'];
-    $records[$i]['warning_no']   = ($record['warning_no'] === null) ? null : (int) $record['warning_no'];
+    $records[$i]['absent'] = (int) $record['absent'];
+    $records[$i]['warning_no'] = ($record['warning_no'] === null) ? null : (int) $record['warning_no'];
     $absentTotal += (int) $record['absent'];
 }
 
@@ -54,8 +54,8 @@ foreach ($records as $record) {
 }
 
 json_response([
-    'success'  => true,
+    'success' => true,
     'offenses' => $offenses,
-    'absent'   => $absentTotal,
-    'records'  => $records,
+    'absent' => $absentTotal,
+    'records' => $records,
 ]);

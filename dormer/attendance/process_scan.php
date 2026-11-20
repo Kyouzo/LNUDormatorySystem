@@ -23,7 +23,7 @@ csrf_require();
 
 const SCAN_COOLDOWN_SECONDS = 30;
 
-$data  = request_input();
+$data = request_input();
 $token = trim((string) ($data['qr_token'] ?? ($data['token'] ?? '')));
 
 if ($token === '') {
@@ -112,12 +112,12 @@ $conn->commit();
 $conn->close();
 
 json_response([
-    'success'         => true,
-    'message'         => 'Attendance recorded successfully!',
-    'name'            => trim($dormer['first_name'] . ' ' . $dormer['last_name']),
-    'student_id'      => $student_id,
-    'room'            => $dormer['room_assignment'],
-    'year_level'      => $dormer['year_level'],
-    'scan_time'       => date('h:i A'),
+    'success' => true,
+    'message' => 'Attendance recorded successfully!',
+    'name' => trim($dormer['first_name'] . ' ' . $dormer['last_name']),
+    'student_id' => $student_id,
+    'room' => $dormer['room_assignment'],
+    'year_level' => $dormer['year_level'],
+    'scan_time' => date('h:i A'),
     'attendance_type' => $attendance_type,
 ]);

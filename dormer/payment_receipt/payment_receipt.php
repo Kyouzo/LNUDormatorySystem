@@ -79,11 +79,11 @@ if ($file['size'] > PROOF_MAX_BYTES || filesize($file['tmp_name']) > PROOF_MAX_B
 
 // Validate the real content type, never the client-supplied name or type.
 $finfo = new finfo(FILEINFO_MIME_TYPE);
-$mime  = $finfo->file($file['tmp_name']);
+$mime = $finfo->file($file['tmp_name']);
 
 $allowed = [
     'image/jpeg' => ['jpg', IMAGETYPE_JPEG],
-    'image/png'  => ['png', IMAGETYPE_PNG],
+    'image/png' => ['png', IMAGETYPE_PNG],
 ];
 
 if (!is_string($mime) || !isset($allowed[$mime])) {
@@ -103,7 +103,7 @@ if (!is_dir($upload_dir) && !@mkdir($upload_dir, 0755, true) && !is_dir($upload_
     proof_finish(false, 'Unable to save uploaded image.', 500);
 }
 
-$filename  = 'proof_' . $student_id . '_' . bin2hex(random_bytes(8)) . '.' . $allowed[$mime][0];
+$filename = 'proof_' . $student_id . '_' . bin2hex(random_bytes(8)) . '.' . $allowed[$mime][0];
 $file_path = $upload_dir . $filename;
 
 if (!move_uploaded_file($file['tmp_name'], $file_path)) {

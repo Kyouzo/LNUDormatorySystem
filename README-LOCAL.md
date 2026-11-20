@@ -36,10 +36,10 @@ Then open `http://localhost:8000/login/login.html`. The built-in server **ignore
 
 ## 3. Demo accounts (seed data, demo only)
 
-| Role | Email | Password |
-|---|---|---|
-| Student | `student@lnu.edu.ph` | `Dormer#2026` |
-| Dorm Administrator | `staff@lnu.edu.ph` | `Staff#2026` |
+| Role               | Email                 | Password        |
+| ------------------ | --------------------- | --------------- |
+| Student            | `student@lnu.edu.ph`  | `Dormer#2026`   |
+| Dorm Administrator | `staff@lnu.edu.ph`    | `Staff#2026`    |
 | Security Personnel | `security@lnu.edu.ph` | `Security#2026` |
 
 Emails come from `database/seed.sql`; the passwords are the ones recorded in `HANDOFF.md` (the seed stores only bcrypt
@@ -57,10 +57,10 @@ security → `staff/security/home.html`.
 
 - **Student** (`registration/register_student.html` → `register.php`): name, age, gender, student ID, email, address,
   optional year level / password, and an **entrance slip** (JPG/PNG/PDF, max 5 MB; optional unless
-  `ENTRANCE_SLIP_REQUIRED=1`). Creates a *pending* record. An admin approves it (if no password was set, approval shows a
+  `ENTRANCE_SLIP_REQUIRED=1`). Creates a _pending_ record. An admin approves it (if no password was set, approval shows a
   one-time temporary password to hand over), then enrols the student into a floor and room.
 - **Dorm personnel** (`registration/register_personnel.html` → `register_personnel.php`): name, age (18+), gender,
-  personnel type (Dorm Administrator = `admin`, Security Personnel = `security`), email, password. Creates a *pending*
+  personnel type (Dorm Administrator = `admin`, Security Personnel = `security`), email, password. Creates a _pending_
   row in `staff_registrations`. An existing admin approves it (`staff/api/staff_registration_review.php`); the person
   then signs in with the email and password they registered. The first admin comes from the seed.
 

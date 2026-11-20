@@ -44,9 +44,9 @@ if (!$cur) {
     json_error('Student not found.', 404);
 }
 
-$sets  = [];
+$sets = [];
 $types = '';
-$vals  = [];
+$vals = [];
 
 if (array_key_exists('address', $in)) {
     $address = prof_text($in['address'], 255);
@@ -54,7 +54,9 @@ if (array_key_exists('address', $in)) {
         json_error('Address cannot be empty.', 422);
     }
     if ($address !== (string) $cur['address']) {
-        $sets[] = 'address = ?'; $types .= 's'; $vals[] = $address;
+        $sets[] = 'address = ?';
+        $types .= 's';
+        $vals[] = $address;
     }
 }
 
@@ -90,14 +92,16 @@ if (array_key_exists('email', $in)) {
         if ($taken) {
             json_error('That email is already in use.', 409);
         }
-        $sets[] = 'email = ?'; $types .= 's'; $vals[] = $email;
+        $sets[] = 'email = ?';
+        $types .= 's';
+        $vals[] = $email;
     }
 }
 
 if ($sets) {
     $vals[] = $studentId;
     $types .= 'i';
-    $stmt   = db_prepare('UPDATE validated_dormers SET ' . implode(', ', $sets) . ' WHERE student_id = ?');
+    $stmt = db_prepare('UPDATE validated_dormers SET ' . implode(', ', $sets) . ' WHERE student_id = ?');
     $stmt->bind_param($types, ...$vals);
     $saved = db_execute($stmt, 'profile update');
     $errno = $stmt->errno;

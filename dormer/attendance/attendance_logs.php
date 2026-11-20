@@ -30,11 +30,11 @@ if (!db_execute($stmt, 'attendance history')) {
 }
 
 $history = [];
-$result  = $stmt->get_result();
+$result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
     $history[] = [
         'attendance_type' => $row['attendance_type'],
-        'scan_datetime'   => $row['scan_datetime'],
+        'scan_datetime' => $row['scan_datetime'],
     ];
 }
 
@@ -42,10 +42,10 @@ $stmt->close();
 
 // Total number of scans on record (history is capped at the latest 10).
 $total = count($history);
-$stmt  = db_prepare('SELECT COUNT(*) AS total FROM attendance_logs WHERE student_id = ?');
+$stmt = db_prepare('SELECT COUNT(*) AS total FROM attendance_logs WHERE student_id = ?');
 $stmt->bind_param('i', $student_id);
 if (db_execute($stmt, 'attendance total')) {
-    $row   = $stmt->get_result()->fetch_assoc();
+    $row = $stmt->get_result()->fetch_assoc();
     $total = (int) ($row['total'] ?? $total);
 }
 $stmt->close();

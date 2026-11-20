@@ -1,66 +1,174 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#00006e">
-  <link rel="icon" type="image/png" href="../../assets/images/lnu-logo.png">
-  <title>Home | LNU Dormitory Security</title>
-  <meta name="description" content="Security personnel home: latest announcements and today's attendance.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="../../assets/css/portal.css">
-  <link rel="stylesheet" href="../../dormer/attendance/student-kit.css">
-  <link rel="stylesheet" href="security.css">
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
-  <script src="../../assets/js/portal.js"></script>
-</head>
-<body>
-<a class="skip-link" href="#main-content">Skip to content</a>
-<div class="app-shell">
-  <aside class="sidebar">
-    <div class="brand"><img class="brand-mark" src="../../assets/images/lnu-logo.png" alt="Leyte Normal University logo"><span>Leyte Normal University<br>Security desk</span></div>
-    <nav class="nav nav-main" aria-label="Security navigation">
-      <a href="home.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</a>
-      <a href="attendance.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2M20 14v6M14 18v2h2"/></svg>Attendance</a>
-      <a class="nav-bottom" href="settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</a>
-    </nav>
-    <a class="sidebar-logout" href="../../login/logout.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>Sign out</a>
-    <div class="sidebar-footer">Security personnel<br>© <span data-current-year></span> Leyte Normal University</div>
-  </aside>
-
-  <main class="main-content" id="main-content">
-    <section class="hero-band dorm-hero" data-hero aria-labelledby="page-title">
-      <span class="eyebrow" data-today>Today</span>
-      <h1 id="page-title">Welcome, <span data-me-name>…</span></h1>
-      <p><span data-me-role>Security Personnel</span> · Leyte Normal University Dormitory</p>
-    </section>
-
-    <p class="page-alert" id="page-alert" role="alert" hidden></p>
-
-    <div class="sec-grid">
-      <section class="panel" aria-labelledby="ann-title">
-        <div class="panel-head"><div><span class="eyebrow">From the dorm office</span><h2 id="ann-title">Latest announcements</h2></div></div>
-        <div id="ann-body" aria-live="polite"><p class="list-state">Loading announcements…</p></div>
-      </section>
-
-      <section class="panel" aria-labelledby="att-title">
-        <div class="panel-head">
-          <div><span class="eyebrow">Today</span><h2 id="att-title">Attendance</h2></div>
-          <a class="button outline small" href="attendance.html">Open scanner</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#00006e" />
+    <link rel="icon" type="image/png" href="../../assets/images/lnu-logo.png" />
+    <title>Home | LNU Dormitory Security</title>
+    <meta
+      name="description"
+      content="Security personnel home: latest announcements and today's attendance."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap"
+    />
+    <link rel="stylesheet" href="../../assets/css/portal.css" />
+    <link rel="stylesheet" href="../../dormer/attendance/student-kit.css" />
+    <link rel="stylesheet" href="security.css" />
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"
+    ></script>
+    <script src="../../assets/js/portal.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <img
+            class="brand-mark"
+            src="../../assets/images/lnu-logo.png"
+            alt="Leyte Normal University logo"
+          /><span>Leyte Normal University<br />Security desk</span>
         </div>
-        <div class="big-count"><span class="stat-value tabular" id="att-count">—</span><span class="stat-label">dormers present today</span></div>
-        <div id="att-body" aria-live="polite"><p class="list-state">Loading today's attendance…</p></div>
-      </section>
-    </div>
-  </main>
-</div>
+        <nav class="nav nav-main" aria-label="Security navigation">
+          <a href="home.html" aria-current="page"
+            ><svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path
+                d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"
+              /></svg
+            >Home</a
+          >
+          <a href="attendance.html"
+            ><svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path
+                d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2M20 14v6M14 18v2h2"
+              /></svg
+            >Attendance</a
+          >
+          <a class="nav-bottom" href="settings.html"
+            ><svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"
+              /></svg
+            >Settings</a
+          >
+        </nav>
+        <a class="sidebar-logout" href="../../login/logout.php"
+          ><svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path
+              d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"
+            /></svg
+          >Sign out</a
+        >
+        <div class="sidebar-footer">
+          Security personnel<br />© <span data-current-year></span> Leyte Normal
+          University
+        </div>
+      </aside>
 
-<script src="../../assets/js/api.js"></script>
-<script src="security.js"></script>
-<script src="home.js"></script>
-</body>
+      <main class="main-content" id="main-content">
+        <section
+          class="hero-band dorm-hero"
+          data-hero
+          aria-labelledby="page-title"
+        >
+          <span class="eyebrow" data-today>Today</span>
+          <h1 id="page-title">Welcome, <span data-me-name>…</span></h1>
+          <p>
+            <span data-me-role>Security Personnel</span> · Leyte Normal
+            University Dormitory
+          </p>
+        </section>
+
+        <p class="page-alert" id="page-alert" role="alert" hidden></p>
+
+        <div class="sec-grid">
+          <section class="panel" aria-labelledby="ann-title">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">From the dorm office</span>
+                <h2 id="ann-title">Latest announcements</h2>
+              </div>
+            </div>
+            <div id="ann-body" aria-live="polite">
+              <p class="list-state">Loading announcements…</p>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="att-title">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">Today</span>
+                <h2 id="att-title">Attendance</h2>
+              </div>
+              <a class="button outline small" href="attendance.html"
+                >Open scanner</a
+              >
+            </div>
+            <div class="big-count">
+              <span class="stat-value tabular" id="att-count">—</span
+              ><span class="stat-label">dormers present today</span>
+            </div>
+            <div id="att-body" aria-live="polite">
+              <p class="list-state">Loading today's attendance…</p>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script src="../../assets/js/api.js"></script>
+    <script src="security.js"></script>
+    <script src="home.js"></script>
+  </body>
 </html>

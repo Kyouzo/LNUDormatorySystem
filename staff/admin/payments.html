@@ -1,92 +1,209 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-  <meta name="theme-color" content="#00006e">
-  <title>Proof of Payment | LNU Dorm Administrator</title>
-  <meta name="description" content="Proof of payment records: view uploaded proofs and mark them recorded.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="../../assets/css/portal.css">
-  <link rel="stylesheet" href="../violations.css">
-  <link rel="stylesheet" href="admin.css">
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
-  <script src="../../assets/js/portal.js"></script>
-</head>
-<body data-admin-page="payments">
-<a class="skip-link" href="#main-content">Skip to content</a>
-<div class="app-shell">
-  <aside class="sidebar" data-admin-sidebar></aside>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta name="theme-color" content="#00006e" />
+    <title>Proof of Payment | LNU Dorm Administrator</title>
+    <meta
+      name="description"
+      content="Proof of payment records: view uploaded proofs and mark them recorded."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap"
+    />
+    <link rel="stylesheet" href="../../assets/css/portal.css" />
+    <link rel="stylesheet" href="../violations.css" />
+    <link rel="stylesheet" href="admin.css" />
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"
+    ></script>
+    <script src="../../assets/js/portal.js"></script>
+  </head>
+  <body data-admin-page="payments">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="app-shell">
+      <aside class="sidebar" data-admin-sidebar></aside>
 
-  <main class="main-content" id="main-content">
-    <section class="hero-band staff-hero" data-hero aria-labelledby="page-title">
-      <span class="eyebrow">Manage</span>
-      <h1 id="page-title">Proof of Payment</h1>
-      <p>Check each dormer's uploaded proof and mark it recorded once the payment is in the books.</p>
-      <p class="hero-meta" aria-live="polite">
-        <span>Recorded <strong id="meta-recorded">—</strong></span>
-        <span>Unrecorded <strong id="meta-unrecorded">—</strong></span>
-      </p>
-      <p class="hero-alert" id="page-alert" role="alert" hidden></p>
-    </section>
+      <main class="main-content" id="main-content">
+        <section
+          class="hero-band staff-hero"
+          data-hero
+          aria-labelledby="page-title"
+        >
+          <span class="eyebrow">Manage</span>
+          <h1 id="page-title">Proof of Payment</h1>
+          <p>
+            Check each dormer's uploaded proof and mark it recorded once the
+            payment is in the books.
+          </p>
+          <p class="hero-meta" aria-live="polite">
+            <span>Recorded <strong id="meta-recorded">—</strong></span>
+            <span>Unrecorded <strong id="meta-unrecorded">—</strong></span>
+          </p>
+          <p class="hero-alert" id="page-alert" role="alert" hidden></p>
+        </section>
 
-    <div class="content-stack">
-      <section class="panel" aria-labelledby="pp-title">
-        <div class="panel-head">
-          <div>
-            <span class="eyebrow">Records</span>
-            <h2 id="pp-title">Proofs records</h2>
-            <p>One row per dormer. The status follows their latest upload.</p>
-          </div>
-          <button class="button outline small" type="button" data-retry="payments">Refresh</button>
+        <div class="content-stack">
+          <section class="panel" aria-labelledby="pp-title">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">Records</span>
+                <h2 id="pp-title">Proofs records</h2>
+                <p>
+                  One row per dormer. The status follows their latest upload.
+                </p>
+              </div>
+              <button
+                class="button outline small"
+                type="button"
+                data-retry="payments"
+              >
+                Refresh
+              </button>
+            </div>
+            <div class="toolbar">
+              <label class="field search-field" for="q"
+                ><span class="sr-only">Search payment records</span>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M20 20l-3.5-3.5" />
+                </svg>
+                <input
+                  id="q"
+                  type="search"
+                  placeholder="Name, student ID or room (3-5)"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+              </label>
+              <div
+                class="chips"
+                role="group"
+                aria-label="Filter by status"
+                id="chips"
+              >
+                <button
+                  class="chip"
+                  type="button"
+                  aria-pressed="true"
+                  data-filter="all"
+                >
+                  All
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  aria-pressed="false"
+                  data-filter="unrecorded"
+                >
+                  Unrecorded
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  aria-pressed="false"
+                  data-filter="recorded"
+                >
+                  Recorded
+                </button>
+              </div>
+              <p class="result-count" id="result-count" aria-live="polite"></p>
+            </div>
+            <div class="data-table table-wrap">
+              <table>
+                <caption class="sr-only">
+                  Proof of payment records
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col" class="col-room">Floor &amp; room</th>
+                    <th scope="col">Status</th>
+                    <th scope="col"><span class="sr-only">Actions</span></th>
+                  </tr>
+                </thead>
+                <tbody id="rows"></tbody>
+              </table>
+            </div>
+          </section>
         </div>
-        <div class="toolbar">
-          <label class="field search-field" for="q"><span class="sr-only">Search payment records</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-            <input id="q" type="search" placeholder="Name, student ID or room (3-5)" autocomplete="off" spellcheck="false">
-          </label>
-          <div class="chips" role="group" aria-label="Filter by status" id="chips">
-            <button class="chip" type="button" aria-pressed="true" data-filter="all">All</button>
-            <button class="chip" type="button" aria-pressed="false" data-filter="unrecorded">Unrecorded</button>
-            <button class="chip" type="button" aria-pressed="false" data-filter="recorded">Recorded</button>
-          </div>
-          <p class="result-count" id="result-count" aria-live="polite"></p>
-        </div>
-        <div class="data-table table-wrap">
-          <table>
-            <caption class="sr-only">Proof of payment records</caption>
-            <thead><tr><th scope="col">Name</th><th scope="col" class="col-room">Floor &amp; room</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
-            <tbody id="rows"></tbody>
-          </table>
-        </div>
-      </section>
+      </main>
     </div>
-  </main>
-</div>
 
-<dialog class="dialog wide" id="proof-dialog" aria-labelledby="pd-title">
-  <div class="dialog-header">
-    <div><span class="eyebrow">Proof of payment</span><h2 id="pd-title">Dormer</h2></div>
-    <button class="icon-button" type="button" data-dialog-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  </div>
-  <div class="dialog-body">
-    <p class="dialog-meta" id="pd-meta"></p>
-    <figure class="proof-frame" id="pd-frame"></figure>
-    <div class="proof-history" id="pd-history" role="group" aria-label="Earlier uploads"></div>
-  </div>
-  <div class="dialog-actions">
-    <button class="button ghost" type="button" data-dialog-close>Close</button>
-    <button class="button outline" type="button" id="pd-unmark" hidden>Mark unrecorded</button>
-    <button class="button primary" type="button" id="pd-mark" hidden>Mark recorded</button>
-  </div>
-</dialog>
+    <dialog class="dialog wide" id="proof-dialog" aria-labelledby="pd-title">
+      <div class="dialog-header">
+        <div>
+          <span class="eyebrow">Proof of payment</span>
+          <h2 id="pd-title">Dormer</h2>
+        </div>
+        <button
+          class="icon-button"
+          type="button"
+          data-dialog-close
+          aria-label="Close"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <p class="dialog-meta" id="pd-meta"></p>
+        <figure class="proof-frame" id="pd-frame"></figure>
+        <div
+          class="proof-history"
+          id="pd-history"
+          role="group"
+          aria-label="Earlier uploads"
+        ></div>
+      </div>
+      <div class="dialog-actions">
+        <button class="button ghost" type="button" data-dialog-close>
+          Close
+        </button>
+        <button class="button outline" type="button" id="pd-unmark" hidden>
+          Mark unrecorded
+        </button>
+        <button class="button primary" type="button" id="pd-mark" hidden>
+          Mark recorded
+        </button>
+      </div>
+    </dialog>
 
-<script src="../../assets/js/api.js"></script>
-<script src="admin.js"></script>
-<script src="payments.js"></script>
-</body>
+    <script src="../../assets/js/api.js"></script>
+    <script src="admin.js"></script>
+    <script src="payments.js"></script>
+  </body>
 </html>

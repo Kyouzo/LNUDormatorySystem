@@ -5,11 +5,13 @@
    Loaded at the end of <body>, before the page script.
    ========================================================================== */
 (function () {
-  'use strict';
+  "use strict";
 
-  const LOGIN_URL = '../../login/login.html';
-  const STAFF_URL = '../../staff/violations.html';
-  const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const LOGIN_URL = "../../login/login.html";
+  const STAFF_URL = "../../staff/violations.html";
+  const reduced =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   class KitError extends Error {
     constructor(kind, message, status) {
@@ -19,36 +21,55 @@
     }
   }
 
-  const OFFLINE_MESSAGE = 'The dormitory server did not answer. Please refresh in a moment; if it keeps happening, tell the Dormitory Office.';
+  const OFFLINE_MESSAGE =
+    "The dormitory server did not answer. Please refresh in a moment; if it keeps happening, tell the Dormitory Office.";
 
   /**
    * Fetch JSON from a relative URL. Resolves with the parsed body when
    * success !== false. A 401 sends the visitor to the login page.
    */
   async function api(url, options) {
-    const opts = Object.assign({ credentials: 'same-origin' }, options || {});
-    opts.headers = Object.assign({ Accept: 'application/json' }, opts.headers || {});
+    const opts = Object.assign({ credentials: "same-origin" }, options || {});
+    opts.headers = Object.assign(
+      { Accept: "application/json" },
+      opts.headers || {},
+    );
     let res;
     try {
       res = await fetch(url, opts);
     } catch (err) {
-      throw new KitError('network', 'We could not reach the dormitory server. Check your connection and try again.');
+      throw new KitError(
+        "network",
+        "We could not reach the dormitory server. Check your connection and try again.",
+      );
     }
     if (res.status === 401) {
       window.location.href = LOGIN_URL;
-      throw new KitError('auth', 'Your session has ended. Taking you to the sign-in page…', 401);
+      throw new KitError(
+        "auth",
+        "Your session has ended. Taking you to the sign-in page…",
+        401,
+      );
     }
-    const type = res.headers.get('content-type') || '';
+    const type = res.headers.get("content-type") || "";
     let data = null;
-    if (type.indexOf('application/json') !== -1) {
-      try { data = await res.json(); } catch (err) { data = null; }
+    if (type.indexOf("application/json") !== -1) {
+      try {
+        data = await res.json();
+      } catch (err) {
+        data = null;
+      }
     }
-    if (!data || typeof data !== 'object') {
-      throw new KitError('offline', OFFLINE_MESSAGE, res.status);
+    if (!data || typeof data !== "object") {
+      throw new KitError("offline", OFFLINE_MESSAGE, res.status);
     }
     if (!res.ok || data.success === false) {
-      const kind = isCsrfFailure(res.status, data) ? 'csrf' : 'server';
-      throw new KitError(kind, data.message || 'Something went wrong. Please try again.', res.status);
+      const kind = isCsrfFailure(res.status, data) ? "csrf" : "server";
+      throw new KitError(
+        kind,
+        data.message || "Something went wrong. Please try again.",
+        res.status,
+      );
     }
     return data;
   }
@@ -56,8 +77,8 @@
   /** 403 caused by a stale/missing CSRF token (backend sends code:"csrf"). */
   function isCsrfFailure(status, data) {
     if (status !== 403 || !data) return false;
-    if (data.code) return data.code === 'csrf';
-    return /csrf/i.test(String(data.message || ''));
+    if (data.code) return data.code === "csrf";
+    return /csrf/i.test(String(data.message || ""));
   }
 
   /**
@@ -70,7 +91,7 @@
       try {
         return await api(url, buildOptions(token));
       } catch (error) {
-        if (error.kind !== 'csrf' || attempt === 1) throw error;
+        if (error.kind !== "csrf" || attempt === 1) throw error;
         resetCsrf();
       }
     }
@@ -81,13 +102,18 @@
   let csrfPromise = null;
   function csrfToken() {
     if (!csrfPromise) {
-      csrfPromise = api('../../connection/csrf_token.php')
-        .then((d) => (typeof d.csrf_token === 'string' ? d.csrf_token : ''))
-        .catch(() => { csrfPromise = null; return ''; });
+      csrfPromise = api("../../connection/csrf_token.php")
+        .then((d) => (typeof d.csrf_token === "string" ? d.csrf_token : ""))
+        .catch(() => {
+          csrfPromise = null;
+          return "";
+        });
     }
     return csrfPromise;
   }
-  function resetCsrf() { csrfPromise = null; }
+  function resetCsrf() {
+    csrfPromise = null;
+  }
 
   /**
    * Who is signed in. Redirects to login when nobody is, and staff to their own
@@ -95,14 +121,14 @@
    */
   async function whoAmI(opts) {
     try {
-      const me = await api('../../connection/me.php');
+      const me = await api("../../connection/me.php");
       if (me.authenticated === false) {
         window.location.href = LOGIN_URL;
         return null;
       }
       // role is student | admin | security; staff go to their own landing page (me.home).
-      if (me.role !== 'student' && !(opts && opts.allowStaff)) {
-        window.location.href = me.home ? '../../' + me.home : STAFF_URL;
+      if (me.role !== "student" && !(opts && opts.allowStaff)) {
+        window.location.href = me.home ? "../../" + me.home : STAFF_URL;
         return null;
       }
       return me;
@@ -118,39 +144,48 @@
       Object.keys(attrs).forEach((key) => {
         const value = attrs[key];
         if (value === null || value === undefined || value === false) return;
-        if (key === 'class') node.className = value;
-        else if (key === 'text') node.textContent = value;
-        else if (key.slice(0, 2) === 'on' && typeof value === 'function') node.addEventListener(key.slice(2), value);
-        else node.setAttribute(key, value === true ? '' : String(value));
+        if (key === "class") node.className = value;
+        else if (key === "text") node.textContent = value;
+        else if (key.slice(0, 2) === "on" && typeof value === "function")
+          node.addEventListener(key.slice(2), value);
+        else node.setAttribute(key, value === true ? "" : String(value));
       });
     }
     [].concat(children || []).forEach((child) => {
       if (child === null || child === undefined || child === false) return;
-      node.appendChild(typeof child === 'string' || typeof child === 'number' ? document.createTextNode(String(child)) : child);
+      node.appendChild(
+        typeof child === "string" || typeof child === "number"
+          ? document.createTextNode(String(child))
+          : child,
+      );
     });
     return node;
   }
 
-  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const SVG_NS = "http://www.w3.org/2000/svg";
   const ICONS = {
-    list: ['M4 7h16', 'M4 12h16', 'M4 17h10'],
-    alert: ['M12 8v5', 'M12 16.5v.01', 'M10.3 3.9 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z'],
-    check: ['M20 6 9 17l-5-5'],
-    image: ['M4 5h16v14H4z', 'm4 16 5-5 4 4 3-3 4 4', 'M15 9.5v.01'],
-    clock: ['M12 7v5l3 2', 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z'],
+    list: ["M4 7h16", "M4 12h16", "M4 17h10"],
+    alert: [
+      "M12 8v5",
+      "M12 16.5v.01",
+      "M10.3 3.9 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z",
+    ],
+    check: ["M20 6 9 17l-5-5"],
+    image: ["M4 5h16v14H4z", "m4 16 5-5 4 4 3-3 4 4", "M15 9.5v.01"],
+    clock: ["M12 7v5l3 2", "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"],
   };
   function icon(name) {
-    const svg = document.createElementNS(SVG_NS, 'svg');
-    svg.setAttribute('viewBox', '0 0 24 24');
-    svg.setAttribute('fill', 'none');
-    svg.setAttribute('stroke', 'currentColor');
-    svg.setAttribute('stroke-width', '2');
-    svg.setAttribute('stroke-linecap', 'round');
-    svg.setAttribute('stroke-linejoin', 'round');
-    svg.setAttribute('aria-hidden', 'true');
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "2");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
     (ICONS[name] || ICONS.list).forEach((d) => {
-      const path = document.createElementNS(SVG_NS, 'path');
-      path.setAttribute('d', d);
+      const path = document.createElementNS(SVG_NS, "path");
+      path.setAttribute("d", d);
       svg.appendChild(path);
     });
     return svg;
@@ -159,24 +194,41 @@
   /** div.empty-state with icon, title, text and optional action button. */
   function emptyState(opts) {
     const o = opts || {};
-    const box = h('div', { class: 'empty-state' + (o.tone ? ' is-' + o.tone : '') }, [
-      h('span', { class: 'empty-state-icon' }, [icon(o.icon || 'list')]),
-      h('h3', { text: o.title || 'Nothing here yet' }),
-      o.text ? h('p', { text: o.text }) : null,
-    ]);
+    const box = h(
+      "div",
+      { class: "empty-state" + (o.tone ? " is-" + o.tone : "") },
+      [
+        h("span", { class: "empty-state-icon" }, [icon(o.icon || "list")]),
+        h("h3", { text: o.title || "Nothing here yet" }),
+        o.text ? h("p", { text: o.text }) : null,
+      ],
+    );
     if (o.action) {
-      box.appendChild(h('button', { class: 'button outline small', type: 'button', onclick: o.action.onClick, text: o.action.label }));
+      box.appendChild(
+        h("button", {
+          class: "button outline small",
+          type: "button",
+          onclick: o.action.onClick,
+          text: o.action.label,
+        }),
+      );
     }
     return box;
   }
 
   function errorState(error, retry) {
     return emptyState({
-      tone: 'error',
-      icon: 'alert',
-      title: error && error.kind === 'auth' ? 'Signing you in again' : 'We could not load this',
+      tone: "error",
+      icon: "alert",
+      title:
+        error && error.kind === "auth"
+          ? "Signing you in again"
+          : "We could not load this",
       text: (error && error.message) || OFFLINE_MESSAGE,
-      action: retry && !(error && error.kind === 'auth') ? { label: 'Try again', onClick: retry } : null,
+      action:
+        retry && !(error && error.kind === "auth")
+          ? { label: "Try again", onClick: retry }
+          : null,
     });
   }
 
@@ -184,9 +236,16 @@
   function skeletonRows(tbody, columns, rows) {
     tbody.replaceChildren();
     for (let r = 0; r < rows; r++) {
-      const tr = h('tr', { class: 'skeleton-row', 'aria-hidden': 'true' });
+      const tr = h("tr", { class: "skeleton-row", "aria-hidden": "true" });
       for (let c = 0; c < columns; c++) {
-        tr.appendChild(h('td', null, [h('span', { class: 'skeleton skeleton-text' + (c === columns - 1 ? ' short' : '') })]));
+        tr.appendChild(
+          h("td", null, [
+            h("span", {
+              class:
+                "skeleton skeleton-text" + (c === columns - 1 ? " short" : ""),
+            }),
+          ]),
+        );
       }
       tbody.appendChild(tr);
     }
@@ -194,7 +253,9 @@
 
   /** A table row that spans every column and holds a state block. */
   function stateRow(columns, node) {
-    return h('tr', { class: 'state-row' }, [h('td', { colspan: columns }, [node])]);
+    return h("tr", { class: "state-row" }, [
+      h("td", { colspan: columns }, [node]),
+    ]);
   }
 
   /** Count a number up from zero (GSAP if present). The final value is always written. */
@@ -202,19 +263,29 @@
     const o = opts || {};
     const target = Number(value) || 0;
     const fmt = new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 });
-    const finalText = (o.prefix || '') + fmt.format(target) + (o.suffix || '');
-    el.setAttribute('data-count', String(target));
-    el.classList.remove('skeleton');
+    const finalText = (o.prefix || "") + fmt.format(target) + (o.suffix || "");
+    el.setAttribute("data-count", String(target));
+    el.classList.remove("skeleton");
     const gsap = window.gsap;
-    if (reduced || !gsap || target === 0) { el.textContent = finalText; return; }
+    if (reduced || !gsap || target === 0) {
+      el.textContent = finalText;
+      return;
+    }
     el.textContent = finalText;
-    el.style.minWidth = el.getBoundingClientRect().width + 'px';
+    el.style.minWidth = el.getBoundingClientRect().width + "px";
     const state = { v: 0 };
-    el.textContent = (o.prefix || '') + '0' + (o.suffix || '');
+    el.textContent = (o.prefix || "") + "0" + (o.suffix || "");
     gsap.to(state, {
-      v: target, duration: 0.8, ease: 'power3.out',
-      onUpdate: () => { el.textContent = (o.prefix || '') + fmt.format(Math.round(state.v)) + (o.suffix || ''); },
-      onComplete: () => { el.textContent = finalText; },
+      v: target,
+      duration: 0.8,
+      ease: "power3.out",
+      onUpdate: () => {
+        el.textContent =
+          (o.prefix || "") + fmt.format(Math.round(state.v)) + (o.suffix || "");
+      },
+      onComplete: () => {
+        el.textContent = finalText;
+      },
     });
   }
 
@@ -223,45 +294,88 @@
     const list = Array.prototype.slice.call(nodes || []);
     const gsap = window.gsap;
     if (reduced || !gsap || !list.length) return;
-    gsap.fromTo(list, { opacity: 0, y: 6 }, {
-      opacity: 1, y: 0, duration: 0.3, ease: 'expo.out', clearProps: 'opacity,transform',
-      stagger: { each: Math.min(0.04, 0.24 / list.length) },
-    });
+    gsap.fromTo(
+      list,
+      { opacity: 0, y: 6 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.3,
+        ease: "expo.out",
+        clearProps: "opacity,transform",
+        stagger: { each: Math.min(0.04, 0.24 / list.length) },
+      },
+    );
   }
 
   /** "2026-11-05 15:04:05" -> Date (local), or null. */
   function parseDateTime(value) {
-    if (!value || typeof value !== 'string') return null;
-    const m = value.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+    if (!value || typeof value !== "string") return null;
+    const m = value.match(
+      /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/,
+    );
     if (!m) return null;
-    const d = new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
+    const d = new Date(
+      +m[1],
+      +m[2] - 1,
+      +m[3],
+      +(m[4] || 0),
+      +(m[5] || 0),
+      +(m[6] || 0),
+    );
     return isNaN(d.getTime()) ? null : d;
   }
-  const fmtDate = (d) => d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
-  const fmtTime = (d) => d.toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' });
-  const fmtWeekday = (d) => d.toLocaleDateString('en-PH', { weekday: 'long' });
+  const fmtDate = (d) =>
+    d.toLocaleDateString("en-PH", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  const fmtTime = (d) =>
+    d.toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" });
+  const fmtWeekday = (d) => d.toLocaleDateString("en-PH", { weekday: "long" });
 
   function relative(d) {
     const diff = (Date.now() - d.getTime()) / 1000;
-    if (diff < 60) return 'just now';
-    if (diff < 3600) return Math.floor(diff / 60) + ' min ago';
-    if (diff < 86400) return Math.floor(diff / 3600) + ' hr ago';
+    if (diff < 60) return "just now";
+    if (diff < 3600) return Math.floor(diff / 60) + " min ago";
+    if (diff < 86400) return Math.floor(diff / 3600) + " hr ago";
     const days = Math.floor(diff / 86400);
-    return days === 1 ? 'yesterday' : days + ' days ago';
+    return days === 1 ? "yesterday" : days + " days ago";
   }
 
   /** Fill every [data-student-name] with the signed-in name. */
   function fillName(name) {
     if (!name) return;
-    document.querySelectorAll('[data-student-name]').forEach((node) => {
+    document.querySelectorAll("[data-student-name]").forEach((node) => {
       node.textContent = name;
-      node.classList.remove('skeleton');
+      node.classList.remove("skeleton");
     });
   }
 
   window.DormKit = {
-    api, csrfToken, resetCsrf, postWithCsrf, isCsrfFailure, whoAmI, h, icon, emptyState, errorState, skeletonRows, stateRow,
-    countTo, enter, parseDateTime, fmtDate, fmtTime, fmtWeekday, relative, fillName,
-    reduced, LOGIN_URL, KitError,
+    api,
+    csrfToken,
+    resetCsrf,
+    postWithCsrf,
+    isCsrfFailure,
+    whoAmI,
+    h,
+    icon,
+    emptyState,
+    errorState,
+    skeletonRows,
+    stateRow,
+    countTo,
+    enter,
+    parseDateTime,
+    fmtDate,
+    fmtTime,
+    fmtWeekday,
+    relative,
+    fillName,
+    reduced,
+    LOGIN_URL,
+    KitError,
   };
 })();

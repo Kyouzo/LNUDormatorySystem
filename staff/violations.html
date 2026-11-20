@@ -1,157 +1,358 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-  <meta name="theme-color" content="#00006e">
-  <title>Student Violation | LNU Dorm Administrator</title>
-  <meta name="description" content="Dormitory office tools: student violations and pending registrations.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="../assets/css/portal.css">
-  <link rel="stylesheet" href="violations.css">
-  <link rel="stylesheet" href="admin/admin.css">
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
-  <script src="../assets/js/portal.js"></script>
-</head>
-<body data-admin-page="violations">
-<a class="skip-link" href="#main-content">Skip to content</a>
-<div class="app-shell">
-  <aside class="sidebar" data-admin-sidebar></aside>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta name="theme-color" content="#00006e" />
+    <title>Student Violation | LNU Dorm Administrator</title>
+    <meta
+      name="description"
+      content="Dormitory office tools: student violations and pending registrations."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap"
+    />
+    <link rel="stylesheet" href="../assets/css/portal.css" />
+    <link rel="stylesheet" href="violations.css" />
+    <link rel="stylesheet" href="admin/admin.css" />
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"
+    ></script>
+    <script src="../assets/js/portal.js"></script>
+  </head>
+  <body data-admin-page="violations">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="app-shell">
+      <aside class="sidebar" data-admin-sidebar></aside>
 
-  <main class="main-content" id="main-content">
-    <section class="hero-band staff-hero" data-hero aria-labelledby="page-title">
-      <span class="eyebrow">Dormitory office</span>
-      <h1 id="page-title">Student conduct and registrations</h1>
-      <p>Log violations and absences, review each dormer's record, and approve new residents.</p>
-      <p class="hero-meta" aria-live="polite">
-        <span>Signed in as <strong id="staff-name" data-admin-name>Administrator</strong></span>
-        <span>Dormers <strong id="meta-dormers">—</strong></span>
-        <span>Pending registrations <strong id="meta-pending">—</strong></span>
-      </p>
-      <p class="hero-alert" id="page-alert" role="alert" hidden></p>
-    </section>
+      <main class="main-content" id="main-content">
+        <section
+          class="hero-band staff-hero"
+          data-hero
+          aria-labelledby="page-title"
+        >
+          <span class="eyebrow">Dormitory office</span>
+          <h1 id="page-title">Student conduct and registrations</h1>
+          <p>
+            Log violations and absences, review each dormer's record, and
+            approve new residents.
+          </p>
+          <p class="hero-meta" aria-live="polite">
+            <span
+              >Signed in as
+              <strong id="staff-name" data-admin-name
+                >Administrator</strong
+              ></span
+            >
+            <span>Dormers <strong id="meta-dormers">—</strong></span>
+            <span
+              >Pending registrations <strong id="meta-pending">—</strong></span
+            >
+          </p>
+          <p class="hero-alert" id="page-alert" role="alert" hidden></p>
+        </section>
 
-    <div class="content-stack">
-      <section class="panel" id="students" aria-labelledby="students-title">
-        <div class="panel-head">
-          <div>
-            <span class="eyebrow">Conduct</span>
-            <h2 id="students-title">Dormers</h2>
-            <p>Search by name, student ID or room, then log a violation or absence.</p>
-          </div>
-          <button class="button outline small" type="button" id="students-refresh">Refresh</button>
-        </div>
+        <div class="content-stack">
+          <section class="panel" id="students" aria-labelledby="students-title">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">Conduct</span>
+                <h2 id="students-title">Dormers</h2>
+                <p>
+                  Search by name, student ID or room, then log a violation or
+                  absence.
+                </p>
+              </div>
+              <button
+                class="button outline small"
+                type="button"
+                id="students-refresh"
+              >
+                Refresh
+              </button>
+            </div>
 
-        <div class="toolbar">
-          <label class="field search-field" for="q"><span class="sr-only">Search dormers</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-            <input id="q" type="search" placeholder="Name, student ID or room (3-5)" autocomplete="off" spellcheck="false">
-          </label>
-          <div class="chips" role="group" aria-label="Filter by record" id="chips">
-            <button class="chip" type="button" aria-pressed="true" data-filter="all">All</button>
-            <button class="chip" type="button" aria-pressed="false" data-filter="any">With records</button>
-            <button class="chip" type="button" aria-pressed="false" data-filter="Major offense">Major</button>
-            <button class="chip" type="button" aria-pressed="false" data-filter="Minor offense">Minor</button>
-            <button class="chip" type="button" aria-pressed="false" data-filter="Curfew">Curfew</button>
-            <button class="chip" type="button" aria-pressed="false" data-filter="Missed cleanup">Cleanup</button>
-            <button class="chip" type="button" aria-pressed="false" data-filter="Payment overdue">Payment</button>
-            <button class="chip" type="button" aria-pressed="false" data-filter="absent">Absences</button>
-          </div>
-          <p class="result-count" id="result-count" aria-live="polite"></p>
-        </div>
+            <div class="toolbar">
+              <label class="field search-field" for="q"
+                ><span class="sr-only">Search dormers</span>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M20 20l-3.5-3.5" />
+                </svg>
+                <input
+                  id="q"
+                  type="search"
+                  placeholder="Name, student ID or room (3-5)"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+              </label>
+              <div
+                class="chips"
+                role="group"
+                aria-label="Filter by record"
+                id="chips"
+              >
+                <button
+                  class="chip"
+                  type="button"
+                  aria-pressed="true"
+                  data-filter="all"
+                >
+                  All
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  aria-pressed="false"
+                  data-filter="any"
+                >
+                  With records
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  aria-pressed="false"
+                  data-filter="Major offense"
+                >
+                  Major
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  aria-pressed="false"
+                  data-filter="Minor offense"
+                >
+                  Minor
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  aria-pressed="false"
+                  data-filter="Curfew"
+                >
+                  Curfew
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  aria-pressed="false"
+                  data-filter="Missed cleanup"
+                >
+                  Cleanup
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  aria-pressed="false"
+                  data-filter="Payment overdue"
+                >
+                  Payment
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  aria-pressed="false"
+                  data-filter="absent"
+                >
+                  Absences
+                </button>
+              </div>
+              <p class="result-count" id="result-count" aria-live="polite"></p>
+            </div>
 
-        <div class="data-table table-wrap" aria-busy="true" id="students-wrap">
-          <table>
-            <caption class="sr-only">Dormers and their violation records</caption>
-            <thead>
-              <tr>
-                <th scope="col">Name</th>
-                <th scope="col" class="col-id">Student ID</th>
-                <th scope="col" class="col-year">Year</th>
-                <th scope="col" class="col-room">Floor &amp; room</th>
-                <th scope="col">Record</th>
-                <th scope="col"><span class="sr-only">Actions</span></th>
-              </tr>
-            </thead>
-            <tbody id="rows">
-              <tr><td colspan="6"><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text short"></span></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+            <div
+              class="data-table table-wrap"
+              aria-busy="true"
+              id="students-wrap"
+            >
+              <table>
+                <caption class="sr-only">
+                  Dormers and their violation records
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col" class="col-id">Student ID</th>
+                    <th scope="col" class="col-year">Year</th>
+                    <th scope="col" class="col-room">Floor &amp; room</th>
+                    <th scope="col">Record</th>
+                    <th scope="col"><span class="sr-only">Actions</span></th>
+                  </tr>
+                </thead>
+                <tbody id="rows">
+                  <tr>
+                    <td colspan="6">
+                      <span class="skeleton skeleton-text"></span
+                      ><span class="skeleton skeleton-text"></span
+                      ><span class="skeleton skeleton-text short"></span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
 
-      <section class="panel" id="registrations" aria-labelledby="reg-title">
-        <div class="panel-head">
-          <div>
-            <span class="eyebrow">Admissions</span>
-            <h2 id="reg-title">Pending registrations <span class="badge badge-gold" id="reg-count" hidden>0</span></h2>
-            <p>Approving creates the dormer's account. Add a room now or later.</p>
-          </div>
-          <button class="button outline small" type="button" id="reg-refresh">Refresh</button>
+          <section class="panel" id="registrations" aria-labelledby="reg-title">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">Admissions</span>
+                <h2 id="reg-title">
+                  Pending registrations
+                  <span class="badge badge-gold" id="reg-count" hidden>0</span>
+                </h2>
+                <p>
+                  Approving creates the dormer's account. Add a room now or
+                  later.
+                </p>
+              </div>
+              <button
+                class="button outline small"
+                type="button"
+                id="reg-refresh"
+              >
+                Refresh
+              </button>
+            </div>
+            <div
+              class="reg-list"
+              id="reg-list"
+              aria-live="polite"
+              aria-busy="true"
+            >
+              <div class="reg-card" aria-hidden="true">
+                <span class="skeleton skeleton-title"></span
+                ><span class="skeleton skeleton-text"></span
+                ><span class="skeleton skeleton-text short"></span>
+              </div>
+              <div class="reg-card" aria-hidden="true">
+                <span class="skeleton skeleton-title"></span
+                ><span class="skeleton skeleton-text"></span
+                ><span class="skeleton skeleton-text short"></span>
+              </div>
+            </div>
+          </section>
         </div>
-        <div class="reg-list" id="reg-list" aria-live="polite" aria-busy="true">
-          <div class="reg-card" aria-hidden="true"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text short"></span></div>
-          <div class="reg-card" aria-hidden="true"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text short"></span></div>
-        </div>
-      </section>
+      </main>
     </div>
-  </main>
-</div>
 
-<!-- Log a violation -->
-<dialog class="dialog" id="violation-dialog" aria-labelledby="vd-title">
-  <div class="dialog-header">
-    <div><span class="eyebrow">Log a violation</span><h2 id="vd-title">Dormer</h2></div>
-    <button class="icon-button" type="button" data-dialog-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  </div>
-  <div class="dialog-body">
-    <p class="dialog-meta" id="vd-meta"></p>
-    <form id="violation-form" novalidate>
-      <div class="form-alert" id="vd-alert" role="alert"></div>
-      <div class="form-grid">
-        <fieldset class="radio-row">
-          <legend>Absent?</legend>
-          <label><input type="radio" name="absent" value="N" checked> No</label>
-          <label><input type="radio" name="absent" value="Y"> Yes, mark absent</label>
-        </fieldset>
-        <label class="field" for="vd-type">Violation type
-          <select id="vd-type" name="type" aria-describedby="vd-type-error">
-            <option value="">Select a type</option>
-            <option>Major offense</option>
-            <option>Minor offense</option>
-            <option>Curfew</option>
-            <option>Missed cleanup</option>
-            <option>Payment overdue</option>
-            <option>Others</option>
-          </select>
-          <span class="field-hint" id="vd-type-hint" hidden>Optional for an absence; saved as "Others".</span>
-          <span class="field-error" id="vd-type-error"></span>
-        </label>
-        <label class="field" for="vd-details">What happened
-          <textarea id="vd-details" name="details" maxlength="2000" placeholder="Time, place and what was observed" aria-describedby="vd-details-error"></textarea>
-          <span class="field-error" id="vd-details-error"></span>
-        </label>
+    <!-- Log a violation -->
+    <dialog class="dialog" id="violation-dialog" aria-labelledby="vd-title">
+      <div class="dialog-header">
+        <div>
+          <span class="eyebrow">Log a violation</span>
+          <h2 id="vd-title">Dormer</h2>
+        </div>
+        <button
+          class="icon-button"
+          type="button"
+          data-dialog-close
+          aria-label="Close"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
       </div>
-    </form>
-    <div class="history">
-      <h3>Previous records</h3>
-      <ul id="vd-history"></ul>
-    </div>
-  </div>
-  <div class="dialog-actions">
-    <button class="button ghost" type="button" data-dialog-close>Cancel</button>
-    <button class="button primary" type="submit" form="violation-form" id="vd-submit">Save record</button>
-  </div>
-</dialog>
+      <div class="dialog-body">
+        <p class="dialog-meta" id="vd-meta"></p>
+        <form id="violation-form" novalidate>
+          <div class="form-alert" id="vd-alert" role="alert"></div>
+          <div class="form-grid">
+            <fieldset class="radio-row">
+              <legend>Absent?</legend>
+              <label
+                ><input type="radio" name="absent" value="N" checked />
+                No</label
+              >
+              <label
+                ><input type="radio" name="absent" value="Y" /> Yes, mark
+                absent</label
+              >
+            </fieldset>
+            <label class="field" for="vd-type"
+              >Violation type
+              <select id="vd-type" name="type" aria-describedby="vd-type-error">
+                <option value="">Select a type</option>
+                <option>Major offense</option>
+                <option>Minor offense</option>
+                <option>Curfew</option>
+                <option>Missed cleanup</option>
+                <option>Payment overdue</option>
+                <option>Others</option>
+              </select>
+              <span class="field-hint" id="vd-type-hint" hidden
+                >Optional for an absence; saved as "Others".</span
+              >
+              <span class="field-error" id="vd-type-error"></span>
+            </label>
+            <label class="field" for="vd-details"
+              >What happened
+              <textarea
+                id="vd-details"
+                name="details"
+                maxlength="2000"
+                placeholder="Time, place and what was observed"
+                aria-describedby="vd-details-error"
+              ></textarea>
+              <span class="field-error" id="vd-details-error"></span>
+            </label>
+          </div>
+        </form>
+        <div class="history">
+          <h3>Previous records</h3>
+          <ul id="vd-history"></ul>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button class="button ghost" type="button" data-dialog-close>
+          Cancel
+        </button>
+        <button
+          class="button primary"
+          type="submit"
+          form="violation-form"
+          id="vd-submit"
+        >
+          Save record
+        </button>
+      </div>
+    </dialog>
 
-
-<script src="../assets/js/api.js"></script>
-<script src="admin/admin.js"></script>
-<script src="admin/registrations.js"></script>
-<script src="violations.js"></script>
-</body>
+    <script src="../assets/js/api.js"></script>
+    <script src="admin/admin.js"></script>
+    <script src="admin/registrations.js"></script>
+    <script src="violations.js"></script>
+  </body>
 </html>

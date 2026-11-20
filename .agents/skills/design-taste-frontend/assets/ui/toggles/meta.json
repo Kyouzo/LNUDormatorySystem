@@ -10,10 +10,7 @@
     "preferences",
     "controls"
   ],
-  "size": [
-    380,
-    290
-  ],
+  "size": [380, 290],
   "js": true,
   "edit": "Rows are HTML (is-on on the switches that are on). The count keeps its words; only its first figure follows.",
   "loop": "about 2.6 s a cycle: two switches flip in turn and the count follows; back to the page's state every six; the finished picture holds for at most 15% of the cycle; restarts when the pointer enters its card",

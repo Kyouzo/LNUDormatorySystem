@@ -8,65 +8,95 @@
    - prefers-reduced-motion: no Lenis, no entrances, no canvas, no magnet.
    ========================================================================== */
 (function () {
-  'use strict';
+  "use strict";
 
   if (window.Portal && window.Portal.__init) return; // included twice: run once
   const doc = document;
   const root = doc.documentElement;
-  const mq = (q) => (window.matchMedia ? window.matchMedia(q) : { matches: false });
-  const reduced = mq('(prefers-reduced-motion: reduce)').matches;
-  const finePointer = mq('(hover: hover) and (pointer: fine)').matches;
+  const mq = (q) =>
+    window.matchMedia ? window.matchMedia(q) : { matches: false };
+  const reduced = mq("(prefers-reduced-motion: reduce)").matches;
+  const finePointer = mq("(hover: hover) and (pointer: fine)").matches;
   const loadedInHead = !doc.body;
 
   /* ---------- Theme (runs before first paint: this file is loaded in <head>) ---------- */
-  const THEME_KEY = 'lnu-theme';
-  const darkMq = mq('(prefers-color-scheme: dark)');
-  const savedTheme = () => { try { const v = localStorage.getItem(THEME_KEY); return v === 'dark' || v === 'light' ? v : null; } catch (e) { return null; } };
+  const THEME_KEY = "lnu-theme";
+  const darkMq = mq("(prefers-color-scheme: dark)");
+  const savedTheme = () => {
+    try {
+      const v = localStorage.getItem(THEME_KEY);
+      return v === "dark" || v === "light" ? v : null;
+    } catch (e) {
+      return null;
+    }
+  };
   const themeMeta = doc.querySelector('meta[name="theme-color"]');
-  const lightMetaColor = themeMeta ? themeMeta.getAttribute('content') : null;
+  const lightMetaColor = themeMeta ? themeMeta.getAttribute("content") : null;
   let themeButton = null;
   function applyTheme(theme) {
     root.dataset.theme = theme;
-    if (themeMeta) themeMeta.setAttribute('content', theme === 'dark' ? '#121212' : lightMetaColor);
+    if (themeMeta)
+      themeMeta.setAttribute(
+        "content",
+        theme === "dark" ? "#121212" : lightMetaColor,
+      );
     if (themeButton) {
-      const dark = theme === 'dark';
-      themeButton.setAttribute('aria-pressed', String(dark));
-      themeButton.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
-      themeButton.title = themeButton.getAttribute('aria-label');
+      const dark = theme === "dark";
+      themeButton.setAttribute("aria-pressed", String(dark));
+      themeButton.setAttribute(
+        "aria-label",
+        dark ? "Switch to light mode" : "Switch to dark mode",
+      );
+      themeButton.title = themeButton.getAttribute("aria-label");
       themeButton.innerHTML = dark // sun in dark mode, moon in light mode
         ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'
         : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
     }
   }
-  applyTheme(savedTheme() || (darkMq.matches ? 'dark' : 'light'));
-  if (darkMq.addEventListener) darkMq.addEventListener('change', (e) => { if (!savedTheme()) applyTheme(e.matches ? 'dark' : 'light'); });
+  applyTheme(savedTheme() || (darkMq.matches ? "dark" : "light"));
+  if (darkMq.addEventListener)
+    darkMq.addEventListener("change", (e) => {
+      if (!savedTheme()) applyTheme(e.matches ? "dark" : "light");
+    });
   function themeToggle() {
-    if (doc.querySelector('.theme-toggle')) return;
-    themeButton = doc.createElement('button');
-    themeButton.type = 'button';
-    themeButton.className = 'theme-toggle';
+    if (doc.querySelector(".theme-toggle")) return;
+    themeButton = doc.createElement("button");
+    themeButton.type = "button";
+    themeButton.className = "theme-toggle";
     applyTheme(root.dataset.theme);
-    themeButton.addEventListener('click', () => {
-      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    themeButton.addEventListener("click", () => {
+      const next = root.dataset.theme === "dark" ? "light" : "dark";
       if (!reduced) {
-        root.classList.add('theme-anim');
+        root.classList.add("theme-anim");
         clearTimeout(themeToggle.t);
-        themeToggle.t = setTimeout(() => root.classList.remove('theme-anim'), 250);
+        themeToggle.t = setTimeout(
+          () => root.classList.remove("theme-anim"),
+          250,
+        );
       }
       applyTheme(next);
-      try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* private mode: theme lasts this page only */ }
+      try {
+        localStorage.setItem(THEME_KEY, next);
+      } catch (e) {
+        /* private mode: theme lasts this page only */
+      }
     });
     doc.body.appendChild(themeButton);
   }
 
   // Hide reveal targets before first paint; portal.css has a 2.5s failsafe.
-  if (loadedInHead && !reduced) root.classList.add('motion');
+  if (loadedInHead && !reduced) root.classList.add("motion");
 
-  const REVEAL_SEL = '[data-reveal], .content-stack > .panel, .summary-grid > .panel, .violation-grid > .panel, .card-grid > .feature-card';
-  const EASE = 'expo.out'; // closest GSAP core ease to cubic-bezier(.16,1,.3,1)
+  const REVEAL_SEL =
+    "[data-reveal], .content-stack > .panel, .summary-grid > .panel, .violation-grid > .panel, .card-grid > .feature-card";
+  const EASE = "expo.out"; // closest GSAP core ease to cubic-bezier(.16,1,.3,1)
 
-  const qsa = (sel, ctx) => Array.prototype.slice.call((ctx || doc).querySelectorAll(sel));
-  const onReady = (fn) => (doc.readyState === 'loading' ? doc.addEventListener('DOMContentLoaded', fn) : fn());
+  const qsa = (sel, ctx) =>
+    Array.prototype.slice.call((ctx || doc).querySelectorAll(sel));
+  const onReady = (fn) =>
+    doc.readyState === "loading"
+      ? doc.addEventListener("DOMContentLoaded", fn)
+      : fn();
 
   const Portal = (window.Portal = window.Portal || {});
   Portal.__init = true;
@@ -74,7 +104,9 @@
 
   /* ---------- Existing behaviour ---------- */
   function currentYear() {
-    qsa('[data-current-year]').forEach((node) => { node.textContent = new Date().getFullYear(); });
+    qsa("[data-current-year]").forEach((node) => {
+      node.textContent = new Date().getFullYear();
+    });
   }
 
   /* ---------- Toast ---------- */
@@ -82,20 +114,23 @@
   Portal.toast = function (message, opts) {
     const o = opts || {};
     if (!toastStack) {
-      toastStack = doc.createElement('div');
-      toastStack.className = 'toast-stack';
-      toastStack.setAttribute('role', 'status');
-      toastStack.setAttribute('aria-live', 'polite');
+      toastStack = doc.createElement("div");
+      toastStack.className = "toast-stack";
+      toastStack.setAttribute("role", "status");
+      toastStack.setAttribute("aria-live", "polite");
       doc.body.appendChild(toastStack);
     }
-    const t = doc.createElement('div');
-    t.className = 'toast' + (o.type ? ' toast-' + o.type : '');
+    const t = doc.createElement("div");
+    t.className = "toast" + (o.type ? " toast-" + o.type : "");
     t.textContent = String(message);
     toastStack.appendChild(t);
-    while (toastStack.children.length > 3) toastStack.removeChild(toastStack.firstChild);
-    requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('is-visible')));
+    while (toastStack.children.length > 3)
+      toastStack.removeChild(toastStack.firstChild);
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => t.classList.add("is-visible")),
+    );
     const dismiss = () => {
-      t.classList.add('is-leaving');
+      t.classList.add("is-leaving");
       setTimeout(() => t.remove(), 180);
     };
     setTimeout(dismiss, o.duration || 3200);
@@ -104,94 +139,130 @@
 
   /* ---------- Dialog (<dialog class="dialog">) ---------- */
   Portal.openDialog = function (dialog) {
-    const d = typeof dialog === 'string' ? doc.getElementById(dialog) : dialog;
+    const d = typeof dialog === "string" ? doc.getElementById(dialog) : dialog;
     if (!d || d.open) return;
-    if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
+    if (typeof d.showModal === "function") d.showModal();
+    else d.setAttribute("open", "");
     if (Portal.lenis) Portal.lenis.stop();
   };
   Portal.closeDialog = function (dialog) {
-    const d = typeof dialog === 'string' ? doc.getElementById(dialog) : dialog;
-    if (!d || !d.open || d.classList.contains('is-closing')) return;
+    const d = typeof dialog === "string" ? doc.getElementById(dialog) : dialog;
+    if (!d || !d.open || d.classList.contains("is-closing")) return;
     const finish = () => {
-      d.classList.remove('is-closing');
-      if (typeof d.close === 'function') d.close(); else d.removeAttribute('open');
+      d.classList.remove("is-closing");
+      if (typeof d.close === "function") d.close();
+      else d.removeAttribute("open");
     };
     if (reduced) return finish();
-    d.classList.add('is-closing');
+    d.classList.add("is-closing");
     setTimeout(finish, 150);
   };
   function wireDialogs() {
-    doc.addEventListener('click', (e) => {
-      const opener = e.target.closest('[data-dialog-open]');
-      if (opener) { e.preventDefault(); Portal.openDialog(opener.getAttribute('data-dialog-open')); return; }
-      const closer = e.target.closest('[data-dialog-close]');
-      if (closer) { Portal.closeDialog(closer.closest('dialog')); return; }
-      if (e.target.matches && e.target.matches('dialog.dialog[open]')) Portal.closeDialog(e.target); // backdrop click
+    doc.addEventListener("click", (e) => {
+      const opener = e.target.closest("[data-dialog-open]");
+      if (opener) {
+        e.preventDefault();
+        Portal.openDialog(opener.getAttribute("data-dialog-open"));
+        return;
+      }
+      const closer = e.target.closest("[data-dialog-close]");
+      if (closer) {
+        Portal.closeDialog(closer.closest("dialog"));
+        return;
+      }
+      if (e.target.matches && e.target.matches("dialog.dialog[open]"))
+        Portal.closeDialog(e.target); // backdrop click
     });
-    qsa('dialog.dialog').forEach((d) => {
-      d.addEventListener('cancel', (e) => { e.preventDefault(); Portal.closeDialog(d); });
-      d.addEventListener('close', () => { if (Portal.lenis) Portal.lenis.start(); });
+    qsa("dialog.dialog").forEach((d) => {
+      d.addEventListener("cancel", (e) => {
+        e.preventDefault();
+        Portal.closeDialog(d);
+      });
+      d.addEventListener("close", () => {
+        if (Portal.lenis) Portal.lenis.start();
+      });
     });
   }
 
   /* ---------- Sidebar: shared gold hover indicator ---------- */
   function navIndicator() {
-    qsa('.sidebar .nav').forEach((nav) => {
-      const links = qsa('a', nav);
+    qsa(".sidebar .nav").forEach((nav) => {
+      const links = qsa("a", nav);
       if (!links.length) return;
-      const bar = doc.createElement('span');
-      bar.className = 'nav-indicator';
-      bar.setAttribute('aria-hidden', 'true');
+      const bar = doc.createElement("span");
+      bar.className = "nav-indicator";
+      bar.setAttribute("aria-hidden", "true");
       nav.appendChild(bar);
-      nav.classList.add('has-indicator');
+      nav.classList.add("has-indicator");
       const current = () => nav.querySelector('a[aria-current="page"]');
       const moveTo = (link, instant) => {
-        if (!link) { bar.classList.remove('is-visible'); return; }
-        if (instant) bar.style.transition = 'none';
-        bar.style.transform = 'translateY(' + (link.offsetTop + (link.offsetHeight - 22) / 2) + 'px)';
-        bar.classList.add('is-visible');
-        if (instant) { void bar.offsetWidth; bar.style.transition = ''; }
+        if (!link) {
+          bar.classList.remove("is-visible");
+          return;
+        }
+        if (instant) bar.style.transition = "none";
+        bar.style.transform =
+          "translateY(" +
+          (link.offsetTop + (link.offsetHeight - 22) / 2) +
+          "px)";
+        bar.classList.add("is-visible");
+        if (instant) {
+          void bar.offsetWidth;
+          bar.style.transition = "";
+        }
       };
       moveTo(current(), true);
       links.forEach((a) => {
-        a.addEventListener('pointerenter', () => moveTo(a));
-        a.addEventListener('focus', () => moveTo(a));
+        a.addEventListener("pointerenter", () => moveTo(a));
+        a.addEventListener("focus", () => moveTo(a));
       });
-      nav.addEventListener('pointerleave', () => moveTo(current()));
-      nav.addEventListener('focusout', (e) => { if (!nav.contains(e.relatedTarget)) moveTo(current()); });
-      window.addEventListener('resize', () => moveTo(current(), true), { passive: true });
+      nav.addEventListener("pointerleave", () => moveTo(current()));
+      nav.addEventListener("focusout", (e) => {
+        if (!nav.contains(e.relatedTarget)) moveTo(current());
+      });
+      window.addEventListener("resize", () => moveTo(current(), true), {
+        passive: true,
+      });
     });
   }
 
   /* ---------- Hero background: drifting diagonal light rails (canvas) ---------- */
   function heroLines(host) {
-    if (host.querySelector(':scope > .hero-lines')) return;
-    const canvas = doc.createElement('canvas');
-    canvas.className = 'hero-lines';
-    canvas.setAttribute('aria-hidden', 'true');
-    const ctx = canvas.getContext && canvas.getContext('2d');
+    if (host.querySelector(":scope > .hero-lines")) return;
+    const canvas = doc.createElement("canvas");
+    canvas.className = "hero-lines";
+    canvas.setAttribute("aria-hidden", "true");
+    const ctx = canvas.getContext && canvas.getContext("2d");
     if (!ctx) return;
     host.insertBefore(canvas, host.firstChild);
 
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const RAIL = 56 * Math.SQRT2; // rails x + y = c, 56px apart
-    let w = 0, h = 0, streaks = [], raf = 0, last = 0, visible = true;
+    let w = 0,
+      h = 0,
+      streaks = [],
+      raf = 0,
+      last = 0,
+      visible = true;
 
     const spawn = (s, fresh) => {
       const rails = Math.floor((w + h) / RAIL);
       s.c = (1 + Math.floor(Math.random() * Math.max(rails, 1))) * RAIL;
       s.len = 70 + Math.random() * 170;
-      s.speed = 28 + Math.random() * 46;           // px per second along x
+      s.speed = 28 + Math.random() * 46; // px per second along x
       s.alpha = 0.16 + Math.random() * 0.3;
       s.gold = Math.random() < 0.35;
       const xStart = Math.max(0, s.c - h);
       const xEnd = Math.min(w, s.c);
-      s.x = fresh ? xStart + Math.random() * (xEnd - xStart + s.len) : xStart - Math.random() * 240;
+      s.x = fresh
+        ? xStart + Math.random() * (xEnd - xStart + s.len)
+        : xStart - Math.random() * 240;
       return s;
     };
     const resize = () => {
       const r = host.getBoundingClientRect();
-      w = r.width; h = r.height;
+      w = r.width;
+      h = r.height;
       canvas.width = Math.max(1, Math.round(w * dpr));
       canvas.height = Math.max(1, Math.round(h * dpr));
       const count = Math.max(6, Math.min(18, Math.round((w + h) / 110)));
@@ -203,14 +274,14 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
       ctx.lineWidth = 1.2;
-      ctx.lineCap = 'round';
+      ctx.lineCap = "round";
       for (let i = 0; i < streaks.length; i++) {
         const s = streaks[i];
         const x0 = s.x - s.len;
-        const rgb = s.gold ? '229,185,60' : '255,255,255';
+        const rgb = s.gold ? "229,185,60" : "255,255,255";
         const g = ctx.createLinearGradient(x0, s.c - x0, s.x, s.c - s.x);
-        g.addColorStop(0, 'rgba(' + rgb + ',0)');
-        g.addColorStop(1, 'rgba(' + rgb + ',' + s.alpha + ')');
+        g.addColorStop(0, "rgba(" + rgb + ",0)");
+        g.addColorStop(1, "rgba(" + rgb + "," + s.alpha + ")");
         ctx.strokeStyle = g;
         ctx.beginPath();
         ctx.moveTo(x0, s.c - x0);
@@ -229,25 +300,35 @@
       draw();
       raf = requestAnimationFrame(tick);
     };
-    const play = () => { if (!raf && visible && !doc.hidden) { last = 0; raf = requestAnimationFrame(tick); } };
-    const pause = () => { if (raf) cancelAnimationFrame(raf); raf = 0; };
+    const play = () => {
+      if (!raf && visible && !doc.hidden) {
+        last = 0;
+        raf = requestAnimationFrame(tick);
+      }
+    };
+    const pause = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+    };
 
     resize();
-    if ('ResizeObserver' in window) new ResizeObserver(resize).observe(host);
-    else window.addEventListener('resize', resize, { passive: true });
-    if ('IntersectionObserver' in window) {
+    if ("ResizeObserver" in window) new ResizeObserver(resize).observe(host);
+    else window.addEventListener("resize", resize, { passive: true });
+    if ("IntersectionObserver" in window) {
       new IntersectionObserver((entries) => {
         visible = entries[0].isIntersecting;
         visible ? play() : pause();
       }).observe(host);
     }
-    doc.addEventListener('visibilitychange', () => (doc.hidden ? pause() : play()));
+    doc.addEventListener("visibilitychange", () =>
+      doc.hidden ? pause() : play(),
+    );
     play();
   }
 
   /* ---------- Split text into words (keeps the accessible name) ---------- */
   function splitWords(el) {
-    const label = el.textContent.replace(/\s+/g, ' ').trim();
+    const label = el.textContent.replace(/\s+/g, " ").trim();
     const words = [];
     const walk = (node) => {
       Array.prototype.slice.call(node.childNodes).forEach((child) => {
@@ -255,50 +336,70 @@
           const frag = doc.createDocumentFragment();
           child.textContent.split(/(\s+)/).forEach((part) => {
             if (!part) return;
-            if (/^\s+$/.test(part)) { frag.appendChild(doc.createTextNode(part)); return; }
-            const span = doc.createElement('span');
-            span.className = 'split-word';
-            span.setAttribute('aria-hidden', 'true');
+            if (/^\s+$/.test(part)) {
+              frag.appendChild(doc.createTextNode(part));
+              return;
+            }
+            const span = doc.createElement("span");
+            span.className = "split-word";
+            span.setAttribute("aria-hidden", "true");
             span.textContent = part;
             words.push(span);
             frag.appendChild(span);
           });
           child.parentNode.replaceChild(frag, child);
-        } else if (child.nodeType === 1 && child.tagName !== 'BR') {
+        } else if (child.nodeType === 1 && child.tagName !== "BR") {
           walk(child);
         }
       });
     };
     walk(el);
-    el.setAttribute('aria-label', label);
+    el.setAttribute("aria-label", label);
     return words;
   }
 
   /* ---------- Count-up ---------- */
   function countUp(gsap, el) {
-    const raw = el.getAttribute('data-count') || el.textContent;
-    const target = parseFloat(String(raw).replace(/[^0-9.\-]/g, ''));
+    const raw = el.getAttribute("data-count") || el.textContent;
+    const target = parseFloat(String(raw).replace(/[^0-9.\-]/g, ""));
     if (!isFinite(target)) return;
-    const decimals = el.hasAttribute('data-count-decimals')
-      ? parseInt(el.getAttribute('data-count-decimals'), 10) || 0
-      : ((String(raw).split('.')[1] || '').replace(/\D/g, '').length);
-    const prefix = el.getAttribute('data-count-prefix') || '';
-    const suffix = el.getAttribute('data-count-suffix') || '';
-    const fmt = new Intl.NumberFormat(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    const decimals = el.hasAttribute("data-count-decimals")
+      ? parseInt(el.getAttribute("data-count-decimals"), 10) || 0
+      : (String(raw).split(".")[1] || "").replace(/\D/g, "").length;
+    const prefix = el.getAttribute("data-count-prefix") || "";
+    const suffix = el.getAttribute("data-count-suffix") || "";
+    const fmt = new Intl.NumberFormat(undefined, {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
     const finalText = prefix + fmt.format(target) + suffix;
     el.textContent = finalText;
     // Lock width at the final value so the roll never shifts layout.
-    if (getComputedStyle(el).display === 'inline') el.style.display = 'inline-block';
-    el.style.minWidth = el.getBoundingClientRect().width + 'px';
-    el.style.fontVariantNumeric = 'tabular-nums';
+    if (getComputedStyle(el).display === "inline")
+      el.style.display = "inline-block";
+    el.style.minWidth = el.getBoundingClientRect().width + "px";
+    el.style.fontVariantNumeric = "tabular-nums";
     const state = { v: 0 };
-    const run = () => gsap.to(state, {
-      v: target, duration: 0.8, ease: 'power3.out',
-      onUpdate: () => { el.textContent = prefix + fmt.format(state.v) + suffix; },
-      onComplete: () => { el.textContent = finalText; },
-    });
+    const run = () =>
+      gsap.to(state, {
+        v: target,
+        duration: 0.8,
+        ease: "power3.out",
+        onUpdate: () => {
+          el.textContent = prefix + fmt.format(state.v) + suffix;
+        },
+        onComplete: () => {
+          el.textContent = finalText;
+        },
+      });
     el.textContent = prefix + fmt.format(0) + suffix;
-    if (window.ScrollTrigger) window.ScrollTrigger.create({ trigger: el, start: 'top 92%', once: true, onEnter: run });
+    if (window.ScrollTrigger)
+      window.ScrollTrigger.create({
+        trigger: el,
+        start: "top 92%",
+        once: true,
+        onEnter: run,
+      });
     else run();
   }
 
@@ -309,42 +410,73 @@
     const get = (btn) => {
       let m = movers.get(btn);
       if (!m) {
-        m = { x: gsap.quickTo(btn, 'x', { duration: 0.3, ease: 'power3.out' }), y: gsap.quickTo(btn, 'y', { duration: 0.3, ease: 'power3.out' }) };
+        m = {
+          x: gsap.quickTo(btn, "x", { duration: 0.3, ease: "power3.out" }),
+          y: gsap.quickTo(btn, "y", { duration: 0.3, ease: "power3.out" }),
+        };
         movers.set(btn, m);
       }
       return m;
     };
-    const release = () => { if (active) { const m = get(active); m.x(0); m.y(0); active = null; } };
-    doc.addEventListener('pointermove', (e) => {
-      if (e.pointerType !== 'mouse') return;
-      const btn = e.target.closest && e.target.closest('.button:not(.full):not([data-no-magnet]):not(:disabled)');
-      if (btn !== active) release();
-      if (!btn) return;
-      active = btn;
-      const r = btn.getBoundingClientRect();
-      const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
-      const dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
-      const m = get(btn);
-      m.x(Math.max(-1, Math.min(1, dx)) * 4);
-      m.y(Math.max(-1, Math.min(1, dy)) * 3);
-    }, { passive: true });
-    doc.addEventListener('pointerleave', release);
-    window.addEventListener('blur', release);
+    const release = () => {
+      if (active) {
+        const m = get(active);
+        m.x(0);
+        m.y(0);
+        active = null;
+      }
+    };
+    doc.addEventListener(
+      "pointermove",
+      (e) => {
+        if (e.pointerType !== "mouse") return;
+        const btn =
+          e.target.closest &&
+          e.target.closest(
+            ".button:not(.full):not([data-no-magnet]):not(:disabled)",
+          );
+        if (btn !== active) release();
+        if (!btn) return;
+        active = btn;
+        const r = btn.getBoundingClientRect();
+        const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+        const dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+        const m = get(btn);
+        m.x(Math.max(-1, Math.min(1, dx)) * 4);
+        m.y(Math.max(-1, Math.min(1, dy)) * 3);
+      },
+      { passive: true },
+    );
+    doc.addEventListener("pointerleave", release);
+    window.addEventListener("blur", release);
   }
 
   /* ---------- Lenis smooth scroll ---------- */
   function smoothScroll(gsap) {
     if (!window.Lenis) return;
-    qsa('.modal, .modal-content, .history-content, dialog, [data-scroll-container]').forEach((n) => n.setAttribute('data-lenis-prevent', ''));
+    qsa(
+      ".modal, .modal-content, .history-content, dialog, [data-scroll-container]",
+    ).forEach((n) => n.setAttribute("data-lenis-prevent", ""));
     let lenis;
-    try { lenis = new window.Lenis({ lerp: 0.12, smoothWheel: true, autoRaf: false }); } catch (err) { return; }
+    try {
+      lenis = new window.Lenis({
+        lerp: 0.12,
+        smoothWheel: true,
+        autoRaf: false,
+      });
+    } catch (err) {
+      return;
+    }
     Portal.lenis = lenis;
     if (gsap) {
-      if (window.ScrollTrigger) lenis.on('scroll', window.ScrollTrigger.update);
+      if (window.ScrollTrigger) lenis.on("scroll", window.ScrollTrigger.update);
       gsap.ticker.add((time) => lenis.raf(time * 1000));
       gsap.ticker.lagSmoothing(0);
     } else {
-      const loop = (t) => { lenis.raf(t); requestAnimationFrame(loop); };
+      const loop = (t) => {
+        lenis.raf(t);
+        requestAnimationFrame(loop);
+      };
       requestAnimationFrame(loop);
     }
   }
@@ -359,63 +491,102 @@
 
   function entrances(gsap) {
     const ST = window.ScrollTrigger;
-    const heroes = qsa('[data-hero]');
+    const heroes = qsa("[data-hero]");
     const inHero = (el) => heroes.some((h) => h !== el && h.contains(el));
-    const targets = qsa(REVEAL_SEL).filter((el) => !inHero(el) && !el.closest('.modal, dialog'));
+    const targets = qsa(REVEAL_SEL).filter(
+      (el) => !inHero(el) && !el.closest(".modal, dialog"),
+    );
 
     // Hero timelines (the one authored moment: up to ~0.9s).
     heroes.forEach((hero) => {
-      const kids = Array.prototype.slice.call(hero.children).filter((k) => !k.classList.contains('hero-lines'));
-      const heading = hero.querySelector('[data-split]') || kids.find((k) => /^H[12]$/.test(k.tagName));
+      const kids = Array.prototype.slice
+        .call(hero.children)
+        .filter((k) => !k.classList.contains("hero-lines"));
+      const heading =
+        hero.querySelector("[data-split]") ||
+        kids.find((k) => /^H[12]$/.test(k.tagName));
       const tl = gsap.timeline({ defaults: { ease: EASE } });
       let afterHeading = 0;
       kids.forEach((kid) => {
-        const holdsHeading = heading && (kid === heading || kid.contains(heading));
+        const holdsHeading =
+          heading && (kid === heading || kid.contains(heading));
         if (holdsHeading) {
           const words = splitWords(heading);
           if (kid !== heading) {
-            qsa(':scope > *', kid).forEach((sib) => {
+            qsa(":scope > *", kid).forEach((sib) => {
               if (sib === heading || sib.contains(heading)) return;
               gsap.set(sib, { opacity: 0, y: 8 });
-              tl.to(sib, { opacity: 1, y: 0, duration: 0.5 }, 0.1 + 0.06 * afterHeading++);
+              tl.to(
+                sib,
+                { opacity: 1, y: 0, duration: 0.5 },
+                0.1 + 0.06 * afterHeading++,
+              );
             });
           }
           gsap.set(kid, { opacity: 1 });
-          gsap.set(words, { opacity: 0, y: '0.45em' });
-          tl.to(words, { opacity: 1, y: 0, duration: 0.6, stagger: Math.min(0.045, 0.3 / Math.max(words.length, 1)) }, 0);
-        } else if (afterHeading === 0 && heading && (kid.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+          gsap.set(words, { opacity: 0, y: "0.45em" });
+          tl.to(
+            words,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.6,
+              stagger: Math.min(0.045, 0.3 / Math.max(words.length, 1)),
+            },
+            0,
+          );
+        } else if (
+          afterHeading === 0 &&
+          heading &&
+          kid.compareDocumentPosition(heading) &
+            Node.DOCUMENT_POSITION_FOLLOWING
+        ) {
           // Decoration before the heading (brand, eyebrow): fade in place with the lead.
           gsap.set(kid, { opacity: 0 });
           tl.to(kid, { opacity: 1, duration: 0.4 }, 0);
         } else {
           const step = afterHeading++;
           gsap.set(kid, { opacity: 0, y: Math.max(4, 10 - step * 2) });
-          tl.to(kid, { opacity: 1, y: 0, duration: 0.5, clearProps: 'transform' }, 0.1 + 0.06 * step);
+          tl.to(
+            kid,
+            { opacity: 1, y: 0, duration: 0.5, clearProps: "transform" },
+            0.1 + 0.06 * step,
+          );
         }
       });
     });
 
     gsap.set(targets, { opacity: 0, y: 12 });
-    const reveal = (batch) => gsap.to(batch, {
-      opacity: 1, y: 0, duration: 0.32, ease: EASE, overwrite: true,
-      stagger: (i) => staggerDelay(i), clearProps: 'opacity,transform',
-    });
-    if (ST && targets.length) ST.batch(targets, { start: 'top 94%', once: true, onEnter: reveal });
+    const reveal = (batch) =>
+      gsap.to(batch, {
+        opacity: 1,
+        y: 0,
+        duration: 0.32,
+        ease: EASE,
+        overwrite: true,
+        stagger: (i) => staggerDelay(i),
+        clearProps: "opacity,transform",
+      });
+    if (ST && targets.length)
+      ST.batch(targets, { start: "top 94%", once: true, onEnter: reveal });
     else if (targets.length) reveal(targets);
   }
 
   /* ---------- Init ---------- */
-  function revealAll() { root.classList.remove('motion'); }
+  function revealAll() {
+    root.classList.remove("motion");
+  }
 
   onReady(() => {
     currentYear();
     themeToggle();
     wireDialogs();
     navIndicator();
-    if (!reduced) qsa('.hero-band, .auth-aside, [data-hero-lines]').forEach(heroLines);
+    if (!reduced)
+      qsa(".hero-band, .auth-aside, [data-hero-lines]").forEach(heroLines);
 
     const gsap = window.gsap;
-    const ownsEntrance = root.classList.contains('motion');
+    const ownsEntrance = root.classList.contains("motion");
     const late = performance.now() > 2200; // CSS failsafe already revealed content
 
     if (reduced || !gsap) {
@@ -430,14 +601,21 @@
     try {
       if (ownsEntrance && !late) {
         entrances(gsap);
-        qsa('[data-count]').forEach((el) => countUp(gsap, el));
+        qsa("[data-count]").forEach((el) => countUp(gsap, el));
       }
     } catch (err) {
-      gsap.set(qsa(REVEAL_SEL + ', [data-hero] > *, .split-word'), { clearProps: 'opacity,transform' });
+      gsap.set(qsa(REVEAL_SEL + ", [data-hero] > *, .split-word"), {
+        clearProps: "opacity,transform",
+      });
     }
     revealAll();
-    if (window.ScrollTrigger) window.addEventListener('load', () => window.ScrollTrigger.refresh(), { once: true });
+    if (window.ScrollTrigger)
+      window.addEventListener("load", () => window.ScrollTrigger.refresh(), {
+        once: true,
+      });
   });
 
-  Portal.refresh = () => { if (window.ScrollTrigger) window.ScrollTrigger.refresh(); };
+  Portal.refresh = () => {
+    if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+  };
 })();

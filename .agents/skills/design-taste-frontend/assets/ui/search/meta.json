@@ -9,10 +9,7 @@
     "knowledge base",
     "navigation"
   ],
-  "size": [
-    380,
-    280
-  ],
+  "size": [380, 280],
   "js": true,
   "edit": "The query and results as written come first; opts.queries [{q, rows: [[icon, title, meta]]}] adds more, one per cycle. With none it types its own query again.",
   "loop": "about 2.7 s a cycle: the query is typed again, results appear one by one, the selection steps down; the finished picture holds for at most 15% of the cycle; restarts when the pointer enters its card"

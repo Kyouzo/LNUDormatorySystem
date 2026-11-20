@@ -1,86 +1,153 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-  <meta name="theme-color" content="#00006e">
-  <title>Attendance | LNU Dorm Administrator</title>
-  <meta name="description" content="Today's dormitory attendance and the curfew log.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="../../assets/css/portal.css">
-  <link rel="stylesheet" href="../violations.css">
-  <link rel="stylesheet" href="admin.css">
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
-  <script src="../../assets/js/portal.js"></script>
-</head>
-<body data-admin-page="attendance">
-<a class="skip-link" href="#main-content">Skip to content</a>
-<div class="app-shell">
-  <aside class="sidebar" data-admin-sidebar></aside>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta name="theme-color" content="#00006e" />
+    <title>Attendance | LNU Dorm Administrator</title>
+    <meta
+      name="description"
+      content="Today's dormitory attendance and the curfew log."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap"
+    />
+    <link rel="stylesheet" href="../../assets/css/portal.css" />
+    <link rel="stylesheet" href="../violations.css" />
+    <link rel="stylesheet" href="admin.css" />
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"
+    ></script>
+    <script src="../../assets/js/portal.js"></script>
+  </head>
+  <body data-admin-page="attendance">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="app-shell">
+      <aside class="sidebar" data-admin-sidebar></aside>
 
-  <main class="main-content" id="main-content">
-    <section class="hero-band staff-hero" data-hero aria-labelledby="page-title">
-      <span class="eyebrow">Attendance</span>
-      <h1 id="page-title">Attendance and curfew</h1>
-      <p>Who has scanned in today, and who came back after curfew. Security personnel scan dormers' QR passes.</p>
-      <p class="hero-meta" aria-live="polite">
-        <span>Present today <strong id="meta-present">—</strong></span>
-        <span>Curfew time <strong id="meta-curfew">—</strong></span>
-        <span>Late tonight <strong id="meta-late">—</strong></span>
-      </p>
-      <div class="hero-actions"><a class="button gold" href="../security/attendance.html">Open QR scanner</a></div>
-      <p class="hero-alert" id="page-alert" role="alert" hidden></p>
-    </section>
+      <main class="main-content" id="main-content">
+        <section
+          class="hero-band staff-hero"
+          data-hero
+          aria-labelledby="page-title"
+        >
+          <span class="eyebrow">Attendance</span>
+          <h1 id="page-title">Attendance and curfew</h1>
+          <p>
+            Who has scanned in today, and who came back after curfew. Security
+            personnel scan dormers' QR passes.
+          </p>
+          <p class="hero-meta" aria-live="polite">
+            <span>Present today <strong id="meta-present">—</strong></span>
+            <span>Curfew time <strong id="meta-curfew">—</strong></span>
+            <span>Late tonight <strong id="meta-late">—</strong></span>
+          </p>
+          <div class="hero-actions">
+            <a class="button gold" href="../security/attendance.html"
+              >Open QR scanner</a
+            >
+          </div>
+          <p class="hero-alert" id="page-alert" role="alert" hidden></p>
+        </section>
 
-    <div class="content-stack">
-      <section class="panel" aria-labelledby="today-title">
-        <div class="panel-head">
-          <div>
-            <span class="eyebrow">Today</span>
-            <h2 id="today-title">Today's attendance</h2>
-            <p>One row per dormer with at least one scan today, most recent first.</p>
-          </div>
-          <button class="button outline small" type="button" data-retry="today">Refresh</button>
-        </div>
-        <div class="data-table table-wrap">
-          <table>
-            <caption class="sr-only">Today's attendance</caption>
-            <thead><tr><th scope="col">Name</th><th scope="col" class="col-year">Year level</th><th scope="col" class="col-room">Floor &amp; room</th><th scope="col">Time in</th><th scope="col">Latest</th><th scope="col">Status</th></tr></thead>
-            <tbody id="rows-today"></tbody>
-          </table>
-        </div>
-      </section>
+        <div class="content-stack">
+          <section class="panel" aria-labelledby="today-title">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">Today</span>
+                <h2 id="today-title">Today's attendance</h2>
+                <p>
+                  One row per dormer with at least one scan today, most recent
+                  first.
+                </p>
+              </div>
+              <button
+                class="button outline small"
+                type="button"
+                data-retry="today"
+              >
+                Refresh
+              </button>
+            </div>
+            <div class="data-table table-wrap">
+              <table>
+                <caption class="sr-only">
+                  Today's attendance
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col" class="col-year">Year level</th>
+                    <th scope="col" class="col-room">Floor &amp; room</th>
+                    <th scope="col">Time in</th>
+                    <th scope="col">Latest</th>
+                    <th scope="col">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="rows-today"></tbody>
+              </table>
+            </div>
+          </section>
 
-      <section class="panel" aria-labelledby="curfew-title">
-        <div class="panel-head">
-          <div>
-            <span class="eyebrow">Curfew</span>
-            <h2 id="curfew-title">Curfew log</h2>
-            <p>Late check-ins for the selected curfew night (read-only).</p>
-          </div>
-          <div class="toolbar-row">
-            <label class="field inline" for="curfew-date">Night<input id="curfew-date" type="date"></label>
-            <button class="button outline small" type="button" data-retry="curfew">Refresh</button>
-          </div>
+          <section class="panel" aria-labelledby="curfew-title">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">Curfew</span>
+                <h2 id="curfew-title">Curfew log</h2>
+                <p>Late check-ins for the selected curfew night (read-only).</p>
+              </div>
+              <div class="toolbar-row">
+                <label class="field inline" for="curfew-date"
+                  >Night<input id="curfew-date" type="date"
+                /></label>
+                <button
+                  class="button outline small"
+                  type="button"
+                  data-retry="curfew"
+                >
+                  Refresh
+                </button>
+              </div>
+            </div>
+            <div class="data-table table-wrap">
+              <table>
+                <caption class="sr-only">
+                  Curfew violations
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col" class="col-year">Year level</th>
+                    <th scope="col" class="col-room">Floor &amp; room</th>
+                    <th scope="col">Arrived</th>
+                    <th scope="col">Violation</th>
+                  </tr>
+                </thead>
+                <tbody id="rows-curfew"></tbody>
+              </table>
+            </div>
+          </section>
         </div>
-        <div class="data-table table-wrap">
-          <table>
-            <caption class="sr-only">Curfew violations</caption>
-            <thead><tr><th scope="col">Name</th><th scope="col" class="col-year">Year level</th><th scope="col" class="col-room">Floor &amp; room</th><th scope="col">Arrived</th><th scope="col">Violation</th></tr></thead>
-            <tbody id="rows-curfew"></tbody>
-          </table>
-        </div>
-      </section>
+      </main>
     </div>
-  </main>
-</div>
 
-<script src="../../assets/js/api.js"></script>
-<script src="admin.js"></script>
-<script src="attendance.js"></script>
-</body>
+    <script src="../../assets/js/api.js"></script>
+    <script src="admin.js"></script>
+    <script src="attendance.js"></script>
+  </body>
 </html>

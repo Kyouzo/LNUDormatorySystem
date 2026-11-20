@@ -5,12 +5,14 @@ Owner's instruction: follow this FEATURE SET and page list, but KEEP the current
 The Canva look itself (blue gradient phone mockups) is NOT wanted.
 
 ## Roles
+
 1. Student (dormer)
 2. Dorm Administrator ("Dorm Administrator Dashboard")
 3. Security Personnel ("SECURITY PERSONNEL" dashboard)
-Dorm personnel register themselves and choose a personnel type (admin / security); an existing admin approves them.
+   Dorm personnel register themselves and choose a personnel type (admin / security); an existing admin approves them.
 
 ## Registration (pages 2-4)
+
 - Entry choice: "Register as Student" / "Register as Dorm Personnel".
 - Student form: Fullname (Last, First, Middle initial), Age, Gender, Student ID, Email contact, Permanent address,
   **Entrance Slip (file upload)**, Register.
@@ -20,7 +22,9 @@ Dorm personnel register themselves and choose a personnel type (admin / security
 ## Login (page 1): email + password; role decides landing page (student / admin / security).
 
 ## Student (pages 5-9)
+
 Sidebar tabs: HOME, PROFILE, ATTENDANCE, PAYMENT, VIOLATIONS, ANNOUNCEMENTS, ... SETTINGS (bottom). Top bar: menu + notification bell.
+
 - Home: "WELCOME, (name) (date)" Student Dashboard. 4 tiles: ROOM NUMBER, ATTENDANCE, PAYMENT, VIOLATIONS.
   Below: **Today Attendance** card (Date, Time, Status) and **Latest Announcements** card.
 - Profile: the student's own details (name, year level, email, address, student ID, room/floor, status).
@@ -32,7 +36,9 @@ Sidebar tabs: HOME, PROFILE, ATTENDANCE, PAYMENT, VIOLATIONS, ANNOUNCEMENTS, ...
 - Notification bell: shows new announcements.
 
 ## Dorm Administrator (pages 10-16)
+
 Sidebar: HOME, MANAGE (v) > Manage Students, Student Violation, Proof of Payment, Room management; ATTENDANCE; ANNOUNCEMENTS; SETTINGS.
+
 - Home: "WELCOME, (name) (date) Dorm Administrator Dashboard". Tiles: MANAGE STUDENTS, ATTENDANCE, ANNOUNCEMENT.
   Cards: "Manage Students" (newly validated student registrations/emails appear here) and "Latest Announcements".
 - Manage Students: "List of student" (name, year level, View) — View panel shows name, year level, email and a button
@@ -48,7 +54,9 @@ Sidebar: HOME, MANAGE (v) > Manage Students, Student Violation, Proof of Payment
 - Approves pending dorm personnel registrations.
 
 ## Security Personnel (pages 17-18)
+
 Sidebar: HOME, ATTENDANCE, SETTINGS. Home: "WELCOME, (name) SECURITY PERSONNEL", cards LATEST ANNOUNCEMENTS and ATTENDANCE.
+
 - Attendance: buttons "Scan QR" and "Scan QR For Curfew". Two tables: attendance (name, year level, floor and room, status PRESENT)
   and curfew violations (name, year level, floor and room, Violation/curfew e.g. "1st warning"). Two scanner panels: "Scanner" and
   "Curfew Scanner" (camera).

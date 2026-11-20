@@ -10,10 +10,7 @@
     "compliance",
     "progress"
   ],
-  "size": [
-    340,
-    268
-  ],
+  "size": [340, 268],
   "js": true,
   "place": "at-rise fit with --fit-max: 340px, 40px down: whole with 24px or more of ground under it, or cut by 24px or more through its last step only (the steps that tick, the count and the bar never sit in the fade)",
   "edit": "Items are HTML (is-done on those already done). The count keeps its words; only its first figure follows the ticks.",

@@ -38,7 +38,7 @@ function dash_row($sql, $studentId, $context)
     $row = [];
     if (db_execute($stmt, $context)) {
         $fetched = $stmt->get_result()->fetch_assoc();
-        $row     = $fetched ? $fetched : [];
+        $row = $fetched ? $fetched : [];
     }
     $stmt->close();
     return $row;
@@ -88,44 +88,44 @@ $labels = ['pending' => 'Pending', 'verified' => 'Recorded', 'rejected' => 'Reje
 $lastStatus = isset($payLast['status']) ? $payLast['status'] : null;
 
 $today = attendance_today_for($studentId);
-$news  = announcements_for_user(5, 0);
+$news = announcements_for_user(5, 0);
 $conn->close();
 
 json_response([
-    'success'    => true,
-    'student'    => [
+    'success' => true,
+    'student' => [
         'student_id' => (int) $p['student_id'],
-        'name'       => trim($p['first_name'] . ' ' . $p['last_name']),
+        'name' => trim($p['first_name'] . ' ' . $p['last_name']),
         'first_name' => $p['first_name'],
-        'last_name'  => $p['last_name'],
+        'last_name' => $p['last_name'],
         'year_level' => $p['year_level'],
-        'email'      => $p['email'],
-        'floor'      => $enrolled ? (int) $p['floor_no'] : null,
-        'room'       => $enrolled ? (int) $p['room_no'] : null,
+        'email' => $p['email'],
+        'floor' => $enrolled ? (int) $p['floor_no'] : null,
+        'room' => $enrolled ? (int) $p['room_no'] : null,
         'room_label' => $enrolled ? room_label($p['floor_no'], $p['room_no']) : null,
-        'enrolled'   => $enrolled,
-        'status'     => $enrolled ? 'Enrolled' : 'Not enrolled',
+        'enrolled' => $enrolled,
+        'status' => $enrolled ? 'Enrolled' : 'Not enrolled',
     ],
-    'date'       => date('Y-m-d'),
+    'date' => date('Y-m-d'),
     'date_label' => date('F j, Y'),
-    'today'      => $today,
+    'today' => $today,
     'attendance' => [
-        'total_scans'  => (int) ($att['total_scans'] ?? 0),
+        'total_scans' => (int) ($att['total_scans'] ?? 0),
         'days_present' => (int) ($att['days_present'] ?? 0),
         'last_scan_at' => $att['last_scan_at'] ?? null,
     ],
-    'payment'    => [
-        'count'             => (int) ($pay['n'] ?? 0),
-        'last_status'       => $lastStatus,
+    'payment' => [
+        'count' => (int) ($pay['n'] ?? 0),
+        'last_status' => $lastStatus,
         'last_status_label' => ($lastStatus === null) ? 'No payment yet' : ($labels[$lastStatus] ?? $lastStatus),
-        'last_uploaded_at'  => $pay['last_uploaded_at'] ?? null,
+        'last_uploaded_at' => $pay['last_uploaded_at'] ?? null,
     ],
     'violations' => [
-        'total'            => (int) ($vio['total'] ?? 0),
-        'absent'           => (int) ($vio['absent_total'] ?? 0),
-        'curfew'           => (int) ($vio['curfew_total'] ?? 0),
+        'total' => (int) ($vio['total'] ?? 0),
+        'absent' => (int) ($vio['absent_total'] ?? 0),
+        'curfew' => (int) ($vio['curfew_total'] ?? 0),
         'latest_curfew_at' => $vio['latest_curfew_at'] ?? null,
     ],
     'announcements' => $news['announcements'],
-    'unseen_count'  => $news['unseen_count'],
+    'unseen_count' => $news['unseen_count'],
 ]);

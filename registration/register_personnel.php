@@ -47,23 +47,23 @@ function pers_text($in, $key, $max)
     return function_exists('mb_substr') ? mb_substr($value, 0, $max, 'UTF-8') : substr($value, 0, $max);
 }
 
-$last   = pers_text($in, 'last_name', 80);
-$first  = pers_text($in, 'first_name', 80);
+$last = pers_text($in, 'last_name', 80);
+$first = pers_text($in, 'first_name', 80);
 $middle = pers_text($in, 'middle_name', 80);
 $single = pers_text($in, 'full_name', 150);
 
 if ($last !== '' && $first !== '') {
-    $initial  = ($middle === '') ? '' : (function_exists('mb_substr') ? mb_substr($middle, 0, 1, 'UTF-8') : substr($middle, 0, 1)) . '.';
+    $initial = ($middle === '') ? '' : (function_exists('mb_substr') ? mb_substr($middle, 0, 1, 'UTF-8') : substr($middle, 0, 1)) . '.';
     $fullName = trim($first . ' ' . $initial . ' ' . $last);
     $fullName = preg_replace('/\s+/', ' ', $fullName);
 } else {
     $fullName = preg_replace('/\s+/', ' ', $single);
 }
 
-$gender   = pers_text($in, 'gender', 20);
-$type     = strtolower(pers_text($in, 'personnel_type', 20));
-$email    = strtolower(pers_text($in, 'email', 190));
-$age_raw  = trim((string) ($in['age'] ?? ''));
+$gender = pers_text($in, 'gender', 20);
+$type = strtolower(pers_text($in, 'personnel_type', 20));
+$email = strtolower(pers_text($in, 'email', 190));
+$age_raw = trim((string) ($in['age'] ?? ''));
 $password = (string) ($in['password'] ?? '');
 
 $errors = [];

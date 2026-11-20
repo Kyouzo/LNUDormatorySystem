@@ -1,157 +1,388 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-  <meta name="theme-color" content="#00006e">
-  <title>Manage Students | LNU Dorm Administrator</title>
-  <meta name="description" content="Approve registrations, enroll students in dorm rooms and update enrolled students.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="../../assets/css/portal.css">
-  <link rel="stylesheet" href="../violations.css">
-  <link rel="stylesheet" href="admin.css">
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
-  <script src="../../assets/js/portal.js"></script>
-</head>
-<body data-admin-page="students">
-<a class="skip-link" href="#main-content">Skip to content</a>
-<div class="app-shell">
-  <aside class="sidebar" data-admin-sidebar></aside>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta name="theme-color" content="#00006e" />
+    <title>Manage Students | LNU Dorm Administrator</title>
+    <meta
+      name="description"
+      content="Approve registrations, enroll students in dorm rooms and update enrolled students."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap"
+    />
+    <link rel="stylesheet" href="../../assets/css/portal.css" />
+    <link rel="stylesheet" href="../violations.css" />
+    <link rel="stylesheet" href="admin.css" />
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"
+    ></script>
+    <script src="../../assets/js/portal.js"></script>
+  </head>
+  <body data-admin-page="students">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="app-shell">
+      <aside class="sidebar" data-admin-sidebar></aside>
 
-  <main class="main-content" id="main-content">
-    <section class="hero-band staff-hero" data-hero aria-labelledby="page-title">
-      <span class="eyebrow">Manage</span>
-      <h1 id="page-title">Manage Students</h1>
-      <p>Approve new registrations, enroll validated students in a room, and keep enrolled students' details current.</p>
-      <p class="hero-meta" aria-live="polite">
-        <span>Pending registrations <strong id="meta-pending">—</strong></span>
-        <span>Not yet enrolled <strong id="meta-unenrolled">—</strong></span>
-        <span>Enrolled <strong id="meta-enrolled">—</strong></span>
-      </p>
-      <p class="hero-alert" id="page-alert" role="alert" hidden></p>
-    </section>
+      <main class="main-content" id="main-content">
+        <section
+          class="hero-band staff-hero"
+          data-hero
+          aria-labelledby="page-title"
+        >
+          <span class="eyebrow">Manage</span>
+          <h1 id="page-title">Manage Students</h1>
+          <p>
+            Approve new registrations, enroll validated students in a room, and
+            keep enrolled students' details current.
+          </p>
+          <p class="hero-meta" aria-live="polite">
+            <span
+              >Pending registrations <strong id="meta-pending">—</strong></span
+            >
+            <span
+              >Not yet enrolled <strong id="meta-unenrolled">—</strong></span
+            >
+            <span>Enrolled <strong id="meta-enrolled">—</strong></span>
+          </p>
+          <p class="hero-alert" id="page-alert" role="alert" hidden></p>
+        </section>
 
-    <div class="content-stack">
-      <section class="panel" id="registrations" aria-labelledby="reg-title">
-        <div class="panel-head">
-          <div>
-            <span class="eyebrow">Admissions</span>
-            <h2 id="reg-title">Pending registrations <span class="badge badge-gold" id="reg-count" hidden>0</span></h2>
-            <p>Approving creates the dormer's account. You can add a room now or enroll them below.</p>
-          </div>
-          <button class="button outline small" type="button" id="reg-refresh">Refresh</button>
-        </div>
-        <div class="reg-list" id="reg-list" aria-live="polite" aria-busy="true">
-          <div class="reg-card" aria-hidden="true"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text short"></span></div>
-        </div>
-      </section>
+        <div class="content-stack">
+          <section class="panel" id="registrations" aria-labelledby="reg-title">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">Admissions</span>
+                <h2 id="reg-title">
+                  Pending registrations
+                  <span class="badge badge-gold" id="reg-count" hidden>0</span>
+                </h2>
+                <p>
+                  Approving creates the dormer's account. You can add a room now
+                  or enroll them below.
+                </p>
+              </div>
+              <button
+                class="button outline small"
+                type="button"
+                id="reg-refresh"
+              >
+                Refresh
+              </button>
+            </div>
+            <div
+              class="reg-list"
+              id="reg-list"
+              aria-live="polite"
+              aria-busy="true"
+            >
+              <div class="reg-card" aria-hidden="true">
+                <span class="skeleton skeleton-title"></span
+                ><span class="skeleton skeleton-text"></span
+                ><span class="skeleton skeleton-text short"></span>
+              </div>
+            </div>
+          </section>
 
-      <section class="panel" id="unenrolled" aria-labelledby="un-title">
-        <div class="panel-head">
-          <div>
-            <span class="eyebrow">Validated</span>
-            <h2 id="un-title">List of students</h2>
-            <p>Approved students who do not have a room yet. Open one to enroll them.</p>
-          </div>
-          <button class="button outline small" type="button" data-refresh="unenrolled">Refresh</button>
-        </div>
-        <div class="toolbar">
-          <label class="field search-field" for="q-unenrolled"><span class="sr-only">Search students not yet enrolled</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-            <input id="q-unenrolled" type="search" placeholder="Name, student ID or email" autocomplete="off" spellcheck="false" data-search="unenrolled">
-          </label>
-          <p class="result-count" id="count-unenrolled" aria-live="polite"></p>
-        </div>
-        <div class="data-table table-wrap">
-          <table>
-            <caption class="sr-only">Students not yet enrolled in a dorm room</caption>
-            <thead><tr><th scope="col">Name</th><th scope="col">Year level</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
-            <tbody id="rows-unenrolled"></tbody>
-          </table>
-        </div>
-      </section>
+          <section class="panel" id="unenrolled" aria-labelledby="un-title">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">Validated</span>
+                <h2 id="un-title">List of students</h2>
+                <p>
+                  Approved students who do not have a room yet. Open one to
+                  enroll them.
+                </p>
+              </div>
+              <button
+                class="button outline small"
+                type="button"
+                data-refresh="unenrolled"
+              >
+                Refresh
+              </button>
+            </div>
+            <div class="toolbar">
+              <label class="field search-field" for="q-unenrolled"
+                ><span class="sr-only">Search students not yet enrolled</span>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M20 20l-3.5-3.5" />
+                </svg>
+                <input
+                  id="q-unenrolled"
+                  type="search"
+                  placeholder="Name, student ID or email"
+                  autocomplete="off"
+                  spellcheck="false"
+                  data-search="unenrolled"
+                />
+              </label>
+              <p
+                class="result-count"
+                id="count-unenrolled"
+                aria-live="polite"
+              ></p>
+            </div>
+            <div class="data-table table-wrap">
+              <table>
+                <caption class="sr-only">
+                  Students not yet enrolled in a dorm room
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Year level</th>
+                    <th scope="col"><span class="sr-only">Actions</span></th>
+                  </tr>
+                </thead>
+                <tbody id="rows-unenrolled"></tbody>
+              </table>
+            </div>
+          </section>
 
-      <section class="panel" id="enrolled" aria-labelledby="en-title">
-        <div class="panel-head">
-          <div>
-            <span class="eyebrow">In the dorms</span>
-            <h2 id="en-title">Students enrolled in dorms</h2>
-            <p>Open a student to view their record or change their name, year level, email or room.</p>
-          </div>
-          <button class="button outline small" type="button" data-refresh="enrolled">Refresh</button>
+          <section class="panel" id="enrolled" aria-labelledby="en-title">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">In the dorms</span>
+                <h2 id="en-title">Students enrolled in dorms</h2>
+                <p>
+                  Open a student to view their record or change their name, year
+                  level, email or room.
+                </p>
+              </div>
+              <button
+                class="button outline small"
+                type="button"
+                data-refresh="enrolled"
+              >
+                Refresh
+              </button>
+            </div>
+            <div class="toolbar">
+              <label class="field search-field" for="q-enrolled"
+                ><span class="sr-only">Search enrolled students</span>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M20 20l-3.5-3.5" />
+                </svg>
+                <input
+                  id="q-enrolled"
+                  type="search"
+                  placeholder="Name, student ID, email or room (3-5)"
+                  autocomplete="off"
+                  spellcheck="false"
+                  data-search="enrolled"
+                />
+              </label>
+              <p
+                class="result-count"
+                id="count-enrolled"
+                aria-live="polite"
+              ></p>
+            </div>
+            <div class="data-table table-wrap">
+              <table>
+                <caption class="sr-only">
+                  Students enrolled in dorm rooms
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Year level</th>
+                    <th scope="col">Floor &amp; room</th>
+                    <th scope="col"><span class="sr-only">Actions</span></th>
+                  </tr>
+                </thead>
+                <tbody id="rows-enrolled"></tbody>
+              </table>
+            </div>
+          </section>
         </div>
-        <div class="toolbar">
-          <label class="field search-field" for="q-enrolled"><span class="sr-only">Search enrolled students</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-            <input id="q-enrolled" type="search" placeholder="Name, student ID, email or room (3-5)" autocomplete="off" spellcheck="false" data-search="enrolled">
-          </label>
-          <p class="result-count" id="count-enrolled" aria-live="polite"></p>
-        </div>
-        <div class="data-table table-wrap">
-          <table>
-            <caption class="sr-only">Students enrolled in dorm rooms</caption>
-            <thead><tr><th scope="col">Name</th><th scope="col">Year level</th><th scope="col">Floor &amp; room</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
-            <tbody id="rows-enrolled"></tbody>
-          </table>
-        </div>
-      </section>
+      </main>
     </div>
-  </main>
-</div>
 
-<datalist id="year-levels"><option value="1st year"><option value="2nd year"><option value="3rd year"><option value="4th year"><option value="5th year"></datalist>
+    <datalist id="year-levels">
+      <option value="1st year"></option>
+      <option value="2nd year"></option>
+      <option value="3rd year"></option>
+      <option value="4th year"></option>
+      <option value="5th year"></option>
+    </datalist>
 
-<dialog class="dialog wide" id="student-dialog" aria-labelledby="sd-title">
-  <div class="dialog-header">
-    <div><span class="eyebrow" id="sd-eyebrow">Student</span><h2 id="sd-title">Student</h2></div>
-    <button class="icon-button" type="button" data-dialog-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  </div>
-  <div class="dialog-body">
-    <dl class="reg-facts view-facts" id="sd-facts"></dl>
+    <dialog class="dialog wide" id="student-dialog" aria-labelledby="sd-title">
+      <div class="dialog-header">
+        <div>
+          <span class="eyebrow" id="sd-eyebrow">Student</span>
+          <h2 id="sd-title">Student</h2>
+        </div>
+        <button
+          class="icon-button"
+          type="button"
+          data-dialog-close
+          aria-label="Close"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <dl class="reg-facts view-facts" id="sd-facts"></dl>
 
-    <!-- Unenrolled: enroll -->
-    <div class="dialog-section" id="sd-enroll" hidden>
-      <button class="button gold" type="button" id="sd-enroll-toggle" aria-expanded="false" aria-controls="enroll-form">Enroll him/her now in dorms?</button>
-      <form id="enroll-form" class="form-grid two" novalidate hidden>
-        <div class="form-alert full" id="enroll-alert" role="alert" style="grid-column:1/-1"></div>
-        <label class="field" for="enroll-floor">Floor
-          <select id="enroll-floor" required><option value="1">Floor 1</option><option value="2">Floor 2</option><option value="3">Floor 3</option></select>
-        </label>
-        <label class="field" for="enroll-room">Room
-          <select id="enroll-room" required aria-describedby="enroll-room-hint"></select>
-          <span class="field-hint" id="enroll-room-hint">Occupants / beds. Full rooms cannot be picked.</span>
-        </label>
-        <div class="actions" style="grid-column:1/-1"><button class="button primary" type="submit" id="enroll-submit">Enroll in this room</button></div>
-      </form>
-    </div>
+        <!-- Unenrolled: enroll -->
+        <div class="dialog-section" id="sd-enroll" hidden>
+          <button
+            class="button gold"
+            type="button"
+            id="sd-enroll-toggle"
+            aria-expanded="false"
+            aria-controls="enroll-form"
+          >
+            Enroll him/her now in dorms?
+          </button>
+          <form id="enroll-form" class="form-grid two" novalidate hidden>
+            <div
+              class="form-alert full"
+              id="enroll-alert"
+              role="alert"
+              style="grid-column: 1/-1"
+            ></div>
+            <label class="field" for="enroll-floor"
+              >Floor
+              <select id="enroll-floor" required>
+                <option value="1">Floor 1</option>
+                <option value="2">Floor 2</option>
+                <option value="3">Floor 3</option>
+              </select>
+            </label>
+            <label class="field" for="enroll-room"
+              >Room
+              <select
+                id="enroll-room"
+                required
+                aria-describedby="enroll-room-hint"
+              ></select>
+              <span class="field-hint" id="enroll-room-hint"
+                >Occupants / beds. Full rooms cannot be picked.</span
+              >
+            </label>
+            <div class="actions" style="grid-column: 1/-1">
+              <button class="button primary" type="submit" id="enroll-submit">
+                Enroll in this room
+              </button>
+            </div>
+          </form>
+        </div>
 
-    <!-- Enrolled: modification -->
-    <div class="dialog-section" id="sd-modify" hidden>
-      <h3>Modification</h3>
-      <form id="modify-form" class="form-grid two" novalidate>
-        <div class="form-alert" id="modify-alert" role="alert" style="grid-column:1/-1"></div>
-        <label class="field" for="m-first">First name<input id="m-first" maxlength="80" required autocomplete="off"></label>
-        <label class="field" for="m-last">Last name<input id="m-last" maxlength="80" required autocomplete="off"></label>
-        <label class="field" for="m-middle">Middle name<input id="m-middle" maxlength="80" autocomplete="off"></label>
-        <label class="field" for="m-year">Year level<input id="m-year" maxlength="20" list="year-levels" autocomplete="off"></label>
-        <label class="field" for="m-email" style="grid-column:1/-1">Email<input id="m-email" type="email" maxlength="190" required autocomplete="off"></label>
-        <label class="field" for="m-floor">Floor
-          <select id="m-floor"><option value="1">Floor 1</option><option value="2">Floor 2</option><option value="3">Floor 3</option></select>
-        </label>
-        <label class="field" for="m-room">Room<select id="m-room"></select></label>
-        <div class="actions" style="grid-column:1/-1"><button class="button primary" type="submit" id="modify-submit">Update</button></div>
-      </form>
-    </div>
-  </div>
-</dialog>
+        <!-- Enrolled: modification -->
+        <div class="dialog-section" id="sd-modify" hidden>
+          <h3>Modification</h3>
+          <form id="modify-form" class="form-grid two" novalidate>
+            <div
+              class="form-alert"
+              id="modify-alert"
+              role="alert"
+              style="grid-column: 1/-1"
+            ></div>
+            <label class="field" for="m-first"
+              >First name<input
+                id="m-first"
+                maxlength="80"
+                required
+                autocomplete="off"
+            /></label>
+            <label class="field" for="m-last"
+              >Last name<input
+                id="m-last"
+                maxlength="80"
+                required
+                autocomplete="off"
+            /></label>
+            <label class="field" for="m-middle"
+              >Middle name<input
+                id="m-middle"
+                maxlength="80"
+                autocomplete="off"
+            /></label>
+            <label class="field" for="m-year"
+              >Year level<input
+                id="m-year"
+                maxlength="20"
+                list="year-levels"
+                autocomplete="off"
+            /></label>
+            <label class="field" for="m-email" style="grid-column: 1/-1"
+              >Email<input
+                id="m-email"
+                type="email"
+                maxlength="190"
+                required
+                autocomplete="off"
+            /></label>
+            <label class="field" for="m-floor"
+              >Floor
+              <select id="m-floor">
+                <option value="1">Floor 1</option>
+                <option value="2">Floor 2</option>
+                <option value="3">Floor 3</option>
+              </select>
+            </label>
+            <label class="field" for="m-room"
+              >Room<select id="m-room"></select
+            ></label>
+            <div class="actions" style="grid-column: 1/-1">
+              <button class="button primary" type="submit" id="modify-submit">
+                Update
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </dialog>
 
-<script src="../../assets/js/api.js"></script>
-<script src="admin.js"></script>
-<script src="registrations.js"></script>
-<script src="students.js"></script>
-</body>
+    <script src="../../assets/js/api.js"></script>
+    <script src="admin.js"></script>
+    <script src="registrations.js"></script>
+    <script src="students.js"></script>
+  </body>
 </html>

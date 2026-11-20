@@ -43,7 +43,7 @@ if (!$student) {
 if (empty($student['qr_token'])) {
     for ($attempt = 0; $attempt < 3; $attempt++) {
         $token = bin2hex(random_bytes(16));
-        $stmt  = db_prepare(
+        $stmt = db_prepare(
             "UPDATE validated_dormers SET qr_token = ? WHERE student_id = ? AND (qr_token IS NULL OR qr_token = '')"
         );
         $stmt->bind_param('si', $token, $student_id);
@@ -57,13 +57,13 @@ if (empty($student['qr_token'])) {
 }
 
 json_response([
-    'success'         => true,
-    'student_id'      => $student['student_id'],
-    'first_name'      => $student['first_name'],
-    'last_name'       => $student['last_name'],
-    'full_name'       => trim($student['first_name'] . ' ' . $student['last_name']),
+    'success' => true,
+    'student_id' => $student['student_id'],
+    'first_name' => $student['first_name'],
+    'last_name' => $student['last_name'],
+    'full_name' => trim($student['first_name'] . ' ' . $student['last_name']),
     'room_assignment' => $student['room_assignment'],
-    'address'         => $student['address'],
-    'year_level'      => $student['year_level'],
-    'qr_token'        => $student['qr_token'],
+    'address' => $student['address'],
+    'year_level' => $student['year_level'],
+    'qr_token' => $student['qr_token'],
 ]);

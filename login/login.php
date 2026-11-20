@@ -19,8 +19,8 @@ require_once __DIR__ . '/../connection/csrf.php';
 require_once __DIR__ . '/../connection/lib_password.php';
 
 const LOGIN_MAX_FAILS_PER_ACCOUNT = 5;
-const LOGIN_MAX_FAILS_PER_IP      = 25;
-const LOGIN_WINDOW_MINUTES        = 15;
+const LOGIN_MAX_FAILS_PER_IP = 25;
+const LOGIN_WINDOW_MINUTES = 15;
 
 // A valid bcrypt hash used only to spend the same time for unknown accounts.
 const LOGIN_DUMMY_HASH = '$2y$10$vIrbLYfe/aK2BQYx5vNVS.Yl.g43nhXEW0hVDrlGoLAUqEB3fenES';
@@ -38,8 +38,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 
 csrf_require();
 
-$input    = request_input();
-$email    = trim((string) ($input['username'] ?? ($input['email'] ?? '')));
+$input = request_input();
+$email = trim((string) ($input['username'] ?? ($input['email'] ?? '')));
 $password = (string) ($input['password'] ?? '');
 
 if ($email === '' || $password === '') {
@@ -50,7 +50,7 @@ if (strlen($email) > 190 || strlen($password) > 1024) {
 }
 
 $identifier = strtolower($email);
-$ip         = client_ip();
+$ip = client_ip();
 
 /** True when the account or IP has too many recent failures. */
 function login_is_throttled($identifier, $ip)
@@ -107,7 +107,7 @@ if (login_is_throttled($identifier, $ip)) {
 
 // --- look the account up: student first, then staff -------------------------
 $account = null;
-$kind    = null;
+$kind = null;
 
 $stmt = db_prepare(
     'SELECT student_id, first_name, last_name, password, is_active
@@ -116,7 +116,7 @@ $stmt = db_prepare(
 $stmt->bind_param('s', $email);
 if (db_execute($stmt, 'student lookup')) {
     $account = $stmt->get_result()->fetch_assoc();
-    $kind    = $account ? 'student' : null;
+    $kind = $account ? 'student' : null;
 }
 $stmt->close();
 
@@ -128,7 +128,7 @@ if (!$account) {
     $stmt->bind_param('s', $email);
     if (db_execute($stmt, 'staff lookup')) {
         $account = $stmt->get_result()->fetch_assoc();
-        $kind    = $account ? 'staff' : null;
+        $kind = $account ? 'staff' : null;
     }
     $stmt->close();
 }
@@ -160,13 +160,13 @@ if ($kind === 'staff') {
     $role = normalize_staff_role($account['role']);
 
     login_session('staff', [
-        'staff_id'     => (int) $account['staff_id'],
-        'staff_role'   => $role,
+        'staff_id' => (int) $account['staff_id'],
+        'staff_role' => $role,
         'display_name' => (trim((string) $account['full_name']) !== '') ? trim((string) $account['full_name']) : $email,
     ]);
 
     $stmt = db_prepare('UPDATE staff_accounts SET last_login = NOW() WHERE staff_id = ?');
-    $sid  = (int) $account['staff_id'];
+    $sid = (int) $account['staff_id'];
     $stmt->bind_param('i', $sid);
     db_execute($stmt, 'staff last_login');
     $stmt->close();
@@ -174,13 +174,13 @@ if ($kind === 'staff') {
     $target = app_url(role_home_path($role));
 } else {
     login_session('student', [
-        'student_id'   => (int) $account['student_id'],
+        'student_id' => (int) $account['student_id'],
         'display_name' => (trim($account['first_name'] . ' ' . $account['last_name']) !== '')
             ? trim($account['first_name'] . ' ' . $account['last_name'])
             : $email,
     ]);
 
-    $role   = 'student';
+    $role = 'student';
     $target = app_url(role_home_path($role));
 }
 
@@ -188,10 +188,10 @@ $conn->close();
 
 if (wants_json()) {
     json_response([
-        'success'    => true,
-        'role'       => $role,
+        'success' => true,
+        'role' => $role,
         'account_type' => ($role === 'student') ? 'student' : 'staff',
-        'redirect'   => $target,
+        'redirect' => $target,
         'csrf_token' => csrf_token(),
     ]);
 }

@@ -10,10 +10,7 @@
     "scheduling",
     "planning"
   ],
-  "size": [
-    440,
-    452
-  ],
+  "size": [440, 452],
   "fluid": "fills its .fit, 280 to 440px wide",
   "js": true,
   "edit": "data-start, data-end and data-month on the root set the range (the client's real dates); is-mark on one day rings a single date; each [data-ev] row is one dated event (its day, title and one line). Mark today with is-today. No Apply or Clear: it shows a plan, not a picker.",

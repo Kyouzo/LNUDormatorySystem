@@ -1,149 +1,345 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#00006e">
-  <link rel="icon" type="image/png" href="../../assets/images/lnu-logo.png">
-  <title>Attendance | Leyte Normal University Dormitory</title>
-  <meta name="description" content="Your LNU dormitory QR gate pass and recent time-in and time-out records.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="../../assets/css/portal.css">
-  <link rel="stylesheet" href="student-kit.css">
-  <link rel="stylesheet" href="../attendance/student-shell.css">
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
-  <script src="../../assets/js/portal.js"></script>
-</head>
-<body>
-<a class="skip-link" href="#main-content">Skip to content</a>
-<div class="app-shell">
-  <aside class="sidebar">
-    <div class="brand"><img class="brand-mark" src="../../assets/images/lnu-logo.png" alt="Leyte Normal University logo"><span>Leyte Normal University<br>Dormitory portal</span></div>
-    <nav class="nav" aria-label="Student navigation">
-      <a href="../dashboard/dashboard.html">Overview</a>
-      <a href="../profile/profile.html">Profile</a>
-      <a href="../attendance/attendance.html" aria-current="page">Attendance</a>
-      <a href="../payment_receipt/paymentReceipt.html">Payments</a>
-      <a href="../violation/violation.html">Violations</a>
-      <a href="../announcements/announcements.html">Announcements</a>
-      <a class="nav-settings" href="../settings/settings.html">Settings</a>
-    </nav>
-    <a class="sidebar-logout" href="../../login/logout.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>Sign out</a>
-    <div class="sidebar-footer">Student workspace<br>© <span data-current-year></span> Leyte Normal University</div>
-  </aside>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#00006e" />
+    <link rel="icon" type="image/png" href="../../assets/images/lnu-logo.png" />
+    <title>Attendance | Leyte Normal University Dormitory</title>
+    <meta
+      name="description"
+      content="Your LNU dormitory QR gate pass and recent time-in and time-out records."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap"
+    />
+    <link rel="stylesheet" href="../../assets/css/portal.css" />
+    <link rel="stylesheet" href="student-kit.css" />
+    <link rel="stylesheet" href="../attendance/student-shell.css" />
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"
+    ></script>
+    <script src="../../assets/js/portal.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <img
+            class="brand-mark"
+            src="../../assets/images/lnu-logo.png"
+            alt="Leyte Normal University logo"
+          /><span>Leyte Normal University<br />Dormitory portal</span>
+        </div>
+        <nav class="nav" aria-label="Student navigation">
+          <a href="../dashboard/dashboard.html">Overview</a>
+          <a href="../profile/profile.html">Profile</a>
+          <a href="../attendance/attendance.html" aria-current="page"
+            >Attendance</a
+          >
+          <a href="../payment_receipt/paymentReceipt.html">Payments</a>
+          <a href="../violation/violation.html">Violations</a>
+          <a href="../announcements/announcements.html">Announcements</a>
+          <a class="nav-settings" href="../settings/settings.html">Settings</a>
+        </nav>
+        <a class="sidebar-logout" href="../../login/logout.php"
+          ><svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path
+              d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"
+            /></svg
+          >Sign out</a
+        >
+        <div class="sidebar-footer">
+          Student workspace<br />© <span data-current-year></span> Leyte Normal
+          University
+        </div>
+      </aside>
 
-  <main class="main-content" id="main-content">
-    <div class="student-bell">
-      <button class="bell-button" type="button" id="bellButton" aria-expanded="false" aria-controls="bellPanel" aria-label="Notifications">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-        <span class="bell-count" aria-hidden="true" hidden>0</span>
-      </button>
-      <div class="bell-panel" id="bellPanel" role="region" aria-label="Latest announcements" hidden data-lenis-prevent>
-        <div class="bell-head"><span class="eyebrow">Notifications</span><h2>Latest announcements</h2></div>
-        <ul class="bell-list" aria-live="polite"></ul>
-        <a class="bell-all" href="../announcements/announcements.html">View all announcements</a>
+      <main class="main-content" id="main-content">
+        <div class="student-bell">
+          <button
+            class="bell-button"
+            type="button"
+            id="bellButton"
+            aria-expanded="false"
+            aria-controls="bellPanel"
+            aria-label="Notifications"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+            </svg>
+            <span class="bell-count" aria-hidden="true" hidden>0</span>
+          </button>
+          <div
+            class="bell-panel"
+            id="bellPanel"
+            role="region"
+            aria-label="Latest announcements"
+            hidden
+            data-lenis-prevent
+          >
+            <div class="bell-head">
+              <span class="eyebrow">Notifications</span>
+              <h2>Latest announcements</h2>
+            </div>
+            <ul class="bell-list" aria-live="polite"></ul>
+            <a class="bell-all" href="../announcements/announcements.html"
+              >View all announcements</a
+            >
+          </div>
+        </div>
+        <section
+          class="hero-band dorm-hero"
+          data-hero
+          aria-labelledby="page-title"
+        >
+          <span class="eyebrow">Attendance · Gate pass</span>
+          <h1 id="page-title">Your pass in and out of the dorm</h1>
+          <p>
+            Show this QR code at the lobby scanner every time you enter or
+            leave. The scanner logs time in or time out on its own, based on
+            your last scan.
+          </p>
+          <p class="hero-meta" aria-live="polite">
+            <span
+              >Signed in as
+              <strong id="heroName" class="skeleton" data-student-name
+                >Loading</strong
+              ></span
+            >
+            <span>Room <strong id="heroRoom">—</strong></span>
+          </p>
+        </section>
+
+        <div class="content-stack">
+          <section class="panel pass-card" aria-labelledby="pass-title">
+            <div class="pass-id">
+              <div>
+                <span class="eyebrow" id="pass-title">Dormer QR pass</span>
+                <h2 class="pass-name skeleton" id="studentName">
+                  Loading your profile
+                </h2>
+              </div>
+              <dl class="id-list">
+                <div>
+                  <dt>Student ID</dt>
+                  <dd class="skeleton" id="studentID">—</dd>
+                </div>
+                <div>
+                  <dt>Room</dt>
+                  <dd class="skeleton" id="studentRoom">—</dd>
+                </div>
+                <div>
+                  <dt>Year level</dt>
+                  <dd class="skeleton" id="studentYear">—</dd>
+                </div>
+                <div>
+                  <dt>Home address</dt>
+                  <dd class="skeleton" id="studentAddress">—</dd>
+                </div>
+              </dl>
+              <p class="field-error" id="profileError" role="alert" hidden></p>
+              <div class="actions">
+                <button
+                  class="button primary"
+                  type="button"
+                  id="enlargeQr"
+                  disabled
+                >
+                  Show full-size pass
+                </button>
+                <button
+                  class="button ghost"
+                  type="button"
+                  id="reloadProfile"
+                  hidden
+                >
+                  Try again
+                </button>
+              </div>
+            </div>
+            <div class="qr-side">
+              <p class="qr-room" id="qrRoom">
+                <span class="skeleton">Room —</span>
+              </p>
+              <div
+                class="qr-frame"
+                id="qrInline"
+                role="img"
+                aria-label="Your QR pass is loading"
+              >
+                <span class="skeleton skeleton-block"></span>
+              </div>
+              <p class="qr-caption">
+                Keep your screen bright and hold it about a hand's width from
+                the scanner.
+              </p>
+            </div>
+          </section>
+
+          <section class="summary-grid" aria-label="Attendance summary">
+            <article class="panel stat-card">
+              <span class="stat-label">Your status</span>
+              <span class="stat-word skeleton" id="statStatus">—</span>
+              <p class="stat-note" id="statStatusNote">
+                Based on today's scans.
+              </p>
+            </article>
+            <article class="panel stat-card">
+              <span class="stat-label">Last scan</span>
+              <span class="stat-word skeleton" id="statLast">—</span>
+              <p class="stat-note" id="statLastNote">
+                Lobby scanner, main entrance.
+              </p>
+            </article>
+            <article class="panel stat-card">
+              <span class="stat-label">Scans on record</span>
+              <span class="stat-value skeleton" id="statCount">0</span>
+              <p class="stat-note">
+                All time. The list below shows the latest ten.
+              </p>
+            </article>
+          </section>
+
+          <section class="panel" aria-labelledby="history-title">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">Recent activity</span>
+                <h2 id="history-title">Time in and time out</h2>
+                <p>Your latest scans at the dormitory lobby, newest first.</p>
+              </div>
+              <button
+                class="button outline small"
+                type="button"
+                id="refreshHistory"
+              >
+                Refresh
+              </button>
+            </div>
+            <div
+              class="data-table table-wrap"
+              aria-live="polite"
+              aria-busy="true"
+              id="historyWrap"
+            >
+              <table>
+                <caption class="sr-only">
+                  Recent attendance scans
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Record</th>
+                  </tr>
+                </thead>
+                <tbody id="recentHistory"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <dialog class="dialog" id="qrDialog" aria-labelledby="qrDialogTitle">
+      <div class="dialog-header">
+        <div>
+          <span class="eyebrow">LNU Dormitory</span>
+          <h2 id="qrDialogTitle">Gate pass</h2>
+        </div>
+        <button
+          class="icon-button"
+          type="button"
+          data-dialog-close
+          aria-label="Close pass"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
       </div>
-    </div>
-    <section class="hero-band dorm-hero" data-hero aria-labelledby="page-title">
-      <span class="eyebrow">Attendance · Gate pass</span>
-      <h1 id="page-title">Your pass in and out of the dorm</h1>
-      <p>Show this QR code at the lobby scanner every time you enter or leave. The scanner logs time in or time out on its own, based on your last scan.</p>
-      <p class="hero-meta" aria-live="polite">
-        <span>Signed in as <strong id="heroName" class="skeleton" data-student-name>Loading</strong></span>
-        <span>Room <strong id="heroRoom">—</strong></span>
-      </p>
-    </section>
-
-    <div class="content-stack">
-      <section class="panel pass-card" aria-labelledby="pass-title">
-        <div class="pass-id">
+      <div class="dialog-body qr-dialog-body">
+        <p class="qr-room" id="qrRoomLarge">Room —</p>
+        <div
+          class="qr-frame"
+          id="qrLarge"
+          role="img"
+          aria-label="Your QR pass"
+        ></div>
+        <p class="live-clock" id="liveClock" aria-hidden="true">--:--</p>
+        <p class="live-date" id="liveDate"></p>
+        <dl class="id-list">
           <div>
-            <span class="eyebrow" id="pass-title">Dormer QR pass</span>
-            <h2 class="pass-name skeleton" id="studentName">Loading your profile</h2>
+            <dt>Name</dt>
+            <dd id="modalStudentName">—</dd>
           </div>
-          <dl class="id-list">
-            <div><dt>Student ID</dt><dd class="skeleton" id="studentID">—</dd></div>
-            <div><dt>Room</dt><dd class="skeleton" id="studentRoom">—</dd></div>
-            <div><dt>Year level</dt><dd class="skeleton" id="studentYear">—</dd></div>
-            <div><dt>Home address</dt><dd class="skeleton" id="studentAddress">—</dd></div>
-          </dl>
-          <p class="field-error" id="profileError" role="alert" hidden></p>
-          <div class="actions">
-            <button class="button primary" type="button" id="enlargeQr" disabled>Show full-size pass</button>
-            <button class="button ghost" type="button" id="reloadProfile" hidden>Try again</button>
+          <div>
+            <dt>Student ID</dt>
+            <dd id="modalStudentID">—</dd>
           </div>
-        </div>
-        <div class="qr-side">
-          <p class="qr-room" id="qrRoom"><span class="skeleton">Room —</span></p>
-          <div class="qr-frame" id="qrInline" role="img" aria-label="Your QR pass is loading"><span class="skeleton skeleton-block"></span></div>
-          <p class="qr-caption">Keep your screen bright and hold it about a hand's width from the scanner.</p>
-        </div>
-      </section>
+          <div>
+            <dt>Room</dt>
+            <dd id="modalRoom">—</dd>
+          </div>
+          <div>
+            <dt>Year level</dt>
+            <dd id="modalYear">—</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="dialog-actions">
+        <button class="button primary" type="button" data-dialog-close>
+          Done
+        </button>
+      </div>
+    </dialog>
 
-      <section class="summary-grid" aria-label="Attendance summary">
-        <article class="panel stat-card">
-          <span class="stat-label">Your status</span>
-          <span class="stat-word skeleton" id="statStatus">—</span>
-          <p class="stat-note" id="statStatusNote">Based on today's scans.</p>
-        </article>
-        <article class="panel stat-card">
-          <span class="stat-label">Last scan</span>
-          <span class="stat-word skeleton" id="statLast">—</span>
-          <p class="stat-note" id="statLastNote">Lobby scanner, main entrance.</p>
-        </article>
-        <article class="panel stat-card">
-          <span class="stat-label">Scans on record</span>
-          <span class="stat-value skeleton" id="statCount">0</span>
-          <p class="stat-note">All time. The list below shows the latest ten.</p>
-        </article>
-      </section>
-
-      <section class="panel" aria-labelledby="history-title">
-        <div class="panel-head">
-          <div><span class="eyebrow">Recent activity</span><h2 id="history-title">Time in and time out</h2><p>Your latest scans at the dormitory lobby, newest first.</p></div>
-          <button class="button outline small" type="button" id="refreshHistory">Refresh</button>
-        </div>
-        <div class="data-table table-wrap" aria-live="polite" aria-busy="true" id="historyWrap">
-          <table>
-            <caption class="sr-only">Recent attendance scans</caption>
-            <thead><tr><th scope="col">Date</th><th scope="col">Time</th><th scope="col">Record</th></tr></thead>
-            <tbody id="recentHistory"></tbody>
-          </table>
-        </div>
-      </section>
-
-    </div>
-  </main>
-</div>
-
-<dialog class="dialog" id="qrDialog" aria-labelledby="qrDialogTitle">
-  <div class="dialog-header">
-    <div><span class="eyebrow">LNU Dormitory</span><h2 id="qrDialogTitle">Gate pass</h2></div>
-    <button class="icon-button" type="button" data-dialog-close aria-label="Close pass"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  </div>
-  <div class="dialog-body qr-dialog-body">
-    <p class="qr-room" id="qrRoomLarge">Room —</p>
-    <div class="qr-frame" id="qrLarge" role="img" aria-label="Your QR pass"></div>
-    <p class="live-clock" id="liveClock" aria-hidden="true">--:--</p>
-    <p class="live-date" id="liveDate"></p>
-    <dl class="id-list">
-      <div><dt>Name</dt><dd id="modalStudentName">—</dd></div>
-      <div><dt>Student ID</dt><dd id="modalStudentID">—</dd></div>
-      <div><dt>Room</dt><dd id="modalRoom">—</dd></div>
-      <div><dt>Year level</dt><dd id="modalYear">—</dd></div>
-    </dl>
-  </div>
-  <div class="dialog-actions"><button class="button primary" type="button" data-dialog-close>Done</button></div>
-</dialog>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="../../assets/js/api.js"></script>
-<script src="student-kit.js"></script>
-<script src="student-shell.js"></script>
-<script src="attendance.js"></script>
-</body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="student-kit.js"></script>
+    <script src="student-shell.js"></script>
+    <script src="attendance.js"></script>
+  </body>
 </html>

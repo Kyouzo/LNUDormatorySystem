@@ -1,175 +1,424 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#00006e">
-  <title>Overview | Leyte Normal University Dormitory</title>
-  <meta name="description" content="Your LNU dormitory overview: gate pass, payments and records.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="../../assets/css/portal.css">
-  <link rel="stylesheet" href="dashboard.css">
-  <link rel="stylesheet" href="../attendance/student-shell.css">
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
-  <script src="../../assets/js/portal.js"></script>
-</head>
-<body>
-<a class="skip-link" href="#main-content">Skip to content</a>
-<div class="app-shell">
-  <aside class="sidebar">
-    <div class="brand"><img class="brand-mark" src="../../assets/images/lnu-logo.png" alt="Leyte Normal University logo"><span>Leyte Normal University<br>Dormitory portal</span></div>
-    <nav class="nav" aria-label="Student navigation">
-      <a href="../dashboard/dashboard.html" aria-current="page">Overview</a>
-      <a href="../profile/profile.html">Profile</a>
-      <a href="../attendance/attendance.html">Attendance</a>
-      <a href="../payment_receipt/paymentReceipt.html">Payments</a>
-      <a href="../violation/violation.html">Violations</a>
-      <a href="../announcements/announcements.html">Announcements</a>
-      <a class="nav-settings" href="../settings/settings.html">Settings</a>
-    </nav>
-    <a class="sidebar-logout" href="../../login/logout.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>Sign out</a>
-    <div class="sidebar-footer">Student workspace<br>© <span data-current-year></span> Leyte Normal University</div>
-  </aside>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#00006e" />
+    <title>Overview | Leyte Normal University Dormitory</title>
+    <meta
+      name="description"
+      content="Your LNU dormitory overview: gate pass, payments and records."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap"
+    />
+    <link rel="stylesheet" href="../../assets/css/portal.css" />
+    <link rel="stylesheet" href="dashboard.css" />
+    <link rel="stylesheet" href="../attendance/student-shell.css" />
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"
+    ></script>
+    <script src="../../assets/js/portal.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <img
+            class="brand-mark"
+            src="../../assets/images/lnu-logo.png"
+            alt="Leyte Normal University logo"
+          /><span>Leyte Normal University<br />Dormitory portal</span>
+        </div>
+        <nav class="nav" aria-label="Student navigation">
+          <a href="../dashboard/dashboard.html" aria-current="page">Overview</a>
+          <a href="../profile/profile.html">Profile</a>
+          <a href="../attendance/attendance.html">Attendance</a>
+          <a href="../payment_receipt/paymentReceipt.html">Payments</a>
+          <a href="../violation/violation.html">Violations</a>
+          <a href="../announcements/announcements.html">Announcements</a>
+          <a class="nav-settings" href="../settings/settings.html">Settings</a>
+        </nav>
+        <a class="sidebar-logout" href="../../login/logout.php"
+          ><svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path
+              d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"
+            /></svg
+          >Sign out</a
+        >
+        <div class="sidebar-footer">
+          Student workspace<br />© <span data-current-year></span> Leyte Normal
+          University
+        </div>
+      </aside>
 
-  <main class="main-content" id="main-content">
-    <div class="student-bell">
-      <button class="bell-button" type="button" id="bellButton" aria-expanded="false" aria-controls="bellPanel" aria-label="Notifications">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-        <span class="bell-count" aria-hidden="true" hidden>0</span>
-      </button>
-      <div class="bell-panel" id="bellPanel" role="region" aria-label="Latest announcements" hidden data-lenis-prevent>
-        <div class="bell-head"><span class="eyebrow">Notifications</span><h2>Latest announcements</h2></div>
-        <ul class="bell-list" aria-live="polite"></ul>
-        <a class="bell-all" href="../announcements/announcements.html">View all announcements</a>
-      </div>
+      <main class="main-content" id="main-content">
+        <div class="student-bell">
+          <button
+            class="bell-button"
+            type="button"
+            id="bellButton"
+            aria-expanded="false"
+            aria-controls="bellPanel"
+            aria-label="Notifications"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+            </svg>
+            <span class="bell-count" aria-hidden="true" hidden>0</span>
+          </button>
+          <div
+            class="bell-panel"
+            id="bellPanel"
+            role="region"
+            aria-label="Latest announcements"
+            hidden
+            data-lenis-prevent
+          >
+            <div class="bell-head">
+              <span class="eyebrow">Notifications</span>
+              <h2>Latest announcements</h2>
+            </div>
+            <ul class="bell-list" aria-live="polite"></ul>
+            <a class="bell-all" href="../announcements/announcements.html"
+              >View all announcements</a
+            >
+          </div>
+        </div>
+        <section
+          class="hero-band dash-hero"
+          data-hero
+          aria-labelledby="page-title"
+        >
+          <span class="eyebrow" id="hero-date">Dormitory portal</span>
+          <h1 id="page-title">
+            <span id="hero-greeting">Welcome back,</span>
+            <span id="hero-name">dormer.</span>
+          </h1>
+          <p>
+            Your gate pass, payment receipts and dormitory record, all in one
+            place.
+          </p>
+          <div class="actions">
+            <a class="button secondary" href="../attendance/attendance.html"
+              >Show my QR pass</a
+            >
+            <a
+              class="button ghost"
+              href="../payment_receipt/paymentReceipt.html"
+              >Upload a receipt</a
+            >
+          </div>
+          <p class="hero-meta" aria-live="polite">
+            <span>Room <strong id="meta-room" class="skeleton">—</strong></span>
+            <span
+              >Year level
+              <strong id="meta-year" class="skeleton">—</strong></span
+            >
+            <span
+              >Student ID <strong id="meta-id" class="skeleton">—</strong></span
+            >
+          </p>
+          <p class="hero-alert" id="hero-alert" role="alert" hidden></p>
+        </section>
+
+        <div class="content-stack">
+          <section
+            class="summary-grid stats-4"
+            aria-label="Your dormitory record at a glance"
+          >
+            <article class="panel stat-card" data-stat="room">
+              <span class="stat-label">Room number</span>
+              <span class="stat-room skeleton" id="roomValue">—</span>
+              <p class="stat-note" id="roomNote" aria-live="polite">Loading…</p>
+              <a class="stat-link" href="../profile/profile.html"
+                >View profile</a
+              >
+            </article>
+            <article class="panel stat-card" data-stat="payments">
+              <span class="stat-label">Payment receipts</span>
+              <span class="stat-value skeleton" data-stat-value>0</span>
+              <p class="stat-note" data-stat-note aria-live="polite">
+                Loading…
+              </p>
+              <a class="stat-link" href="../payment_receipt/paymentReceipt.html"
+                >View payments</a
+              >
+            </article>
+            <article class="panel stat-card" data-stat="violations">
+              <span class="stat-label">Violations on record</span>
+              <span class="stat-value skeleton" data-stat-value>0</span>
+              <p class="stat-note" data-stat-note aria-live="polite">
+                Loading…
+              </p>
+              <a class="stat-link" href="../violation/violation.html"
+                >View record</a
+              >
+            </article>
+            <article class="panel stat-card" data-stat="attendance">
+              <span class="stat-label">Days present</span>
+              <span class="stat-value skeleton" data-stat-value>0</span>
+              <p class="stat-note" data-stat-note aria-live="polite">
+                Loading…
+              </p>
+              <a class="stat-link" href="../attendance/attendance.html"
+                >View attendance</a
+              >
+            </article>
+          </section>
+
+          <div class="dash-today">
+            <section class="panel today-card" aria-labelledby="today-title">
+              <div class="panel-head">
+                <div>
+                  <span class="eyebrow">Today attendance</span>
+                  <h2 id="today-title">Your status today</h2>
+                </div>
+                <a class="stat-link" href="../attendance/attendance.html"
+                  >Open QR pass</a
+                >
+              </div>
+              <dl class="today-list" id="todayList" aria-live="polite">
+                <div>
+                  <dt>Date</dt>
+                  <dd class="skeleton" id="todayDate">—</dd>
+                </div>
+                <div>
+                  <dt>Time</dt>
+                  <dd class="skeleton tabular" id="todayTime">—</dd>
+                </div>
+                <div>
+                  <dt>Status</dt>
+                  <dd class="skeleton" id="todayStatus">—</dd>
+                </div>
+              </dl>
+              <p class="stat-note" id="todayNote"></p>
+            </section>
+
+            <section class="panel" aria-labelledby="news-title">
+              <div class="panel-head">
+                <div>
+                  <span class="eyebrow">From the dormitory office</span>
+                  <h2 id="news-title">Latest announcements</h2>
+                </div>
+                <a class="stat-link" href="../announcements/announcements.html"
+                  >View all</a
+                >
+              </div>
+              <ul
+                class="news-list"
+                id="newsList"
+                aria-live="polite"
+                aria-busy="true"
+              >
+                <li>
+                  <span class="skeleton skeleton-text"></span
+                  ><span class="skeleton skeleton-text short"></span>
+                </li>
+              </ul>
+            </section>
+          </div>
+
+          <div class="section-title"><h2>Quick actions</h2></div>
+          <section class="summary-grid" aria-label="Quick actions">
+            <a class="panel action-card" href="../attendance/attendance.html">
+              <span class="action-icon" aria-hidden="true"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="3" y="3" width="7" height="7" rx="1" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" />
+                  <path
+                    d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"
+                  /></svg
+              ></span>
+              <h3>Gate pass</h3>
+              <p>Open your QR code for the lobby scanner.</p>
+              <svg
+                class="arrow"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </a>
+            <a
+              class="panel action-card"
+              href="../payment_receipt/paymentReceipt.html"
+            >
+              <span class="action-icon" aria-hidden="true"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M6 3h12v18l-3-2-3 2-3-2-3 2z" />
+                  <path d="M9 8h6M9 12h6" /></svg
+              ></span>
+              <h3>Payment proof</h3>
+              <p>Upload a photo of your dormitory fee receipt.</p>
+              <svg
+                class="arrow"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </a>
+            <a class="panel action-card" href="../violation/violation.html">
+              <span class="action-icon" aria-hidden="true"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z" />
+                  <path d="M9 12l2 2 4-4" /></svg
+              ></span>
+              <h3>Conduct record</h3>
+              <p>Check offenses, absences and curfew logs.</p>
+              <svg
+                class="arrow"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </a>
+          </section>
+
+          <div class="dash-split">
+            <section class="panel" aria-labelledby="activity-title" data-reveal>
+              <div class="panel-head">
+                <div>
+                  <span class="eyebrow">Recent activity</span>
+                  <h2 id="activity-title">Time in and time out</h2>
+                  <p>Your latest scans at the dormitory lobby.</p>
+                </div>
+              </div>
+              <div
+                class="data-table table-wrap"
+                id="activity-wrap"
+                aria-live="polite"
+                aria-busy="true"
+              >
+                <table>
+                  <caption class="sr-only">
+                    Latest attendance scans
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Date</th>
+                      <th scope="col">Time</th>
+                      <th scope="col">Record</th>
+                    </tr>
+                  </thead>
+                  <tbody id="activity-body">
+                    <tr>
+                      <td colspan="3">
+                        <span class="skeleton skeleton-text"></span
+                        ><span class="skeleton skeleton-text short"></span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section
+              class="callout"
+              aria-labelledby="reminders-title"
+              data-reveal
+            >
+              <span class="eyebrow">From the dormitory office</span>
+              <h3 id="reminders-title">Good habits for dorm life</h3>
+              <ul>
+                <li>
+                  Scan your QR pass every time you enter or leave the building.
+                </li>
+                <li>
+                  Upload your payment receipt as soon as you pay, so the office
+                  can verify it.
+                </li>
+                <li>
+                  Questions about a record? Visit the dormitory office with your
+                  student ID.
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </main>
     </div>
-    <section class="hero-band dash-hero" data-hero aria-labelledby="page-title">
-      <span class="eyebrow" id="hero-date">Dormitory portal</span>
-      <h1 id="page-title"><span id="hero-greeting">Welcome back,</span> <span id="hero-name">dormer.</span></h1>
-      <p>Your gate pass, payment receipts and dormitory record, all in one place.</p>
-      <div class="actions">
-        <a class="button secondary" href="../attendance/attendance.html">Show my QR pass</a>
-        <a class="button ghost" href="../payment_receipt/paymentReceipt.html">Upload a receipt</a>
-      </div>
-      <p class="hero-meta" aria-live="polite">
-        <span>Room <strong id="meta-room" class="skeleton">—</strong></span>
-        <span>Year level <strong id="meta-year" class="skeleton">—</strong></span>
-        <span>Student ID <strong id="meta-id" class="skeleton">—</strong></span>
-      </p>
-      <p class="hero-alert" id="hero-alert" role="alert" hidden></p>
-    </section>
 
-    <div class="content-stack">
-      <section class="summary-grid stats-4" aria-label="Your dormitory record at a glance">
-        <article class="panel stat-card" data-stat="room">
-          <span class="stat-label">Room number</span>
-          <span class="stat-room skeleton" id="roomValue">—</span>
-          <p class="stat-note" id="roomNote" aria-live="polite">Loading…</p>
-          <a class="stat-link" href="../profile/profile.html">View profile</a>
-        </article>
-        <article class="panel stat-card" data-stat="payments">
-          <span class="stat-label">Payment receipts</span>
-          <span class="stat-value skeleton" data-stat-value>0</span>
-          <p class="stat-note" data-stat-note aria-live="polite">Loading…</p>
-          <a class="stat-link" href="../payment_receipt/paymentReceipt.html">View payments</a>
-        </article>
-        <article class="panel stat-card" data-stat="violations">
-          <span class="stat-label">Violations on record</span>
-          <span class="stat-value skeleton" data-stat-value>0</span>
-          <p class="stat-note" data-stat-note aria-live="polite">Loading…</p>
-          <a class="stat-link" href="../violation/violation.html">View record</a>
-        </article>
-        <article class="panel stat-card" data-stat="attendance">
-          <span class="stat-label">Days present</span>
-          <span class="stat-value skeleton" data-stat-value>0</span>
-          <p class="stat-note" data-stat-note aria-live="polite">Loading…</p>
-          <a class="stat-link" href="../attendance/attendance.html">View attendance</a>
-        </article>
-      </section>
-
-      <div class="dash-today">
-        <section class="panel today-card" aria-labelledby="today-title">
-          <div class="panel-head">
-            <div><span class="eyebrow">Today attendance</span><h2 id="today-title">Your status today</h2></div>
-            <a class="stat-link" href="../attendance/attendance.html">Open QR pass</a>
-          </div>
-          <dl class="today-list" id="todayList" aria-live="polite">
-            <div><dt>Date</dt><dd class="skeleton" id="todayDate">—</dd></div>
-            <div><dt>Time</dt><dd class="skeleton tabular" id="todayTime">—</dd></div>
-            <div><dt>Status</dt><dd class="skeleton" id="todayStatus">—</dd></div>
-          </dl>
-          <p class="stat-note" id="todayNote"></p>
-        </section>
-
-        <section class="panel" aria-labelledby="news-title">
-          <div class="panel-head">
-            <div><span class="eyebrow">From the dormitory office</span><h2 id="news-title">Latest announcements</h2></div>
-            <a class="stat-link" href="../announcements/announcements.html">View all</a>
-          </div>
-          <ul class="news-list" id="newsList" aria-live="polite" aria-busy="true">
-            <li><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text short"></span></li>
-          </ul>
-        </section>
-      </div>
-
-      <div class="section-title"><h2>Quick actions</h2></div>
-      <section class="summary-grid" aria-label="Quick actions">
-        <a class="panel action-card" href="../attendance/attendance.html">
-          <span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></span>
-          <h3>Gate pass</h3>
-          <p>Open your QR code for the lobby scanner.</p>
-          <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
-        <a class="panel action-card" href="../payment_receipt/paymentReceipt.html">
-          <span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span>
-          <h3>Payment proof</h3>
-          <p>Upload a photo of your dormitory fee receipt.</p>
-          <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
-        <a class="panel action-card" href="../violation/violation.html">
-          <span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
-          <h3>Conduct record</h3>
-          <p>Check offenses, absences and curfew logs.</p>
-          <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
-      </section>
-
-      <div class="dash-split">
-        <section class="panel" aria-labelledby="activity-title" data-reveal>
-          <div class="panel-head">
-            <div><span class="eyebrow">Recent activity</span><h2 id="activity-title">Time in and time out</h2><p>Your latest scans at the dormitory lobby.</p></div>
-          </div>
-          <div class="data-table table-wrap" id="activity-wrap" aria-live="polite" aria-busy="true">
-            <table>
-              <caption class="sr-only">Latest attendance scans</caption>
-              <thead><tr><th scope="col">Date</th><th scope="col">Time</th><th scope="col">Record</th></tr></thead>
-              <tbody id="activity-body">
-                <tr><td colspan="3"><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text short"></span></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <section class="callout" aria-labelledby="reminders-title" data-reveal>
-          <span class="eyebrow">From the dormitory office</span>
-          <h3 id="reminders-title">Good habits for dorm life</h3>
-          <ul>
-            <li>Scan your QR pass every time you enter or leave the building.</li>
-            <li>Upload your payment receipt as soon as you pay, so the office can verify it.</li>
-            <li>Questions about a record? Visit the dormitory office with your student ID.</li>
-          </ul>
-        </section>
-      </div>
-    </div>
-  </main>
-</div>
-
-<script src="../../assets/js/api.js"></script>
-<script src="../attendance/student-shell.js"></script>
-<script src="dashboard.js"></script>
-</body>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../attendance/student-shell.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
 </html>

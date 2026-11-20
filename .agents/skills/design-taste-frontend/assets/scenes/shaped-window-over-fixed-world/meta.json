@@ -3,13 +3,8 @@
   "name": "Shaped window over a fixed world",
   "family": "mask-and-reveal",
   "look": "One full-bleed photograph of the client's site stays still behind a shutter painted in the page's ground. Two tall windows cut in it, level and side by side, show the site through a mullion under the title; the scroll widens them outward, closes the bar into one window, holds a beat, then scales the shutter past the screen's edges so the reader pushes through into the place; a flat band of the ground rises across the foot carrying the chapter's one word, then its lede and the action. The shutter is five flat pieces moved by transform: no mask edge, no hairline, no word on the photograph.",
-  "fits": [
-    "statement"
-  ],
-  "types": [
-    "tech",
-    "gaming"
-  ],
+  "fits": ["statement"],
+  "types": ["tech", "gaming"],
   "trigger": "scroll",
   "hold": 1,
   "restH": 2,
@@ -43,9 +38,5 @@
       "wait": 600
     }
   },
-  "avoidMoments": [
-    "headline-arrives",
-    "cursor-spotlight",
-    "window-parallax"
-  ]
+  "avoidMoments": ["headline-arrives", "cursor-spotlight", "window-parallax"]
 }

@@ -6,6 +6,7 @@ authoring machine, so NO PHP has ever been executed and nothing has been tested 
 reading code, `node --check` on JS, and browser checks of static HTML with faked fetch data. The first real test is yours.
 
 ## 1. What the owner asked for (in order)
+
 1. "Finish everything from UI to backend", restyle with the **Leyte Normal University** (lnu.edu.ph) colour scheme using
    GSAP, Lenis, React Bits-style effects and the skills in `.agents/skills` (emilkowalski/skills, impeccable, taste-skill).
    Deploy target chosen: **local XAMPP-style run only** (PHP+MySQL can't run on Vercel; no cloud deploy was done).
@@ -18,13 +19,15 @@ reading code, `node --check` on JS, and browser checks of static HTML with faked
    (`registration/register_personnel.php`) choosing Admin or Security, and an admin approves; first admin is seeded.
 
 ## 2. Roles
+
 - **student** (table `validated_dormers`; registers via `registration/register.php` → pending row in `validation_dormers` → admin approves → admin enrolls into floor/room)
 - **admin** = Dorm Administrator (table `staff_accounts`, role `admin`)
 - **security** = Security Personnel (`staff_accounts`, role `security`)
-Demo accounts (seed, demo only): student `student@lnu.edu.ph` / `Dormer#2026`; admin `staff@lnu.edu.ph` / `Staff#2026`;
-security `security@lnu.edu.ph` / `Security#2026` (confirm in `database/seed.sql` — hashes are bcrypt `$2y$`).
+  Demo accounts (seed, demo only): student `student@lnu.edu.ph` / `Dormer#2026`; admin `staff@lnu.edu.ph` / `Staff#2026`;
+  security `security@lnu.edu.ph` / `Security#2026` (confirm in `database/seed.sql` — hashes are bcrypt `$2y$`).
 
 ## 3. Design system (DONE, committed)
+
 - `assets/css/portal.css` (tokens: `--navy-900/800/700`, `--indigo`, `--gold`, `--paper`, `--ink`…, components), `assets/js/portal.js`
   (Lenis + GSAP/ScrollTrigger motion, reduced-motion safe, degrades if CDN fails), `assets/DESIGN.md` (token table, component catalog,
   exact `<head>` snippet — portal.js goes in `<head>` WITHOUT defer after the deferred CDN scripts), `assets/styleguide.html` (live reference).
@@ -34,11 +37,13 @@ security `security@lnu.edu.ph` / `Security#2026` (confirm in `database/seed.sql`
 - `dormer/attendance/student-kit.js|css` = shared helpers/styles for the student pages (payments + violations load them from `../attendance/`; don't move them).
 
 ## 4. What exists (committed unless noted)
+
 Front end (restyled, role-aware where noted):
+
 - `login/` (login.html/js/css, login.php, logout.php), `registration/` (register.html/js/css — student form only so far)
 - `dormer/dashboard`, `dormer/attendance` (+ `scan_qr.php/js` staff scanner), `dormer/payment_receipt`, `dormer/violation`
 - `staff/violations.html/js/css` (admin: violations list + modal, pending student registrations approve/reject)
-Backend (PHP, all guarded with `connection/auth.php`: `require_student`, `require_staff`, `require_role`):
+  Backend (PHP, all guarded with `connection/auth.php`: `require_student`, `require_staff`, `require_role`):
 - `connection/` helpers: `bootstrap.php` (env/.env config, session hardening, json helpers, logging to `logs/php-error.log`), `auth.php`,
   `csrf.php` + `csrf_token.php` (lenient by default; `CSRF_ENFORCE=1` enforces), `me.php`, `announcements.php`, `notifications_seen.php`,
   `change_password.php`, `lib_*.php` (announcements, attendance, password, rooms, throttle, upload), `violation_types.php`.
@@ -53,38 +58,41 @@ Backend (PHP, all guarded with `connection/auth.php`: `require_student`, `requir
   dormer_violation, login_attempts, room_checks, announcements, user_notifications_seen, staff_registrations, curfew_scans),
   `database/seed.sql` (demo data incl. student in Room 3-5, announcements, pending personnel), `database/API.md` (endpoint contract —
   **authoritative for the front end; verify it matches the PHP before trusting it**).
-Security done: bcrypt (`password_hash`/`verify`, legacy plaintext auto-upgraded), session regeneration + hardened cookies, login throttling,
-prepared statements, validated uploads (finfo, 5MB, random names), output escaping, auth on every endpoint, QR accepts only `qr_token`
-(`QR_ALLOW_STUDENT_ID=0` default).
+  Security done: bcrypt (`password_hash`/`verify`, legacy plaintext auto-upgraded), session regeneration + hardened cookies, login throttling,
+  prepared statements, validated uploads (finfo, 5MB, random names), output escaping, auth on every endpoint, QR accepts only `qr_token`
+  (`QR_ALLOW_STUDENT_ID=0` default).
 
 ## 5. State when this note was written — READ CAREFULLY
+
 - The last backend agent run was **interrupted** ("stopped") after producing most endpoints, schema and seed. It was resumed once and
   was interrupted again. **Verify**: every endpoint listed in `database/API.md` exists and matches the PHP; schema.sql has columns every
   query uses; seed.sql inserts match the schema; brace/paren balance of each PHP file (no `php -l` was possible); `README-LOCAL.md`
   is MISSING from the repo root (it was deleted/lost — recreate it, see §7); login.php role redirect (security → `staff/security/home.html`).
 - **No UI exists yet for the new roles/features.** Missing front-end pages (all must use the existing design system and the same layout
   patterns; add, don't redesign):
-  * **Student:** tabs PROFILE, ANNOUNCEMENTS, SETTINGS (change password via `connection/change_password.php`), notification bell,
+  - **Student:** tabs PROFILE, ANNOUNCEMENTS, SETTINGS (change password via `connection/change_password.php`), notification bell,
     dashboard additions: ROOM NUMBER tile, **Today Attendance** card (Date/Time/Status), **Latest Announcements** card (use
     `dormer/dashboard/dashboard_summary.php`, `connection/announcements.php`), "Your status" + room label ("Room 3-5") on attendance. Add the
     new tabs to the sidebar of ALL student pages.
-  * **Admin** (new pages under `staff/`): admin home/dashboard, Manage Students (unenrolled list → View → "Enroll now" with floor+room;
+  - **Admin** (new pages under `staff/`): admin home/dashboard, Manage Students (unenrolled list → View → "Enroll now" with floor+room;
     enrolled list → View → Modification form + Update), Student Violations (exists — add search/room columns), Proof of Payment records
     (Recorded/Unrecorded, view proof image, mark recorded), Room management (floors 1–3 × rooms 1–10, Checked/Unchecked, room view with
     occupants + "Check" button), Announcements (compose + submit), personnel-registration approvals, Settings. Sidebar: HOME,
     MANAGE ▸ (Manage Students, Student Violation, Proof of Payment, Room management), ATTENDANCE, ANNOUNCEMENTS, SETTINGS.
-  * **Security** (new folder `staff/security/`): `home.html` (Latest Announcements + Attendance cards), Attendance page with "Scan QR" and
+  - **Security** (new folder `staff/security/`): `home.html` (Latest Announcements + Attendance cards), Attendance page with "Scan QR" and
     "Scan QR for Curfew" buttons, today's attendance table (name, year, floor/room, PRESENT) and curfew violations table (1st warning…),
     two camera panels (Scanner / Curfew Scanner). Reuse `dormer/attendance/scan_qr.js` logic. Sidebar: HOME, ATTENDANCE, SETTINGS.
-  * **Registration:** entry choice page ("Register as Student" / "Register as Dorm Personnel"), student form + **entrance slip upload**
+  - **Registration:** entry choice page ("Register as Student" / "Register as Dorm Personnel"), student form + **entrance slip upload**
     (multipart `entrance_slip`), personnel form (full name, age, gender, personnel type select, email, password) → pending approval message.
-  * **Login:** route by `role` returned from login.php to the right home (student/admin/security).
-  Detailed per-page content: `docs/canva-spec.md`.
+  - **Login:** route by `role` returned from login.php to the right home (student/admin/security).
+    Detailed per-page content: `docs/canva-spec.md`.
 - Suggested work split (worked well): one agent per area with disjoint files — (a) student pages, (b) admin pages, (c) security pages +
   registration + login routing — then an independent reviewer, then fix rounds back to the same agent.
 
 ## 5b. STATUS UPDATE (audit done after §5 was written, 2026-11-20) — what is actually still missing
+
 Audit method: file listing + grep (no PHP executed). Findings:
+
 - **Backend looks complete on disk.** Every `.php` file named in `database/API.md` exists (52 PHP files); schema has all 13 tables
   (incl. rooms, room_checks, announcements, user_notifications_seen, staff_registrations, curfew_scans, floor_no/room_no on
   `validated_dormers`); seed has the security account; login.php returns `role` and role-based redirect. So §5's "backend may be
@@ -113,7 +121,9 @@ Audit method: file listing + grep (no PHP executed). Findings:
   pass that toggles IN/OUT; kept as-is.
 
 ## 5c. STATUS UPDATE 2 (supersedes the "missing" lists in §5/§5b) — 2026-11-21
+
 **Built since §5b (all UNCOMMITTED in the working tree; commit them):**
+
 - Registration: `registration/register.html` = choice page; `register_student.html|js` (+ entrance-slip upload); `register_personnel.html|js`.
 - Student: `dormer/{profile,announcements,settings}/`, `dormer/attendance/student-shell.js|css` (sidebar + bell shared), dashboard room tile /
   Today Attendance / Latest Announcements, attendance room pill + "Your status".
@@ -125,7 +135,7 @@ Audit method: file listing + grep (no PHP executed). Findings:
   `process_scan.php` now reads `qr_token` (falls back to `token`), db_execute-failure crashes, early daytime curfew scans rejected
   (`code: too_early`), `[hidden]` CSS bugs. Reviewer confirmed: SQL columns/bind types match schema, seed valid, roles consistent,
   every endpoint guarded (except logout), no XSS/path traversal found, room-capacity + double-scan are race-safe.
-**Still open / not done:**
+  **Still open / not done:**
 - NEVER RUN: no PHP executed, no MySQL import, no camera test. First XAMPP run is the real test; expect runtime bugs. (JS passes
   `node --check`; PHP only checked by a brace-balance script, not `php -l` — run `php -l` on every file first.)
 - `logout.php` is GET (CSRF-able logout) — make POST+token. CSRF enforcement still lenient (`CSRF_ENFORCE=0`).
@@ -138,6 +148,7 @@ Audit method: file listing + grep (no PHP executed). Findings:
 - `login.html` links register to the choice page; PHP no-JS fallback "back" links in register*.php point at the choice page.
 
 ## 6. Known issues / decisions / ideas
+
 - CSRF enforcement left lenient (`CSRF_ENFORCE=0`) because the no-JS form fallbacks can't send tokens; flip to 1 once fallbacks are dropped/updated.
 - Logout is a plain GET link; CDN scripts have no SRI hashes (couldn't verify hashes offline). Camera scanner needs HTTPS or localhost.
 - `students.php`/`violation.php`: `offenses` text returns latest non-empty record; `attendance_logs.php` returns latest 10 + `total`.
@@ -149,15 +160,17 @@ Audit method: file listing + grep (no PHP executed). Findings:
 - `note.txt` at repo root is the owner's pasted transcript of an earlier session; safe to ignore/delete.
 
 ## 7. How to run / verify (recreate README-LOCAL.md from this)
+
 1. Install XAMPP; copy project to `C:\xampp\htdocs\LNUDormatorySystem\`; start Apache + MySQL.
 2. phpMyAdmin → Import `database/schema.sql` then `database/seed.sql` (or `mysql -u root < ...`).
 3. Open `http://localhost/LNUDormatorySystem/login/login.html`, sign in with the demo accounts above.
 4. DB config via env vars or `connection/.env` (copy `.env.example`): DB_HOST/PORT/USER/PASS/NAME (defaults localhost/root/empty/`lnudormatorysystem`).
 5. Errors are logged to `logs/php-error.log`, never shown. Apache needs `AllowOverride All` (XAMPP default) for the `.htaccess` protections.
-First thing to do: run through every flow end to end (register student → admin approve → enroll → student login → QR scan → payment upload → violation → announcements)
-and fix whatever the never-executed PHP breaks.
+   First thing to do: run through every flow end to end (register student → admin approve → enroll → student login → QR scan → payment upload → violation → announcements)
+   and fix whatever the never-executed PHP breaks.
 
 ## 8. Process notes (how this was built)
+
 Orchestrator pattern: plan → delegate (Opus for taste/UI, Sonnet for mechanical/backend) → independent review → send fixes back to the
 SAME agent via SendMessage. Specs must be complete (agents start cold). Agents cannot run PHP here; reviewers can only read.
 Owner-supplied design inputs: LNU site screenshots (navy/gold), login reference screenshot, `loginbg_light-Dow2JmjG.png`, the Canva link.
