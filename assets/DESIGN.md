@@ -31,6 +31,12 @@ Delete the old `<script src=".../portal.js">` at the end of `<body>`. If a page 
 | `--shadow-sm` `--shadow` `--shadow-lg`, `--ease-out` | cubic-bezier(.16,1,.3,1) | depth, motion |
 Never hard-code colours in pages. Use `var(--token)`. Gold is never used for body text on white.
 
+## 2b. Dark mode
+- **Mechanism:** `portal.js` sets `<html data-theme="light|dark">` before first paint (saved choice in `localStorage['lnu-theme']`, else `prefers-color-scheme`; system changes are followed only while nothing is saved). `portal.css` has one `:root[data-theme="dark"]` block that overrides the neutral and status tokens (`--paper` #232326, `--paper-2` #121212, `--ink`, `--muted`, `--line`, `-soft` colours, shadows) and sets `color-scheme: dark`. Brand navy/gold, hero bands, the sidebar and the login gradient panel are the same in both themes.
+- **Toggle:** `portal.js` injects one round `.theme-toggle` button (44px, fixed bottom-right, above the safe area, sun/moon icon, `aria-pressed`). It updates `data-theme`, `localStorage` and `<meta name="theme-color">` (#121212 in dark). Colours cross-fade for 200ms, not under reduced motion. On phones `body` gets extra bottom padding so the button never covers the last content.
+- **Theme-safe CSS:** use tokens, never `#fff`/light hex for surfaces. Navy *text*, links, icons and focus borders on paper use `--accent` / `--accent-deep` / `--accent-hover` (navy in light, periwinkle in dark), never `--navy-700` directly; `--navy-*` is for fills with white text. Text on gold fills uses `--on-gold`. Other roles: `--chip-bg(-hover)` (secondary button, badge, skeleton), `--row-hover`, `--paper-3`, `--line-hover`, `--placeholder`, `--focus`, `--ring`, `--sheen`, `--callout-line`, `--upload-line`, `--gold-line`. Literal `#fff` is fine only on navy surfaces or where white is required (logo discs, the QR frame: QR codes stay navy-on-white in both themes). For one-off fixes write `:root[data-theme="dark"] .thing { … }` next to the rule.
+- Background line art: in dark the same `loginbg_light` image is drawn on a fixed layer with `filter: invert(1) brightness(4); opacity: .16` (login/registration) or `invert(1) brightness(4)` at the existing .07 (student pages).
+
 ## 3. Component catalog
 | Class | Usage |
 |---|---|
