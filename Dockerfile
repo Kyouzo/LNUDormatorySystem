@@ -5,7 +5,7 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends mariadb-server mariadb-client \
  && rm -rf /var/lib/apt/lists/* \
  && docker-php-ext-install -j"$(nproc)" mysqli pdo_mysql \
- && a2enmod headers setenvif
+ && a2enmod headers setenvif rewrite
 
 COPY docker/lnu.conf /etc/apache2/conf-available/lnu.conf
 COPY docker/php.ini /usr/local/etc/php/conf.d/zz-lnu.ini
