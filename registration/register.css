@@ -9,7 +9,7 @@
 
 /* Entrance slip: native file input + preview row */
 .field input[type="file"] { padding: .6rem .75rem; cursor: pointer; }
-.field input[type="file"]::file-selector-button { margin-right: .75rem; padding: .45rem .95rem; border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--paper-2); color: var(--navy-800); font: inherit; font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.field input[type="file"]::file-selector-button { margin-right: .75rem; padding: .45rem .95rem; border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--paper-2); color: var(--accent-deep); font: inherit; font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
 .slip-preview { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: .85rem; align-items: center; padding: .6rem; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper-2); font-weight: 400; }
 .slip-preview img, .slip-icon { width: 64px; height: 48px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); object-fit: cover; }
 .slip-icon { display: grid; place-items: center; color: var(--danger); font-size: .78rem; font-weight: 800; letter-spacing: .08em; }
@@ -20,13 +20,13 @@
 /* Registration choice page */
 .choice-list { display: grid; gap: .9rem; }
 .choice-card { display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; gap: 1rem; align-items: center; padding: 1.1rem 1.2rem; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); box-shadow: var(--shadow-sm); transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), translate var(--dur-fast) var(--ease-out); }
-.choice-card:hover { border-color: var(--navy-700); box-shadow: var(--shadow); translate: 0 -1px; }
+.choice-card:hover { border-color: var(--accent); box-shadow: var(--shadow); translate: 0 -1px; }
 .choice-card:active { scale: .99; }
-.choice-icon { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: var(--indigo-soft); color: var(--navy-700); }
+.choice-icon { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: var(--indigo-soft); color: var(--accent); }
 .choice-icon svg { width: 1.4rem; height: 1.4rem; }
 .choice-text strong { display: block; font-size: 1.05rem; letter-spacing: -.01em; }
 .choice-text span { display: block; margin-top: .15rem; color: var(--muted); font-size: .88rem; }
-.choice-arrow { width: 1.2rem; height: 1.2rem; color: var(--navy-700); }
+.choice-arrow { width: 1.2rem; height: 1.2rem; color: var(--accent); }
 @media (prefers-reduced-motion: reduce) { .choice-card, .choice-card:hover, .choice-card:active { transition: none; translate: none; scale: none; } }
 
 /* Author display rules above (grid) must not defeat the hidden attribute. */

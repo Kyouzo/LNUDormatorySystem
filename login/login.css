@@ -17,6 +17,9 @@
   background-position: center;
   background-repeat: no-repeat;
 }
+/* Dark: same line art, inverted and faint on near-black (fixed layer, so no attachment jank). */
+:root[data-theme="dark"] .login-page { position: relative; isolation: isolate; background-image: none; }
+:root[data-theme="dark"] .login-page::before { content: ""; position: fixed; inset: 0; z-index: -1; background: url("../assets/images/loginbg_light-Dow2JmjG.png") center / cover no-repeat; filter: invert(1); opacity: .1; pointer-events: none; }
 /* Fixed backgrounds jank on touch browsers; only pin them on larger screens. */
 @media (min-width: 721px) and (hover: hover) {
   .login-page { background-attachment: fixed; }
@@ -52,7 +55,7 @@
   /* Vivid navy -> blue diagonal from design tokens only; the radial lift keeps the
      bottom-right corner bright without a hard-coded colour. */
   background:
-    radial-gradient(90% 80% at 100% 100%, color-mix(in srgb, var(--indigo) 85%, var(--paper) 15%) 0%, transparent 60%),
+    radial-gradient(90% 80% at 100% 100%, color-mix(in srgb, var(--indigo) 85%, #fff 15%) 0%, transparent 60%),
     linear-gradient(135deg, var(--navy-800) 0%, var(--navy-700) 40%, var(--indigo) 100%);
 }
 .login-aside::before {
@@ -140,7 +143,7 @@
   border: 0;
   border-radius: var(--radius-pill);
   background: transparent;
-  color: var(--navy-700);
+  color: var(--accent);
   font-size: .75rem;
   font-weight: 700;
   letter-spacing: .08em;
@@ -171,12 +174,12 @@
   font-weight: 500;
 }
 .form-alert:empty { display: none; }
-.form-alert.is-info { background: var(--indigo-soft); color: var(--navy-800); }
+.form-alert.is-info { background: var(--indigo-soft); color: var(--accent-deep); }
 .form-alert a { color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 
 .login-alt { margin: 1.25rem 0 0; text-align: center; font-size: .93rem; color: var(--muted); }
-.login-alt a { color: var(--navy-700); font-weight: 600; text-decoration: underline; text-decoration-color: var(--gold); text-decoration-thickness: 2px; text-underline-offset: 4px; }
-.login-alt a:hover { color: var(--indigo); }
+.login-alt a { color: var(--accent); font-weight: 600; text-decoration: underline; text-decoration-color: var(--gold); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.login-alt a:hover { color: var(--accent-hover); }
 
 .login-footer { margin: 0; text-align: center; color: var(--muted); font-size: .8rem; line-height: 1.5; }
 

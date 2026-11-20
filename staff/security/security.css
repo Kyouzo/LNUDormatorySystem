@@ -35,7 +35,7 @@
 .scanner-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; align-items: start; }
 @media (max-width: 960px) { .scanner-pair { grid-template-columns: 1fr; } }
 .reader-box { position: relative; min-height: 220px; display: grid; place-items: center; overflow: hidden; border-radius: var(--radius-sm); background: var(--paper-2); border: 1px dashed var(--line-strong); }
-.reader-box.is-live { border-style: solid; border-color: var(--navy-700); }
+.reader-box.is-live { border-style: solid; border-color: var(--accent); }
 .reader-box video { display: block; width: 100% !important; height: auto !important; border-radius: var(--radius-sm); }
 .reader-idle { margin: 0; padding: 1.25rem; color: var(--muted); text-align: center; font-size: .92rem; }
 .scanner-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin: .9rem 0; }
@@ -47,7 +47,7 @@
 .settings-form .button { margin-top: 1.25rem; }
 .input-affix { position: relative; display: block; }
 .input-affix input { padding-right: 4.75rem; }
-.affix-button { position: absolute; top: 50%; right: .4rem; translate: 0 -50%; min-height: 36px; padding: 0 .8rem; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--navy-700); font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+.affix-button { position: absolute; top: 50%; right: .4rem; translate: 0 -50%; min-height: 36px; padding: 0 .8rem; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--accent); font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
 .affix-button:hover { background: var(--indigo-soft); }
 .field .field-error:empty { display: none; }
 .field input[aria-invalid="true"] { border-color: var(--danger); }
