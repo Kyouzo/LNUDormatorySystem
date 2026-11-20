@@ -19187,14 +19187,12 @@ function lib() {
               : "no line";
       const key = `${u}, ${+c.fontWeight >= 600 ? "bold" : "regular"}`;
       if (!linkLooks.has(key)) linkLooks.set(key, []);
-      linkLooks
-        .get(key)
-        .push({
-          id: idOf(a),
-          sel: sel(a),
-          text: full(a).slice(0, 40),
-          doc: doc(a),
-        });
+      linkLooks.get(key).push({
+        id: idOf(a),
+        sel: sel(a),
+        text: full(a).slice(0, 40),
+        doc: doc(a),
+      });
     }
     // one action in two looks: the same words a button in one place and a text link in another
     const twoLooks = [];

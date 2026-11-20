@@ -2469,12 +2469,10 @@ export function mountProduct(product, el, opts = {}) {
   const spec = product.spec;
   const given = { ...(opts.params || {}) };
   if (opts.fit === false || opts.place === "legacy")
-    return product
-      .legacy()
-      .mount(el, {
-        ...opts,
-        place: opts.place === "legacy" ? "hero" : opts.place,
-      });
+    return product.legacy().mount(el, {
+      ...opts,
+      place: opts.place === "legacy" ? "hero" : opts.place,
+    });
   const st = {
     view:
       opts.view ||

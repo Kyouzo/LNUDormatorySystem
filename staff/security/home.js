@@ -54,27 +54,25 @@
         h(
           "ul",
           { class: "mini-list" },
-          rows
-            .slice(0, 6)
-            .map((r) =>
-              h("li", null, [
-                h("span", null, [
-                  h("span", { class: "cell-strong", text: r.name }),
-                  h("span", {
-                    class: "cell-sub",
-                    text:
-                      Sec.floorRoom(r) +
-                      " · " +
-                      (r.last_type === "OUT" ? "Out " : "In ") +
-                      (r.time || ""),
-                  }),
-                ]),
+          rows.slice(0, 6).map((r) =>
+            h("li", null, [
+              h("span", null, [
+                h("span", { class: "cell-strong", text: r.name }),
                 h("span", {
-                  class: "badge badge-success",
-                  text: r.status || "PRESENT",
+                  class: "cell-sub",
+                  text:
+                    Sec.floorRoom(r) +
+                    " · " +
+                    (r.last_type === "OUT" ? "Out " : "In ") +
+                    (r.time || ""),
                 }),
               ]),
-            ),
+              h("span", {
+                class: "badge badge-success",
+                text: r.status || "PRESENT",
+              }),
+            ]),
+          ),
         ),
       );
       if (rows.length > 6)
