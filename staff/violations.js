@@ -22,7 +22,8 @@
     if (!log.length) return '<span class="badge badge-success">Clear</span>';
     const major = log.filter((v) => v.type === MAJOR).length;
     const absences = log.filter((v) => v.absent).length;
-    const other = log.length - major;
+    // Absence-only entries (absent, no written offense) count as absences, not offenses.
+    const other = log.filter((v) => v.type !== MAJOR && (!v.absent || String(v.details || '').trim())).length;
     let html = '';
     if (major) html += '<span class="badge badge-danger">' + major + ' major</span>';
     if (other) html += '<span class="badge badge-warning">' + other + ' other</span>';
@@ -350,6 +351,7 @@
       regsError('Registrations could not be loaded.');
       return;
     }
+    if (me.authenticated && me.role === 'student') { location.replace(LNU.url('dormer/dashboard/dashboard.html')); return; }
     if (!me.authenticated || me.role !== 'staff') { LNU.goLogin(); return; }
     if (me.name) $('staff-name').textContent = me.name;
     const results = await Promise.allSettled([loadStudents(), loadRegs()]);

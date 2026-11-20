@@ -121,7 +121,9 @@
       return;
     } catch (err) {
       if (err.kind === 'format' && err.status >= 200 && err.status < 300) {
-        form.submit(); // HTML-only backend: fall back to a normal post
+        // The server stored the record but answered with its HTML notice page.
+        // Re-posting would create a duplicate, so treat it as success.
+        success(!!data.password, data.first_name);
         return;
       }
       if (err.status === 409) {

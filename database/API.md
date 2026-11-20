@@ -7,6 +7,9 @@ All paths are relative to the project root. Every JSON endpoint sends `Content-T
 { "success": false, "message": "Human readable reason" }
 ```
 
+401/403 errors also carry a machine-readable `code`: `unauthorized` (401, not logged in), `forbidden` (403, wrong
+role) or `csrf` (403, missing/invalid CSRF token or foreign Origin). Other errors have no `code`.
+
 Status codes: `400/422` bad input, `401` not logged in, `403` wrong role / CSRF, `404` not found,
 `405` wrong method, `409` conflict, `429` throttled / scan cooldown, `500/503` server problem.
 
@@ -43,7 +46,7 @@ again after signing in.
 | POST | `/registration/register.php` | none | form or JSON: `last_name, first_name, middle_name?, age, gender (Male\|Female\|Other), student_id (digits), email, address, year_level?, password? (8+)` | HTML "Registration received" page (200); JSON 201 `{success, message}`. Creates a *pending* record. 409 if ID/email exists |
 | GET | `/dormer/attendance/attendance.php` | student | - | `{success, student_id, first_name, last_name, full_name, room_assignment, address, year_level, qr_token}` |
 | GET | `/dormer/attendance/attendance_logs.php` | student | - | `{success, history:[{attendance_type:"IN"\|"OUT", scan_datetime:"YYYY-MM-DD HH:MM:SS"}], total:int}` (history = latest 10; `total` = all scans on record) |
-| POST | `/dormer/attendance/process_scan.php` | **staff** | JSON: `{token}` (QR content = `qr_token`; plain student ID accepted while `QR_ALLOW_STUDENT_ID=1`) | `{success, message, name, student_id, room, attendance_type:"IN"\|"OUT"}`; 404 invalid QR, 429 within 30 s of previous scan |
+| POST | `/dormer/attendance/process_scan.php` | **staff** | JSON: `{token}` (QR content = `qr_token`; plain student ID accepted only if `QR_ALLOW_STUDENT_ID=1`; default 0) | `{success, message, name, student_id, room, attendance_type:"IN"\|"OUT"}`; 404 invalid QR, 429 within 30 s of previous scan |
 | GET | `/dormer/attendance/scan_qr.php` | **staff** (page) | - | HTML scanner page; redirects to login when not staff |
 | GET | `/dormer/payment_receipt/paymentDisplay.php` | student | - | `{success, payments:[{id, proof_image (path relative to payment_receipt/), date:"November 05, 2026", time:"03:04:05 PM", uploaded_at, status:"pending"\|"verified"\|"rejected"}]}` |
 | POST | `/dormer/payment_receipt/payment_receipt.php` | student | multipart: `proof_image` (JPG/PNG, <= 5 MB) | form: alert page then redirect to `paymentReceipt.html`; JSON (`Accept: application/json`): 201 `{success:true, message}` |
@@ -72,8 +75,7 @@ Violation `type` values: `Major offense`, `Minor offense`, `Curfew`, `Missed cle
 
 ## Front-end changes still recommended
 
-1. `attendance.js`: encode `student.qr_token` (not `student.student_id`) into the QR code; then set
-   `QR_ALLOW_STUDENT_ID=0`.
+1. `attendance.js`: encode `student.qr_token` into the QR code (done); `QR_ALLOW_STUDENT_ID` defaults to 0.
 2. Send the CSRF token on POSTs (cookies are same-origin, no extra `credentials` option needed): fetch
    `/connection/csrf_token.php`, then `X-CSRF-Token` header (fetch) or hidden `csrf_token` input (forms);
    then set `CSRF_ENFORCE=1`.

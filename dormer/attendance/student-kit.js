@@ -8,6 +8,7 @@
   'use strict';
 
   const LOGIN_URL = '../../login/login.html';
+  const STAFF_URL = '../../staff/violations.html';
   const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   class KitError extends Error {
@@ -46,9 +47,34 @@
       throw new KitError('offline', OFFLINE_MESSAGE, res.status);
     }
     if (!res.ok || data.success === false) {
-      throw new KitError('server', data.message || 'Something went wrong. Please try again.', res.status);
+      const kind = isCsrfFailure(res.status, data) ? 'csrf' : 'server';
+      throw new KitError(kind, data.message || 'Something went wrong. Please try again.', res.status);
     }
     return data;
+  }
+
+  /** 403 caused by a stale/missing CSRF token (backend sends code:"csrf"). */
+  function isCsrfFailure(status, data) {
+    if (status !== 403 || !data) return false;
+    if (data.code) return data.code === 'csrf';
+    return /csrf/i.test(String(data.message || ''));
+  }
+
+  /**
+   * POST with the CSRF token. buildOptions(token) returns fetch options; on a CSRF
+   * 403 the cached token is dropped and the request is retried once.
+   */
+  async function postWithCsrf(url, buildOptions) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const token = await csrfToken();
+      try {
+        return await api(url, buildOptions(token));
+      } catch (error) {
+        if (error.kind !== 'csrf' || attempt === 1) throw error;
+        resetCsrf();
+      }
+    }
+    return null;
   }
 
   /** CSRF token for POSTs; resolves to '' when unavailable (server is lenient by default). */
@@ -61,13 +87,21 @@
     }
     return csrfPromise;
   }
+  function resetCsrf() { csrfPromise = null; }
 
-  /** Who is signed in. Redirects to login when the server says nobody is. Never throws. */
-  async function whoAmI() {
+  /**
+   * Who is signed in. Redirects to login when nobody is, and staff to their own
+   * page (pass {allowStaff:true} on staff pages). Never throws.
+   */
+  async function whoAmI(opts) {
     try {
       const me = await api('../../connection/me.php');
       if (me.authenticated === false) {
         window.location.href = LOGIN_URL;
+        return null;
+      }
+      if (me.role === 'staff' && !(opts && opts.allowStaff)) {
+        window.location.href = STAFF_URL;
         return null;
       }
       return me;
@@ -225,7 +259,7 @@
   }
 
   window.DormKit = {
-    api, csrfToken, whoAmI, h, icon, emptyState, errorState, skeletonRows, stateRow,
+    api, csrfToken, resetCsrf, postWithCsrf, isCsrfFailure, whoAmI, h, icon, emptyState, errorState, skeletonRows, stateRow,
     countTo, enter, parseDateTime, fmtDate, fmtTime, fmtWeekday, relative, fillName,
     reduced, LOGIN_URL, KitError,
   };

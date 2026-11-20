@@ -138,13 +138,13 @@
     button.textContent = 'Uploading…';
     setError('');
 
-    const body = new FormData();
-    body.append('proof_image', selected, selected.name);
-    const headers = { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
-    const token = await K.csrfToken();
-    if (token) { headers['X-CSRF-Token'] = token; body.append('csrf_token', token); }
-
-    try {
+    const file = selected;
+    const send = async () => {
+      const body = new FormData();
+      body.append('proof_image', file, file.name);
+      const headers = { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
+      const token = await K.csrfToken();
+      if (token) { headers['X-CSRF-Token'] = token; body.append('csrf_token', token); }
       let res;
       try {
         res = await fetch('payment_receipt.php', { method: 'POST', body, headers, credentials: 'same-origin' });
@@ -158,6 +158,16 @@
       const isJson = (res.headers.get('content-type') || '').indexOf('application/json') !== -1;
       let data = null;
       if (isJson) { try { data = await res.json(); } catch (err) { data = null; } }
+      return { res, data };
+    };
+
+    try {
+      let { res, data } = await send();
+      if (K.isCsrfFailure(res.status, data)) {
+        // Token went stale (e.g. new session): fetch a fresh one and retry once.
+        K.resetCsrf();
+        ({ res, data } = await send());
+      }
 
       if (data) {
         if (!res.ok || !data.success) throw new Error(data.message || STATUS_MESSAGES[res.status] || 'The upload failed. Please try again.');

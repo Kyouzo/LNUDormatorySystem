@@ -169,7 +169,7 @@ function render_notice($title, $message, $status, $backHref, $backLabel)
     $css = h(app_url('assets/css/portal.css'));
     echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">'
         . '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-        . '<title>' . h($title) . ' | Leyte National University</title>'
+        . '<title>' . h($title) . ' | Leyte Normal University</title>'
         . '<link rel="stylesheet" href="' . $css . '"></head><body>'
         . '<main style="max-width:36rem;margin:12vh auto;padding:0 1rem" role="status">'
         . '<h1>' . h($title) . '</h1><p>' . h($message) . '</p>'
@@ -182,10 +182,10 @@ function render_notice($title, $message, $status, $backHref, $backLabel)
  * Error for endpoints used both by fetch and by classic form posts:
  * JSON when the caller wants JSON, otherwise a small HTML page.
  */
-function respond_error($message, $status, $backHref, $backLabel = 'Go back')
+function respond_error($message, $status, $backHref, $backLabel = 'Go back', $code = null)
 {
     if (wants_json()) {
-        json_error($message, $status);
+        json_error($message, $status, $code === null ? [] : ['code' => $code]);
     }
     render_notice('Something went wrong', $message, $status, $backHref, $backLabel);
 }

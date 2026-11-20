@@ -116,8 +116,8 @@
     return K.h('span', { class: 'badge ' + (isIn ? 'badge-success' : 'badge-navy'), text: isIn ? 'Time in' : 'Time out' });
   }
 
-  function updateStats(history) {
-    K.countTo($('statCount'), history.length);
+  function updateStats(history, data) {
+    K.countTo($('statCount'), Number(data && data.total) || history.length);
     const latest = history[0];
     if (!latest) {
       setText('statStatus', 'No scans yet');
@@ -152,7 +152,7 @@
       const data = await K.api('attendance_logs.php');
       const history = Array.isArray(data.history) ? data.history : [];
       tbody.replaceChildren();
-      updateStats(history);
+      updateStats(history, data);
       if (!history.length) {
         tbody.appendChild(K.stateRow(COLUMNS, K.emptyState({
           icon: 'clock',
@@ -185,6 +185,7 @@
     $('reloadProfile').addEventListener('click', loadStudent);
     $('refreshHistory').addEventListener('click', loadHistory);
     $('qrDialog').addEventListener('close', () => clearInterval(clockTimer));
+    K.whoAmI(); // redirects signed-out visitors to login and staff to their page
     loadStudent();
     loadHistory();
   });

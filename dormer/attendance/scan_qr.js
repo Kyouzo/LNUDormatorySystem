@@ -54,12 +54,13 @@
     try { scanner.pause(true); } catch (err) { /* older versions */ }
     showResult('', 'Recording attendance…', ['Hold on a moment.']);
 
-    const headers = { 'Content-Type': 'application/json' };
-    const csrf = await K.csrfToken();
-    if (csrf) headers['X-CSRF-Token'] = csrf;
-
+    const body = JSON.stringify({ token: String(token).trim() });
     try {
-      const data = await K.api('process_scan.php', { method: 'POST', headers, body: JSON.stringify({ token: String(token).trim() }) });
+      const data = await K.postWithCsrf('process_scan.php', (csrf) => {
+        const headers = { 'Content-Type': 'application/json' };
+        if (csrf) headers['X-CSRF-Token'] = csrf;
+        return { method: 'POST', headers, body };
+      });
       showResult('ok', data.name || 'Dormer recorded', [
         data.message,
         'Student ID ' + (data.student_id || '—') + ' · Room ' + (data.room || 'not assigned'),
@@ -68,17 +69,31 @@
     } catch (error) {
       if (error.status === 429) showResult('warn', 'Already scanned', [error.message, 'Wait 30 seconds before scanning the same pass again.']);
       else if (error.status === 404) showResult('error', 'Pass not recognised', [error.message, 'Ask the student to reopen their pass on the Attendance page.']);
+      else if (error.status === 403 && error.kind === 'csrf') showResult('error', 'Session check failed', [error.message, 'Refresh the page and scan again.']);
       else if (error.status === 403) showResult('error', 'Not allowed', [error.message, 'Sign in again with a staff account.']);
       else showResult('error', 'Scan not recorded', [error.message]);
     }
     resumeSoon();
   }
 
+  function scannerProblem(message) {
+    const err = $('scannerError');
+    err.textContent = message;
+    err.hidden = false;
+  }
+
+  function isLocalHost() {
+    const host = window.location.hostname;
+    return host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host === '::1' || /\.localhost$/.test(host);
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
+    if (!window.isSecureContext && !isLocalHost()) {
+      scannerProblem('Open this page over HTTPS or on localhost to use the camera. Browsers block camera access on plain http:// addresses.');
+      return;
+    }
     if (typeof window.Html5QrcodeScanner !== 'function') {
-      const err = $('scannerError');
-      err.textContent = 'The camera scanner could not load. Check the internet connection and refresh the page.';
-      err.hidden = false;
+      scannerProblem('The camera scanner could not load. Check the internet connection and refresh the page.');
       return;
     }
     scanner = new window.Html5QrcodeScanner('reader', { fps: 10, qrbox: { width: 240, height: 240 }, rememberLastUsedCamera: true }, false);

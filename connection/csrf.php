@@ -102,6 +102,7 @@ function csrf_require()
         'Your session security token is missing or expired. Reload the page and try again.',
         403,
         app_url('login/login.html'),
-        'Back to sign in'
+        'Back to sign in',
+        'csrf'
     );
 }

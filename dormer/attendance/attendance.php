@@ -44,7 +44,7 @@ if (empty($student['qr_token'])) {
     for ($attempt = 0; $attempt < 3; $attempt++) {
         $token = bin2hex(random_bytes(16));
         $stmt  = db_prepare(
-            'UPDATE validated_dormers SET qr_token = ? WHERE student_id = ? AND qr_token IS NULL'
+            "UPDATE validated_dormers SET qr_token = ? WHERE student_id = ? AND (qr_token IS NULL OR qr_token = '')"
         );
         $stmt->bind_param('si', $token, $student_id);
         $saved = db_execute($stmt, 'qr token create');

@@ -49,8 +49,8 @@ there. Use Apache for anything beyond local testing.
 | Staff   | `staff@lnu.edu.ph`      | `Staff#2026`  |
 
 The seed also includes one pending registration (Liza Navarro) for the staff approval endpoints.
-The demo student's QR token is `5f2c1a9e7b3d4c68a1e0f4b2d9c37a10` (the scanner also still accepts the plain
-student ID `251502` while `QR_ALLOW_STUDENT_ID=1`).
+The demo student's QR token is `5f2c1a9e7b3d4c68a1e0f4b2d9c37a10` (the scanner accepts only the qr_token by default; the plain
+student ID `251502` works only if you set `QR_ALLOW_STUDENT_ID=1`).
 
 ## Things that behave differently from before
 

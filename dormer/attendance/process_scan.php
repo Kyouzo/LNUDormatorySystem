@@ -3,9 +3,9 @@
  * POST /dormer/attendance/process_scan.php   (staff only)
  * Body (JSON): {"token": "<QR content>"}
  *
- * The QR content is the dormer's qr_token. While the student UI still encodes
- * the plain student ID (older attendance.js), that is accepted too as long as
- * QR_ALLOW_STUDENT_ID is not set to 0.
+ * The QR content is the dormer's qr_token. The legacy plain student ID
+ * (older attendance.js) is accepted only when
+ * QR_ALLOW_STUDENT_ID=1 (default 0).
  *
  * Alternates IN / OUT per student per day; repeat scans within 30 seconds are
  * ignored.
@@ -33,7 +33,7 @@ if (strlen($token) > 64) {
     json_error('Invalid QR code.', 404);
 }
 
-$allowStudentId = filter_var(env_value('QR_ALLOW_STUDENT_ID', '1'), FILTER_VALIDATE_BOOLEAN);
+$allowStudentId = filter_var(env_value('QR_ALLOW_STUDENT_ID', '0'), FILTER_VALIDATE_BOOLEAN);
 
 $conn->begin_transaction();
 

@@ -3,7 +3,6 @@
    registration/register.html). Builds on assets/css/portal.css tokens.
    ========================================================================== */
 .login-page {
-  --login-blue: #0000ff;
   --login-radius: 28px;
   min-height: 100dvh;
   margin: 0;
@@ -50,7 +49,11 @@
   gap: 2rem;
   padding: clamp(1.75rem, 4vw, 2.6rem);
   color: var(--on-navy);
-  background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-700) 38%, var(--login-blue) 100%);
+  /* Vivid navy -> blue diagonal from design tokens only; the radial lift keeps the
+     bottom-right corner bright without a hard-coded colour. */
+  background:
+    radial-gradient(90% 80% at 100% 100%, color-mix(in srgb, var(--indigo) 85%, var(--paper) 15%) 0%, transparent 60%),
+    linear-gradient(135deg, var(--navy-800) 0%, var(--navy-700) 40%, var(--indigo) 100%);
 }
 .login-aside::before {
   content: "";

@@ -62,6 +62,12 @@
   }
   function setCsrf(token) { csrf = token ? String(token) : null; }
 
+  function isCsrfFailure(data) {
+    if (!data) return false;
+    if (data.code !== undefined) return data.code === 'csrf';
+    return /csrf|security token/i.test(String(data.message || ''));
+  }
+
   function isJson(res) {
     return /application\/json/i.test(res.headers.get('Content-Type') || '');
   }
@@ -111,7 +117,9 @@
       }
 
       // A rejected token: fetch a fresh one and try once more.
-      if (res.status === 403 && method !== 'GET' && !retry) return send(true);
+      // Only when the server says the token was the problem (code "csrf", or an older
+      // backend whose message mentions CSRF / the security token).
+      if (res.status === 403 && method !== 'GET' && !retry && isCsrfFailure(data)) return send(true);
 
       if (auth && (res.status === 401 || (res.status === 403 && method === 'GET'))) {
         goLogin();

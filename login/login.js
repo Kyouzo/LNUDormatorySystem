@@ -52,15 +52,22 @@
     });
   });
 
+  /*
+   * Where to go after signing in. The role map wins: it only points at our own
+   * pages. The server's `redirect` (relative to login/login.php) is used only for
+   * an unknown role, and only when it resolves same-origin AND inside the project
+   * root, so a tampered response cannot send the user off-site.
+   */
   function destination(data) {
-    // `redirect` is relative to login/login.php, which shares this page's folder.
+    const role = data && data.role;
+    if (role && FALLBACK[role]) return LNU.url(FALLBACK[role]);
     if (data && typeof data.redirect === 'string' && data.redirect) {
       try {
         const target = new URL(data.redirect, LNU.url('login/login.php'));
-        if (target.origin === location.origin) return target.href;
-      } catch (e) { /* use the role default */ }
+        if (target.origin === location.origin && target.href.indexOf(LNU.root) === 0) return target.href;
+      } catch (e) { /* use the default below */ }
     }
-    return LNU.url(FALLBACK[data && data.role] || FALLBACK.student);
+    return LNU.url(FALLBACK.student);
   }
 
   let sending = false;

@@ -33,7 +33,7 @@ function current_role()
 function auth_fail($json, $status, $message)
 {
     if ($json) {
-        json_error($message, $status);
+        json_error($message, $status, ['code' => ($status === 403) ? 'forbidden' : 'unauthorized']);
     }
     header('Location: ' . app_url('login/login.html'));
     exit;

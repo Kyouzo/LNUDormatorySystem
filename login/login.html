@@ -22,6 +22,8 @@
       <aside class="login-aside" data-hero data-hero-lines aria-label="Leyte Normal University">
         <p class="eyebrow">Leyte Normal University</p>
         <div>
+          <p class="login-aside-title">Dormitory Portal</p>
+          <p class="login-aside-copy">Your gate pass, receipts and records.</p>
         </div>
         <p class="tagline">Integrity | Excellence | Service</p>
       </aside>
@@ -36,12 +38,13 @@
         <form class="login-form" id="login-form" action="login.php" method="POST">
           <div class="form-alert" id="login-alert" role="alert" aria-live="assertive"></div>
           <div class="form-grid">
-            <label class="field full" for="username">Email address
+            <div class="field full">
+              <label for="username">Email address</label>
               <input type="email" id="username" name="username" placeholder="you@lnu.edu.ph"
                      autocomplete="username" autocapitalize="none" spellcheck="false" inputmode="email"
                      required aria-describedby="username-error">
               <span class="field-error" id="username-error"></span>
-            </label>
+            </div>
             <div class="field full">
               <label for="password">Password</label>
               <span class="input-affix">
