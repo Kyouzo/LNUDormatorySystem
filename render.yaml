@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: lnu-dorm-portal
+    runtime: docker
+    plan: free
+    healthCheckPath: /login/login.html
+    envVars:
+      - key: DB_PASS
+        generateValue: true
+      - key: CSRF_ENFORCE
+        value: "0"
+      - key: QR_ALLOW_STUDENT_ID
+        value: "0"
