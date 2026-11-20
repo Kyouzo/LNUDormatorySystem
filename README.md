@@ -1,113 +1,88 @@
-# LNU Dormitory Portal - running it locally (Windows)
+# Running the LNU Dormitory Portal locally
 
-Stack: PHP 7.4+ (8.x recommended) and MySQL/MariaDB. The easiest route is XAMPP.
+Plain HTML + vanilla JS + PHP 7.4+/8 + MySQL. No build step. The intended local setup is XAMPP
+(Apache + MySQL), served at `http://localhost/LNUDormatorySystem/`.
 
-## Option A - XAMPP (recommended)
+> The PHP has never been executed by the people who wrote it (no PHP on the authoring machine).
+> Expect runtime bugs on the first real run; `logs/php-error.log` is the first place to look.
 
-1. Install XAMPP from https://www.apachefriends.org (Apache + MySQL + PHP 8.x).
-2. Copy the whole project folder into XAMPP's web root so the result is
-   `C:\xampp\htdocs\LNUDormatorySystem\` (the folder that contains `login`, `dormer`, `staff`, `connection`...).
-3. Open the **XAMPP Control Panel** and click **Start** next to **Apache** and **MySQL**.
-4. Create the database and demo data, either way:
+## 1. XAMPP setup
 
-   **phpMyAdmin**
-   1. Open http://localhost/phpmyadmin
-   2. Click **Import** -> choose `database\schema.sql` -> **Import**
-      (this creates the `lnudormatorysystem` database and all tables).
-   3. Click **Import** again -> choose `database\seed.sql` -> **Import**.
-
-   **MySQL command line** (PowerShell)
-   ```powershell
-   cd C:\xampp\htdocs\LNUDormatorySystem
-   C:\xampp\mysql\bin\mysql.exe -u root -e "source database/schema.sql"
-   C:\xampp\mysql\bin\mysql.exe -u root -e "source database/seed.sql"
+1. Install XAMPP and copy the project to `C:\xampp\htdocs\LNUDormatorySystem\`.
+2. Open the XAMPP Control Panel and start **Apache** and **MySQL**.
+3. Create the database: phpMyAdmin (`http://localhost/phpmyadmin`) → **Import** `database/schema.sql`, then
+   **Import** `database/seed.sql`. Or from a shell:
    ```
-5. Open http://localhost/LNUDormatorySystem/login/login.html and sign in with a demo account below.
+   C:\xampp\mysql\bin\mysql -u root < database\schema.sql
+   C:\xampp\mysql\bin\mysql -u root < database\seed.sql
+   ```
+4. Database settings (optional): copy `connection/.env.example` to `connection/.env`, or set environment variables.
+   Defaults: `DB_HOST=localhost`, `DB_PORT=3306`, `DB_USER=root`, `DB_PASS=` (empty), `DB_NAME=lnudormatorysystem`.
+   The same file holds `CURFEW_TIME` (22:00), `CURFEW_END` (04:00), `ROOM_CAPACITY` (4), `ENTRANCE_SLIP_REQUIRED` (0),
+   `QR_ALLOW_STUDENT_ID` (0), `CSRF_ENFORCE` (0), `SESSION_IDLE_SECONDS` (7200).
+5. Open `http://localhost/LNUDormatorySystem/login/login.html` and sign in with a demo account below.
 
-The default database settings are `localhost` / user `root` / empty password / database `lnudormatorysystem`,
-which is what a fresh XAMPP uses. To change them, copy `connection\.env.example` to `connection\.env` and edit it
-(or set `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`, `DB_PORT` as environment variables).
+## 2. Alternative: PHP's built-in server
 
-## Option B - PHP built-in server (only if PHP is installed and on PATH)
+If PHP and MySQL are installed without Apache:
 
-You still need a running MySQL (XAMPP's MySQL is fine) with the schema and seed imported as above.
-
-```powershell
-php -S localhost:8000 -t D:\LNUDormatorySystem
+```
+cd D:\LNUDormatorySystem
+php -S localhost:8000
 ```
 
-Then open http://localhost:8000/login/login.html .
-Note: the built-in server ignores `.htaccess`, so the upload-folder and `connection/` protections are not applied
-there. Use Apache for anything beyond local testing.
+Then open `http://localhost:8000/login/login.html`. The built-in server **ignores `.htaccess`**, so the upload,
+`connection/` and `logs/` folders are not protected. Use it for local testing only.
 
-## Demo accounts (DEMO ONLY - delete or change before any real use)
+## 3. Demo accounts (seed data, demo only)
 
-| Role    | Sign-in (email)         | Password      |
-|---------|-------------------------|---------------|
-| Student | `student@lnu.edu.ph`    | `Dormer#2026` |
-| Student | `maria.santos@lnu.edu.ph`, `pedro.reyes@lnu.edu.ph`, `ana.villanueva@lnu.edu.ph` | `Dormer#2026` |
-| Admin (Dorm Administrator) | `staff@lnu.edu.ph` | `Staff#2026` |
+| Role | Email | Password |
+|---|---|---|
+| Student | `student@lnu.edu.ph` | `Dormer#2026` |
+| Dorm Administrator | `staff@lnu.edu.ph` | `Staff#2026` |
 | Security Personnel | `security@lnu.edu.ph` | `Security#2026` |
 
-The seed also includes: one pending student registration (Liza Navarro), one pending personnel registration
-(`rosa.garcia@lnu.edu.ph`, security), 3 floors x 10 rooms (capacity 4), the demo student in **Room 3-5**
-(with Pedro Reyes), two validated students not yet enrolled (Mark Cruz, Grace Bautista), three announcements
-(incl. "Floor 3 Room 1 and 3 please clean your rooms"), some rooms Checked and some Unchecked today, and a
-sample curfew warning.
-The demo student's QR token is `5f2c1a9e7b3d4c68a1e0f4b2d9c37a10` (the scanner accepts only the qr_token by default; the plain
-student ID `251502` works only if you set `QR_ALLOW_STUDENT_ID=1`).
+Emails come from `database/seed.sql`; the passwords are the ones recorded in `HANDOFF.md` (the seed stores only bcrypt
+hashes, so if a login fails, check `HANDOFF.md` / `seed.sql` comments or reset the hash with PHP's `password_hash`).
+Other seeded students (`maria.santos@…`, `pedro.reyes@…`, `ana.villanueva@…`, `mark.cruz@…`, `grace.bautista@…`)
+share the student password hash. The seed also has one pending student registration (`liza.navarro@lnu.edu.ph`) and one
+pending personnel registration (`rosa.garcia@lnu.edu.ph`, Security) to try the approval screens.
 
-## Roles and landing pages
+Landing page after sign-in: student → `dormer/dashboard/dashboard.html`, admin → `staff/violations.html` (for now),
+security → `staff/security/home.html`.
 
-| Role | After sign-in |
-|---|---|
-| Student | `dormer/dashboard/dashboard.html` |
-| Admin (Dorm Administrator) | `staff/violations.html` (for now) |
-| Security Personnel | `staff/security/home.html` |
+## 4. Registration flows
 
-## How dorm personnel (admin / security) register
+`registration/register.html` asks **Register as Student** or **Register as Dorm Personnel**.
 
-There is no hidden admin sign-up. Personnel open the registration page, choose **Register as Dorm Personnel**
-(`registration/register_personnel.php`), pick their personnel type (Dorm Administrator or Security Personnel)
-and submit. The request is *pending*. A dorm administrator approves it in the admin portal
-(`staff/api/staff_registrations_list.php` + `staff_registration_review.php`), which creates the staff account;
-the person then signs in with the email and password they chose. The **first admin is seeded**
-(`staff@lnu.edu.ph`) and bootstraps the first approval. Students register the same way and are validated by an
-admin, who then enrols them in a room (Manage Students).
+- **Student** (`registration/register_student.html` → `register.php`): name, age, gender, student ID, email, address,
+  optional year level / password, and an **entrance slip** (JPG/PNG/PDF, max 5 MB; optional unless
+  `ENTRANCE_SLIP_REQUIRED=1`). Creates a *pending* record. An admin approves it (if no password was set, approval shows a
+  one-time temporary password to hand over), then enrols the student into a floor and room.
+- **Dorm personnel** (`registration/register_personnel.html` → `register_personnel.php`): name, age (18+), gender,
+  personnel type (Dorm Administrator = `admin`, Security Personnel = `security`), email, password. Creates a *pending*
+  row in `staff_registrations`. An existing admin approves it (`staff/api/staff_registration_review.php`); the person
+  then signs in with the email and password they registered. The first admin comes from the seed.
 
-## Upgrading an existing database (from the previous version)
+## 5. Things to check end to end
 
-1. Back up the database.
-2. Import `database\schema.sql` again (creates the new tables only).
-3. Run the statements in the UPGRADE block at the bottom of `schema.sql` that you still need
-   (roles, new columns, rooms, legacy "3-5" room text -> floor/room, foreign key).
-4. Import `database\seed.sql` again (adds the admin + security demo accounts, rooms and demo data;
-   it refreshes demo rows and clears demo announcements, room checks and curfew scans).
-5. Make sure `registration\uploads\entrance_slips\` exists and Apache may write to it (it ships with a
-   `.htaccess` that denies all web access; admins view slips through `staff/api/entrance_slip_file.php`).
-6. Optional settings in `connection\.env`: `ROOM_CAPACITY`, `CURFEW_TIME`, `CURFEW_END`, `ENTRANCE_SLIP_REQUIRED`
-   (see `connection\.env.example`).
+Register student → admin approves → admin enrols into a room → student signs in → student opens the QR pass →
+security scans it (`staff/security/attendance.html`, **Scan QR**) → curfew scan (**Scan QR For Curfew**) →
+payment upload → violation → announcements. Fix whatever the never-executed PHP breaks.
 
-Front-end note: `role` from `login.php` / `me.php` is now `student`, `admin` or `security` (use `account_type`
-for the old student/staff split). Full endpoint list: `database\API.md`.
+## 6. Troubleshooting
 
-## Things that behave differently from before
-
-- Passwords are stored as bcrypt hashes. Any old plaintext password row still signs in once and is then
-  automatically re-saved as a hash. (If your old `password` column is shorter than 60 characters, run
-  `ALTER TABLE validated_dormers MODIFY password VARCHAR(255) NOT NULL;`.)
-- Registration creates a *pending* record; an admin approves it via `staff/api/registration_review.php`
-  (see `database\API.md`).
-- Errors are written to `logs\php-error.log`, never shown in the browser. Check that file if something fails.
-- CSRF checking is lenient until the front end sends tokens. To enforce it, set `CSRF_ENFORCE=1`
-  in `connection\.env` (see `database\API.md`).
-- Uploaded payment proofs go to `dormer\payment_receipt\uploads\payment_proofs\` (JPG/PNG, max 5 MB).
-  PHP's own `upload_max_filesize` / `post_max_size` must be at least 5M (XAMPP defaults are larger).
-
-## Troubleshooting
-
-- "The service is temporarily unavailable": MySQL is not running or credentials differ; see `logs\php-error.log`.
-- Blank page / HTTP 500: Apache's `AllowOverride` blocks `.htaccess`; XAMPP's default (`All`) is fine.
-- Login says incorrect password for the demo account: re-import `database\seed.sql`.
-- Camera scanner (http://localhost/LNUDormatorySystem/dormer/attendance/scan_qr.php) needs HTTPS or `localhost`,
-  and a staff login first.
+- **Blank data / "server not reachable" messages:** Apache or MySQL is not running, or the page was opened as a
+  `file://` URL. Always open it through `http://localhost/...`.
+- **PHP errors:** never shown in the browser; they go to `logs/php-error.log`. Make sure the `logs/` folder is
+  writable by Apache.
+- **`.htaccess` ignored / uploads or `connection/` readable from the browser:** Apache needs `AllowOverride All` for
+  the project folder (the XAMPP default for `htdocs`). Check `C:\xampp\apache\conf\httpd.conf`.
+- **Database connection failed:** check `connection/.env` (or the defaults above) and that `schema.sql` was imported
+  into a database named `lnudormatorysystem`.
+- **Camera / QR scanner does not start:** browsers allow the camera only on `https://` or `http://localhost`.
+  Opening the site from another device by IP address (`http://192.168.x.x/...`) blocks the camera; use HTTPS
+  there. Also allow the camera permission prompt and close other apps using the camera.
+- **Scanner says "could not load":** the scanner library comes from unpkg.com (`html5-qrcode@2.3.8`); it needs internet.
+- **"Already scanned":** attendance ignores the same pass within 30 seconds; curfew allows one check-in per night.
+- **Security login lands on a 404:** make sure `staff/security/home.html` exists in your copy.
