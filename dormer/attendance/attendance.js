@@ -1,177 +1,191 @@
+/* Attendance page: QR gate pass (encodes student.qr_token) + recent scans. */
+(function () {
+  'use strict';
 
-let student = null;
+  const K = window.DormKit;
+  const $ = (id) => document.getElementById(id);
+  const COLUMNS = 3;
 
-// Load logged-in student's information
-async function loadStudent() {
+  let student = null;
+  let clockTimer = null;
 
-    try {
-        const response = await fetch("./attendance.php");
-        const result = await response.text();
+  /* ---------- Profile + QR ---------- */
+  function setText(id, value, fallback) {
+    const node = $(id);
+    if (!node) return;
+    node.textContent = value !== null && value !== undefined && String(value).trim() !== '' ? String(value) : (fallback || '—');
+    node.classList.remove('skeleton');
+  }
 
-        console.log("PHP Response:", result);
+  function qrColor() {
+    const v = getComputedStyle(document.documentElement).getPropertyValue('--navy-900').trim();
+    return v || '#03034f';
+  }
 
-        let data;
-
-        try {
-            data = JSON.parse(result);
-        } catch (error) {
-            throw new Error(
-                "PHP did not return JSON. Check attendance.php for PHP errors."
-            );
-        }
-
-        if (!response.ok || !data.success) {
-            throw new Error(data.message || "Student not found.");
-        }
-
-        student = data;
-        console.log("FULL STUDENT DATA:", student);
-        console.log("LAST NAME:", student.last_name);
-
-        // Display student information on the page
-        document.getElementById("studentName").textContent =
-            student.last_name || "no last name";
-
-        document.getElementById("studentID").textContent =
-            student.student_id || "";
-
-        console.log("Student loaded successfully:", student);
-
-    } catch (error) {
-        console.error("Loading Error:", error);
-        alert("Unable to load student information: " + error.message);
+  /** Render the QR for the token into a frame. Returns false when it could not. */
+  function renderQr(frame, size) {
+    frame.replaceChildren();
+    const token = student && typeof student.qr_token === 'string' ? student.qr_token : '';
+    if (!token) {
+      frame.appendChild(K.h('p', { class: 'qr-fallback', text: 'Your pass is not ready yet. Please ask the Dormitory Office to activate it.' }));
+      frame.setAttribute('aria-label', 'QR pass unavailable');
+      return false;
     }
-
-
-}
-
-    async function loadAttendanceHistory() {
-
-    const historyTable = document.getElementById("recentHistory");
-
-    try {
-
-        const response = await fetch("./attendance_logs.php");
-
-        const data = await response.json();
-
-        if (!response.ok || !data.success) {
-            throw new Error(data.message || "Unable to load attendance history.");
-        }
-
-        // Clear existing table content
-        historyTable.innerHTML = "";
-
-        // Check if there are attendance records
-        if (data.history.length === 0) {
-
-            historyTable.innerHTML = `
-                <tr>
-                    <td colspan="2">No attendance records found.</td>
-                </tr>
-            `;
-
-            return;
-        }
-
-        // Display attendance records
-        data.history.forEach(record => {
-
-            const row = document.createElement("tr");
-
-            const dateCell = document.createElement("td");
-            const typeCell = document.createElement("td");
-
-            dateCell.textContent = record.scan_datetime;
-
-            typeCell.textContent = record.attendance_type;
-
-            row.appendChild(dateCell);
-            row.appendChild(typeCell);
-
-            historyTable.appendChild(row);
-
-        });
-
-    } catch (error) {
-
-        console.error("Attendance History Error:", error);
-
-        historyTable.innerHTML = `
-            <tr>
-                <td colspan="2">Unable to load attendance history.</td>
-            </tr>
-        `;
+    if (typeof window.QRCode !== 'function') {
+      frame.appendChild(K.h('p', { class: 'qr-fallback', text: 'The QR generator did not load. Check your connection and refresh the page.' }));
+      frame.setAttribute('aria-label', 'QR pass unavailable');
+      return false;
     }
-}
-
-// Open QR modal
-function openModal(action) {
-
-    if (!student) {
-        alert("Student information is not yet loaded.");
-        return;
-    }
-
-    document.getElementById("qrModal").hidden = false;
-
-    document.getElementById("actionTitle").textContent = action;
-
-    // Display student information in the modal
-    document.getElementById("modalStudentName").textContent =
-        student.last_name || "no last name";
-
-    document.getElementById("modalStudentID").textContent =
-        student.student_id || "";
-
-    document.getElementById("roomType").textContent =
-        student.room_assignment || "";
-
-    document.getElementById("address").textContent =
-        student.address || "";
-
-    // Display current date and time
-    const today = new Date();
-
-    document.getElementById("date").textContent =
-        today.toLocaleDateString();
-
-    document.getElementById("time").textContent =
-        today.toLocaleTimeString();
-
-    // Generate QR code
-    const qrContainer = document.getElementById("qrcode");
-
-    qrContainer.innerHTML = "";
-
-    new QRCode(qrContainer, {
-        text: String(student.student_id),
-        width: 180,
-        height: 180
+    const holder = K.h('div');
+    frame.appendChild(holder);
+    new window.QRCode(holder, {
+      text: token,
+      width: size,
+      height: size,
+      colorDark: qrColor(),
+      colorLight: '#ffffff',
+      correctLevel: window.QRCode.CorrectLevel ? window.QRCode.CorrectLevel.M : undefined,
     });
-}
+    holder.removeAttribute('title'); // qrcodejs copies the token into a tooltip
+    holder.querySelectorAll('img').forEach((img) => { img.alt = ''; });
+    frame.setAttribute('aria-label', 'QR pass for ' + (student.full_name || 'your account'));
+    return true;
+  }
 
-// Close QR modal
-function closeModal() {
-    document.getElementById("qrModal").hidden = true;
-}
+  function showProfileError(error) {
+    const box = $('profileError');
+    box.textContent = error.message;
+    box.hidden = false;
+    $('reloadProfile').hidden = error.kind === 'auth';
+    ['studentID', 'studentRoom', 'studentYear', 'studentAddress', 'heroRoom'].forEach((id) => setText(id, null));
+    setText('studentName', 'Profile unavailable');
+    setText('heroName', 'your account');
+    const frame = $('qrInline');
+    frame.replaceChildren(K.h('p', { class: 'qr-fallback', text: 'Your pass will appear here once your profile loads.' }));
+    frame.setAttribute('aria-label', 'QR pass unavailable');
+  }
 
-// Close modal when clicking outside
-window.onclick = function(event) {
-    const modal = document.getElementById("qrModal");
-
-    if (event.target === modal) {
-        closeModal();
+  async function loadStudent() {
+    $('profileError').hidden = true;
+    $('reloadProfile').hidden = true;
+    try {
+      const data = await K.api('attendance.php');
+      student = data;
+      const name = data.full_name || [data.first_name, data.last_name].filter(Boolean).join(' ') || 'LNU dormer';
+      student.full_name = name;
+      setText('studentName', name);
+      K.fillName(name);
+      setText('studentID', data.student_id);
+      setText('studentRoom', data.room_assignment, 'Not yet assigned');
+      setText('heroRoom', data.room_assignment, 'Not yet assigned');
+      setText('studentYear', data.year_level, 'Not set');
+      setText('studentAddress', data.address, 'Not set');
+      const ok = renderQr($('qrInline'), 184);
+      $('enlargeQr').disabled = !ok;
+    } catch (error) {
+      student = null;
+      $('enlargeQr').disabled = true;
+      showProfileError(error);
     }
-};
+  }
 
-// Load student information once when page opens
-document.addEventListener("DOMContentLoaded", function() {
+  /* ---------- Full-size pass dialog ---------- */
+  function tickClock() {
+    const now = new Date();
+    $('liveClock').textContent = now.toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit', second: '2-digit' });
+    $('liveDate').textContent = K.fmtWeekday(now) + ', ' + K.fmtDate(now);
+  }
 
-      console.log("Attendance page loaded!");
+  function openPass() {
+    if (!student) return;
+    setText('modalStudentName', student.full_name);
+    setText('modalStudentID', student.student_id);
+    setText('modalRoom', student.room_assignment, 'Not yet assigned');
+    setText('modalYear', student.year_level, 'Not set');
+    renderQr($('qrLarge'), 272);
+    tickClock();
+    clearInterval(clockTimer);
+    clockTimer = setInterval(tickClock, 1000);
+    if (window.Portal && Portal.openDialog) Portal.openDialog('qrDialog');
+    else $('qrDialog').showModal();
+  }
 
+  /* ---------- History ---------- */
+  function directionBadge(type) {
+    const isIn = String(type).toUpperCase() === 'IN';
+    return K.h('span', { class: 'badge ' + (isIn ? 'badge-success' : 'badge-navy'), text: isIn ? 'Time in' : 'Time out' });
+  }
+
+  function updateStats(history) {
+    K.countTo($('statCount'), history.length);
+    const latest = history[0];
+    if (!latest) {
+      setText('statStatus', 'No scans yet');
+      $('statStatusNote').textContent = 'Your first scan sets this.';
+      setText('statLast', '—');
+      $('statLastNote').textContent = 'Nothing recorded so far.';
+      return;
+    }
+    const isIn = String(latest.attendance_type).toUpperCase() === 'IN';
+    setText('statStatus', isIn ? 'Inside the dorm' : 'Signed out');
+    $('statStatusNote').textContent = isIn ? 'You timed in on your latest scan.' : 'Remember to time in when you return.';
+    const d = K.parseDateTime(latest.scan_datetime);
+    setText('statLast', d ? K.relative(d) : latest.scan_datetime);
+    $('statLastNote').textContent = d ? K.fmtDate(d) + ' at ' + K.fmtTime(d) : 'Lobby scanner';
+  }
+
+  function statsUnavailable() {
+    ['statStatus', 'statLast'].forEach((id) => setText(id, 'Unavailable'));
+    $('statStatusNote').textContent = 'We could not read your scans.';
+    $('statLastNote').textContent = 'Try refreshing the activity list.';
+    setText('statCount', '—');
+  }
+
+  async function loadHistory() {
+    const tbody = $('recentHistory');
+    const wrap = $('historyWrap');
+    const button = $('refreshHistory');
+    wrap.setAttribute('aria-busy', 'true');
+    button.disabled = true;
+    K.skeletonRows(tbody, COLUMNS, 5);
+    try {
+      const data = await K.api('attendance_logs.php');
+      const history = Array.isArray(data.history) ? data.history : [];
+      tbody.replaceChildren();
+      updateStats(history);
+      if (!history.length) {
+        tbody.appendChild(K.stateRow(COLUMNS, K.emptyState({
+          icon: 'clock',
+          title: 'No scans yet',
+          text: 'Your time in and time out records will appear here after your first scan at the lobby.',
+        })));
+        return;
+      }
+      const rows = history.map((record) => {
+        const d = K.parseDateTime(record.scan_datetime);
+        return K.h('tr', null, [
+          K.h('td', null, d ? [K.h('span', { class: 'cell-strong', text: K.fmtDate(d) }), K.h('span', { class: 'cell-sub', text: K.fmtWeekday(d) })] : [String(record.scan_datetime || '—')]),
+          K.h('td', { class: 'tabular', text: d ? K.fmtTime(d) : '—' }),
+          K.h('td', null, [directionBadge(record.attendance_type)]),
+        ]);
+      });
+      rows.forEach((row) => tbody.appendChild(row));
+      K.enter(rows);
+    } catch (error) {
+      statsUnavailable();
+      tbody.replaceChildren(K.stateRow(COLUMNS, K.errorState(error, loadHistory)));
+    } finally {
+      wrap.setAttribute('aria-busy', 'false');
+      button.disabled = false;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    $('enlargeQr').addEventListener('click', openPass);
+    $('reloadProfile').addEventListener('click', loadStudent);
+    $('refreshHistory').addEventListener('click', loadHistory);
+    $('qrDialog').addEventListener('close', () => clearInterval(clockTimer));
     loadStudent();
-
-    loadAttendanceHistory();
-
-});
+    loadHistory();
+  });
+})();

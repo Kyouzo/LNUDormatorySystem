@@ -1,355 +1,188 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<meta name="theme-color" content="#ffffff">
-<title>Students Violations</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="../assets/css/portal.css">
-<style>
-/* ---------- Tokens (taken from the Canva design) ---------- */
-:root {
-  --bg: #f5f8fc;
-  --panel: #ffffff;
-  --header: #ffffff;
-  --grad-top: #edf7f8;
-  --grad-bottom: #dce9f2;
-  --ink: #172b4d;
-  --muted: #64748b;
-  --white: #ffffff;
-  --accent: #dff3f5;
-  --major: #c0392b;
-  --minor: #d98c1f;
-  --ok: #2e8b57;
-  --radius: 14px;
-  --font: Inter, ui-sans-serif, system-ui, sans-serif;
-}
-* { box-sizing: border-box; margin: 0; }
-body {
-  font-family: var(--font);
-  color: var(--ink);
-  background: var(--bg);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-}
-
-/* ---------- App shell ---------- */
-.app {
-  width: 100%;
-  max-width: 480px;
-  min-height: 100vh;
-  background: linear-gradient(180deg, var(--grad-top), var(--grad-bottom));
-}
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
-  background: var(--header);
-  box-shadow: 0 6px 14px rgba(60, 60, 130, .25);
-}
-.topbar h1 { flex: 1; font-size: 1.4rem; font-weight: 600; }
-.icon-btn {
-  background: none; border: 0; cursor: pointer;
-  color: var(--ink); display: grid; place-items: center; padding: 4px;
-}
-.icon-btn svg { width: 28px; height: 28px; }
-
-/* ---------- Search + filters ---------- */
-.search {
-  display: flex; align-items: center; gap: 10px;
-  margin: 22px 20px 12px;
-}
-.search label { font-size: 1rem; font-weight: 500; }
-.search input {
-  flex: 1; min-width: 0;
-  border: 0; border-radius: 999px;
-  padding: 10px 16px;
-  font: inherit; background: var(--white);
-}
-.filters { display: flex; gap: 8px; margin: 0 20px 14px; flex-wrap: wrap; }
-.chip {
-  border: 2px solid var(--ink); background: transparent;
-  border-radius: 999px; padding: 4px 12px;
-  font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer;
-}
-.chip[aria-pressed="true"] { background: var(--ink); color: var(--white); }
-
-/* ---------- Student list ---------- */
-.list {
-  margin: 0 20px 24px;
-  background: rgba(220, 220, 250, .75);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-}
-.row {
-  display: grid;
-  grid-template-columns: 1.4fr .9fr .8fr auto;
-  gap: 8px; align-items: center;
-  padding: 10px 0;
-}
-.row + .row { border-top: 1px solid rgba(29, 27, 58, .15); }
-.row.head { font-weight: 700; padding-top: 2px; }
-.row small { display: block; color: var(--muted); font-weight: 500; }
-.badge {
-  display: inline-block; min-width: 20px; text-align: center;
-  border-radius: 999px; padding: 0 8px; margin-top: 2px;
-  font-size: .75rem; font-weight: 700; color: var(--white);
-}
-.badge.major { background: var(--major); }
-.badge.minor { background: var(--minor); }
-.badge.none  { background: var(--ok); }
-.btn {
-  font: inherit; font-weight: 700; cursor: pointer;
-  border: 2px solid var(--ink); border-radius: 999px;
-  background: var(--accent); color: var(--ink);
-  padding: 6px 18px;
-}
-.btn:hover { background: #a7d6fa; }
-.empty { padding: 28px 8px; text-align: center; color: var(--muted); }
-
-/* ---------- Modal ---------- */
-.overlay {
-  position: fixed; inset: 0;
-  background: rgba(29, 27, 58, .45);
-  display: none; align-items: center; justify-content: center;
-  padding: 16px; z-index: 10;
-}
-.overlay.open { display: flex; }
-.modal {
-  width: 100%; max-width: 640px; max-height: 94vh; overflow-y: auto;
-  background: var(--panel);
-  border-radius: 28px;
-  padding: 24px 28px 28px;
-  position: relative;
-}
-.modal h2 { text-align: center; font-size: 1.7rem; font-weight: 600; margin-bottom: 14px; }
-.close { position: absolute; top: 14px; right: 16px; font-size: 1.6rem; line-height: 1; }
-.info p { font-size: 1.05rem; margin-bottom: 4px; }
-.field { margin-top: 16px; }
-.field > span, legend { display: block; font-weight: 600; margin-bottom: 6px; padding: 0; }
-.field-inline { display: flex; align-items: center; gap: 24px; margin-top: 16px; }
-.field-inline legend { margin: 0; min-width: 100px; }
-fieldset { border: 0; padding: 0; }
-.radios { display: flex; gap: 18px; }
-.radios label { display: flex; align-items: center; gap: 6px; font-weight: 600; cursor: pointer; }
-.radios input { accent-color: var(--ink); width: 18px; height: 18px; }
-select, textarea {
-  width: 100%; border: 0; border-radius: 16px;
-  padding: 12px 14px; font: inherit; background: var(--white); color: var(--ink);
-}
-textarea { min-height: 110px; resize: vertical; }
-:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
-.modal .btn { margin-top: 18px; }
-
-/* Previous violations inside the modal */
-.history { margin-top: 22px; }
-.history h3 { font-size: 1rem; margin-bottom: 8px; }
-.history ul { list-style: none; padding: 0; display: grid; gap: 8px; }
-.history li {
-  background: rgba(255, 255, 255, .6); border-radius: 14px;
-  padding: 10px 14px; font-size: .92rem;
-}
-.history li b { font-weight: 700; }
-.history time { color: var(--muted); font-size: .8rem; display: block; }
-
-/* Toast */
-.toast {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-  background: var(--ink); color: var(--white);
-  padding: 10px 20px; border-radius: 999px; font-weight: 600;
-  opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 20;
-}
-.toast.show { opacity: 1; }
-
-/* ---------- Larger screens: show list wider ---------- */
-@media (min-width: 720px) {
-  .app { max-width: 820px; }
-  .row { grid-template-columns: 1.6fr 1fr 1fr 90px auto; }
-}
-@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#00006e">
+  <title>Conduct and registrations | LNU Dormitory Office</title>
+  <meta name="description" content="Dormitory office tools: student violations and pending registrations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../assets/css/portal.css">
+  <link rel="stylesheet" href="violations.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+  <script src="../assets/js/portal.js"></script>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><img class="brand-mark" src="../assets/images/lnu-logo.png" alt="Leyte Normal University logo"><span>Leyte Normal University<br>Dormitory office</span></div>
+    <nav class="nav" aria-label="Staff navigation">
+      <a href="#students" aria-current="page">Conduct</a>
+      <a href="#registrations">Registrations</a>
+      <a href="../dormer/attendance/scan_qr.php">QR scanner</a>
+    </nav>
+    <a class="sidebar-logout" href="../login/logout.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>Sign out</a>
+    <div class="sidebar-footer">Staff workspace<br>© <span data-current-year></span> Leyte Normal University</div>
+  </aside>
 
-<main class="app">
-  <header class="topbar">
-    <img class="brand-mark" src="../assets/images/lnu-logo.png" alt="Leyte National University logo">
-    <button class="icon-btn" aria-label="Open menu">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-    </button>
-    <h1>Students Violations</h1>
-    <button class="icon-btn" aria-label="Notifications">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 0 0-5-6.7V3a2 2 0 0 0-4 0v1.3A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2Z"/></svg>
-    </button>
-  </header>
+  <main class="main-content" id="main-content">
+    <section class="hero-band staff-hero" data-hero aria-labelledby="page-title">
+      <span class="eyebrow">Dormitory office</span>
+      <h1 id="page-title">Student conduct and registrations</h1>
+      <p>Log violations and absences, review each dormer's record, and approve new residents.</p>
+      <p class="hero-meta" aria-live="polite">
+        <span>Signed in as <strong id="staff-name">staff</strong></span>
+        <span>Dormers <strong id="meta-dormers">—</strong></span>
+        <span>Pending registrations <strong id="meta-pending">—</strong></span>
+      </p>
+      <p class="hero-alert" id="hero-alert" role="alert" hidden></p>
+    </section>
 
-  <div class="search">
-    <label for="q">Search students:</label>
-    <input id="q" type="search" placeholder="Name or room">
-  </div>
-
-  <div class="filters" role="group" aria-label="Filter by violation type">
-    <button class="chip" aria-pressed="true" data-filter="all">All</button>
-    <button class="chip" aria-pressed="false" data-filter="Major offense">Major</button>
-    <button class="chip" aria-pressed="false" data-filter="Minor offense">Minor</button>
-    <button class="chip" aria-pressed="false" data-filter="Curfew">Curfew</button>
-    <button class="chip" aria-pressed="false" data-filter="Missed cleanup">Cleanup</button>
-    <button class="chip" aria-pressed="false" data-filter="Payment overdue">Payment</button>
-  </div>
-
-  <section class="list" aria-label="Student list">
-    <div class="row head">
-      <span>Name</span><span>Year level</span><span>Floor and room</span><span></span>
-    </div>
-    <div id="rows"></div>
-  </section>
-</main>
-
-<!-- Student violation modal -->
-<div class="overlay" id="overlay" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <button class="icon-btn close" id="close" aria-label="Close">&times;</button>
-    <h2 id="modal-title">Student violation</h2>
-
-    <div class="info">
-      <p id="m-name"></p>
-      <p id="m-room"></p>
-    </div>
-
-    <form id="form">
-      <fieldset class="field-inline">
-        <legend>Absent</legend>
-        <div class="radios">
-          <label><input type="radio" name="absent" value="Y"> Y</label>
-          <label><input type="radio" name="absent" value="N" checked> N</label>
+    <div class="content-stack">
+      <section class="panel" id="students" aria-labelledby="students-title">
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">Conduct</span>
+            <h2 id="students-title">Dormers</h2>
+            <p>Search by name, student ID or room, then log a violation or absence.</p>
+          </div>
+          <button class="button outline small" type="button" id="students-refresh">Refresh</button>
         </div>
-      </fieldset>
 
-      <label class="field">
-        <span>Violation type</span>
-        <select id="type" required>
-          <option value="">Select a type</option>
-          <option>Major offense</option>
-          <option>Minor offense</option>
-          <option>Curfew</option>
-          <option>Missed cleanup</option>
-          <option>Payment overdue</option>
-          <option>Others</option>
-        </select>
-      </label>
+        <div class="toolbar">
+          <label class="field search-field" for="q"><span class="sr-only">Search dormers</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input id="q" type="search" placeholder="Name, student ID or room" autocomplete="off" spellcheck="false">
+          </label>
+          <div class="chips" role="group" aria-label="Filter by record" id="chips">
+            <button class="chip" type="button" aria-pressed="true" data-filter="all">All</button>
+            <button class="chip" type="button" aria-pressed="false" data-filter="any">With records</button>
+            <button class="chip" type="button" aria-pressed="false" data-filter="Major offense">Major</button>
+            <button class="chip" type="button" aria-pressed="false" data-filter="Minor offense">Minor</button>
+            <button class="chip" type="button" aria-pressed="false" data-filter="Curfew">Curfew</button>
+            <button class="chip" type="button" aria-pressed="false" data-filter="Missed cleanup">Cleanup</button>
+            <button class="chip" type="button" aria-pressed="false" data-filter="Payment overdue">Payment</button>
+            <button class="chip" type="button" aria-pressed="false" data-filter="absent">Absences</button>
+          </div>
+          <p class="result-count" id="result-count" aria-live="polite"></p>
+        </div>
 
-      <label class="field">
-        <span>Dormer offenses</span>
-        <textarea id="details" placeholder="Describe what happened" required></textarea>
-      </label>
+        <div class="data-table table-wrap" aria-busy="true" id="students-wrap">
+          <table>
+            <caption class="sr-only">Dormers and their violation records</caption>
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col" class="col-id">Student ID</th>
+                <th scope="col" class="col-year">Year</th>
+                <th scope="col" class="col-room">Room</th>
+                <th scope="col">Record</th>
+                <th scope="col"><span class="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody id="rows">
+              <tr><td colspan="6"><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text short"></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-      <button class="btn" type="submit">Submit</button>
-    </form>
-
-    <div class="history">
-      <h3>Previous violations</h3>
-      <ul id="history"></ul>
+      <section class="panel" id="registrations" aria-labelledby="reg-title">
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">Admissions</span>
+            <h2 id="reg-title">Pending registrations <span class="badge badge-gold" id="reg-count" hidden>0</span></h2>
+            <p>Approving creates the dormer's account. Add a room now or later.</p>
+          </div>
+          <button class="button outline small" type="button" id="reg-refresh">Refresh</button>
+        </div>
+        <div class="reg-list" id="reg-list" aria-live="polite" aria-busy="true">
+          <div class="reg-card" aria-hidden="true"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text short"></span></div>
+          <div class="reg-card" aria-hidden="true"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text short"></span></div>
+        </div>
+      </section>
     </div>
-  </div>
+  </main>
 </div>
 
-<div class="toast" id="toast" role="status"></div>
+<!-- Log a violation -->
+<dialog class="dialog" id="violation-dialog" aria-labelledby="vd-title">
+  <div class="dialog-header">
+    <div><span class="eyebrow">Log a violation</span><h2 id="vd-title">Dormer</h2></div>
+    <button class="icon-button" type="button" data-dialog-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="dialog-body">
+    <p class="dialog-meta" id="vd-meta"></p>
+    <form id="violation-form" novalidate>
+      <div class="form-alert" id="vd-alert" role="alert"></div>
+      <div class="form-grid">
+        <fieldset class="radio-row">
+          <legend>Absent?</legend>
+          <label><input type="radio" name="absent" value="N" checked> No</label>
+          <label><input type="radio" name="absent" value="Y"> Yes, mark absent</label>
+        </fieldset>
+        <label class="field" for="vd-type">Violation type
+          <select id="vd-type" name="type" aria-describedby="vd-type-error">
+            <option value="">Select a type</option>
+            <option>Major offense</option>
+            <option>Minor offense</option>
+            <option>Curfew</option>
+            <option>Missed cleanup</option>
+            <option>Payment overdue</option>
+            <option>Others</option>
+          </select>
+          <span class="field-hint" id="vd-type-hint" hidden>Optional for an absence; saved as "Others".</span>
+          <span class="field-error" id="vd-type-error"></span>
+        </label>
+        <label class="field" for="vd-details">What happened
+          <textarea id="vd-details" name="details" maxlength="2000" placeholder="Time, place and what was observed" aria-describedby="vd-details-error"></textarea>
+          <span class="field-error" id="vd-details-error"></span>
+        </label>
+      </div>
+    </form>
+    <div class="history">
+      <h3>Previous records</h3>
+      <ul id="vd-history"></ul>
+    </div>
+  </div>
+  <div class="dialog-actions">
+    <button class="button ghost" type="button" data-dialog-close>Cancel</button>
+    <button class="button primary" type="submit" form="violation-form" id="vd-submit">Save record</button>
+  </div>
+</dialog>
 
-<script>
-/* Sample data. Replace with your backend (fetch from your API/database). */
-const students = [
-  { id: 1, name: "Juan dela Cruz", year: "2nd year", room: "3-16", log: [
-      { type: "Curfew", details: "Arrived 10:45 PM, curfew is 10:00 PM.", date: "Nov 12, 2026" } ] },
-  { id: 2, name: "Maria Santos", year: "1st year", room: "2-04", log: [] },
-  { id: 3, name: "Pedro Reyes", year: "3rd year", room: "3-09", log: [
-      { type: "Major offense", details: "Caught smoking inside the dorm.", date: "Nov 3, 2026" },
-      { type: "Missed cleanup", details: "Skipped weekly cleanup.", date: "Nov 10, 2026" } ] },
-  { id: 4, name: "Ana Villanueva", year: "4th year", room: "1-12", log: [
-      { type: "Payment overdue", details: "November dorm fee unpaid.", date: "Nov 15, 2026" } ] }
-];
-const MAJOR = ["Major offense"];
-const state = { filter: "all", query: "", current: null };
-const $ = (id) => document.getElementById(id);
+<!-- Confirm rejection -->
+<dialog class="dialog" id="reject-dialog" aria-labelledby="rj-title">
+  <div class="dialog-header">
+    <h2 id="rj-title">Reject this registration?</h2>
+    <button class="icon-button" type="button" data-dialog-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="dialog-body"><p id="rj-text">The applicant will not get an account. This cannot be undone from this page.</p></div>
+  <div class="dialog-actions">
+    <button class="button ghost" type="button" data-dialog-close>Keep pending</button>
+    <button class="button danger" type="button" id="rj-confirm">Reject</button>
+  </div>
+</dialog>
 
-function badge(s) {
-  const major = s.log.filter(v => MAJOR.includes(v.type)).length;
-  const other = s.log.length - major;
-  if (!s.log.length) return '<span class="badge none">Clear</span>';
-  return (major ? `<span class="badge major">${major} major</span> ` : "") +
-         (other ? `<span class="badge minor">${other} other</span>` : "");
-}
+<!-- Temporary password after approval -->
+<dialog class="dialog" id="temp-dialog" aria-labelledby="tp-title">
+  <div class="dialog-header">
+    <div><span class="eyebrow">Account created</span><h2 id="tp-title">Hand over this password</h2></div>
+    <button class="icon-button" type="button" data-dialog-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="dialog-body">
+    <p id="tp-text">This dormer did not choose a password. Give them this temporary one in person. It is shown only once.</p>
+    <div class="temp-password"><code id="tp-code"></code><button class="button secondary small" type="button" id="tp-copy">Copy</button></div>
+  </div>
+  <div class="dialog-actions"><button class="button primary" type="button" data-dialog-close>Done</button></div>
+</dialog>
 
-function renderList() {
-  const q = state.query.toLowerCase();
-  const items = students.filter(s =>
-    (s.name + " " + s.room).toLowerCase().includes(q) &&
-    (state.filter === "all" || s.log.some(v => v.type === state.filter)));
-  $("rows").innerHTML = items.length ? items.map(s => `
-    <div class="row">
-      <span>${s.name}<small>${badge(s)}</small></span>
-      <span>${s.year}</span>
-      <span>${s.room}</span>
-      <button class="btn" data-id="${s.id}">View</button>
-    </div>`).join("") : '<p class="empty">No students match your search.</p>';
-}
-
-function renderHistory() {
-  const log = state.current.log;
-  $("history").innerHTML = log.length ? log.slice().reverse().map(v =>
-    `<li><b>${v.type}</b><time>${v.date}</time>${v.details}</li>`).join("")
-    : "<li>No violations recorded.</li>";
-}
-
-function openModal(id) {
-  state.current = students.find(s => s.id === id);
-  $("m-name").textContent = "Name: " + state.current.name;
-  $("m-room").textContent = "Floor and room: " + state.current.room;
-  $("form").reset();
-  renderHistory();
-  $("overlay").classList.add("open");
-  $("overlay").setAttribute("aria-hidden", "false");
-  $("type").focus();
-}
-function closeModal() {
-  $("overlay").classList.remove("open");
-  $("overlay").setAttribute("aria-hidden", "true");
-}
-function toast(msg) {
-  const t = $("toast"); t.textContent = msg; t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2200);
-}
-
-$("rows").addEventListener("click", e => {
-  const b = e.target.closest("button[data-id]");
-  if (b) openModal(Number(b.dataset.id));
-});
-$("q").addEventListener("input", e => { state.query = e.target.value; renderList(); });
-document.querySelector(".filters").addEventListener("click", e => {
-  const c = e.target.closest(".chip"); if (!c) return;
-  document.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", x === c));
-  state.filter = c.dataset.filter; renderList();
-});
-$("close").addEventListener("click", closeModal);
-$("overlay").addEventListener("click", e => { if (e.target === $("overlay")) closeModal(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
-
-$("form").addEventListener("submit", e => {
-  e.preventDefault();
-  const absent = document.querySelector('input[name="absent"]:checked').value;
-  const type = absent === "Y" && !$("type").value ? "Missed cleanup" : $("type").value;
-  state.current.log.push({
-    type,
-    details: $("details").value.trim() + (absent === "Y" ? " (Marked absent)" : ""),
-    date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-  });
-  /* TODO: send to your backend, e.g. fetch("/api/violations", { method: "POST", body: ... }) */
-  renderList(); closeModal(); toast("Violation submitted");
-});
-
-renderList();
-</script>
+<script src="../assets/js/api.js"></script>
+<script src="violations.js"></script>
 </body>
 </html>

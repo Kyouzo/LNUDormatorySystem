@@ -1,98 +1,112 @@
+/* Violations page: summary counts + record table from violation.php. */
+(function () {
+  'use strict';
 
-document.addEventListener("DOMContentLoaded", loadViolations);
+  const K = window.DormKit;
+  const $ = (id) => document.getElementById(id);
+  const COLUMNS = 5;
 
-async function loadViolations() {
+  const TYPE_BADGE = {
+    'major offense': 'badge-danger',
+    'minor offense': 'badge-warning',
+    curfew: 'badge-navy',
+    'missed cleanup': 'badge-info',
+    'payment overdue': 'badge-gold',
+    others: 'badge-outline',
+  };
 
-    const curfewTable = document.getElementById("curfewRecords");
+  function typeBadge(type) {
+    const label = String(type || '').trim() || 'Others';
+    return K.h('span', { class: 'badge ' + (TYPE_BADGE[label.toLowerCase()] || 'badge-outline'), text: label });
+  }
 
+  function dateCell(value) {
+    const d = K.parseDateTime(value);
+    if (!d) return K.h('td', { class: 'muted', text: value ? String(value) : '—' });
+    return K.h('td', null, [K.h('span', { class: 'cell-strong', text: K.fmtDate(d) }), K.h('span', { class: 'cell-sub', text: K.fmtTime(d) })]);
+  }
+
+  function curfewCell(value) {
+    const d = K.parseDateTime(value);
+    if (!d) return K.h('td', { class: 'muted', text: '—' });
+    return K.h('td', null, [K.h('span', { class: 'cell-strong tabular', text: K.fmtTime(d) }), K.h('span', { class: 'cell-sub', text: K.fmtDate(d) })]);
+  }
+
+  function detailsText(record) {
+    const text = String(record.offenses || '').trim();
+    if (text) return text;
+    if (Number(record.absent) === 1) return 'Absent at roll call';
+    if (record.curfew) return 'Returned after curfew';
+    return 'No details recorded';
+  }
+
+  function row(record) {
+    const absent = Number(record.absent) === 1;
+    return K.h('tr', null, [
+      dateCell(record.created_at || record.curfew),
+      K.h('td', null, [typeBadge(record.violation_type)]),
+      K.h('td', { text: detailsText(record) }),
+      K.h('td', null, [absent ? K.h('span', { class: 'badge badge-warning', text: 'Absent' }) : K.h('span', { class: 'cell-sub', text: '—' })]),
+      curfewCell(record.curfew),
+    ]);
+  }
+
+  function setLatest(text, muted) {
+    const node = $('offenses');
+    node.replaceChildren(document.createTextNode(text));
+    node.style.color = muted ? 'var(--muted)' : '';
+  }
+
+  async function loadViolations() {
+    const tbody = $('curfewRecords');
+    const wrap = $('recordsWrap');
+    const button = $('refreshRecords');
+    wrap.setAttribute('aria-busy', 'true');
+    button.disabled = true;
+    K.skeletonRows(tbody, COLUMNS, 4);
     try {
+      const data = await K.api('violation.php');
+      const records = Array.isArray(data.records) ? data.records : [];
+      const curfews = records.filter((r) => r.curfew || String(r.violation_type || '').toLowerCase() === 'curfew').length;
 
-        const response = await fetch("./violation.php");
+      K.countTo($('statTotal'), records.length);
+      K.countTo($('absent'), Number(data.absent) || 0);
+      K.countTo($('statCurfew'), curfews);
+      $('statTotalNote').textContent = records.length ? 'Offenses and notices combined.' : 'A clean record so far.';
 
-        const data = await response.json();
+      const latest = records[0];
+      if (!latest) setLatest('Nothing has been recorded on your account.', true);
+      else setLatest(data.offenses && data.offenses !== 'No offenses' ? String(data.offenses) : detailsText(latest), false);
 
-        if (!response.ok || !data.success) {
-            throw new Error(data.message || "Unable to load violations.");
-        }
-
-        // Display offenses
-        document.getElementById("offenses").textContent =
-            data.offenses || "No offenses";
-
-        // Display absent count
-        document.getElementById("absent").textContent =
-            data.absent ?? 0;
-
-        // Clear curfew table
-        curfewTable.innerHTML = "";
-
-        if (!data.records || data.records.length === 0) {
-
-            curfewTable.innerHTML = `
-                <tr>
-                    <td colspan="2">No curfew records found.</td>
-                </tr>
-            `;
-
-            return;
-        }
-
-        // Display curfew records
-        data.records.forEach(record => {
-
-            const row = document.createElement("tr");
-
-            const dateCell = document.createElement("td");
-            const timeCell = document.createElement("td");
-
-            if (record.curfew) {
-
-                const parts = record.curfew.split(" ");
-                const date = parts[0];
-                const time = parts[1];
-
-                dateCell.textContent = date;
-
-                // Convert 24-hour time to 12-hour time
-                const [hour, minute] = time.split(":");
-
-                const hourNumber = Number(hour);
-
-                const period = hourNumber >= 12 ? "PM" : "AM";
-
-                const formattedHour =
-                    (hourNumber % 12 || 12).toString().padStart(2, "0");
-
-                timeCell.textContent =
-                    `${formattedHour}:${minute} ${period}`;
-
-            } else {
-
-                dateCell.textContent = "No curfew record";
-                timeCell.textContent = "-";
-
-            }
-
-            row.appendChild(dateCell);
-            row.appendChild(timeCell);
-
-            curfewTable.appendChild(row);
-
-        });
-
-        console.log("Violations loaded successfully!");
-
+      tbody.replaceChildren();
+      if (!records.length) {
+        tbody.appendChild(K.stateRow(COLUMNS, K.emptyState({
+          tone: 'success',
+          icon: 'check',
+          title: 'No violations recorded',
+          text: 'Entries will appear here if dormitory staff log an offense, an absence or a curfew breach on your account.',
+        })));
+        return;
+      }
+      const rows = records.map(row);
+      rows.forEach((r) => tbody.appendChild(r));
+      K.enter(rows);
     } catch (error) {
-
-        console.error("Violations Error:", error);
-
-        document.getElementById("offenses").textContent = "Unable to load";
-        document.getElementById("absent").textContent = "Unable to load";
-
-        curfewTable.innerHTML = `
-            <tr>
-                <td colspan="2">Unable to load curfew records.</td>
-            </tr>
-        `;
+      ['statTotal', 'absent', 'statCurfew'].forEach((id) => { const n = $(id); n.textContent = '—'; n.classList.remove('skeleton'); });
+      setLatest('Unavailable right now.', true);
+      tbody.replaceChildren(K.stateRow(COLUMNS, K.errorState(error, loadViolations)));
+    } finally {
+      wrap.setAttribute('aria-busy', 'false');
+      button.disabled = false;
     }
-}
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    $('refreshRecords').addEventListener('click', loadViolations);
+    K.whoAmI().then((me) => {
+      if (me && me.name) K.fillName(me.name);
+      else document.querySelectorAll('[data-student-name]').forEach((n) => { n.textContent = 'your account'; n.classList.remove('skeleton'); });
+    });
+    loadViolations();
+  });
+})();

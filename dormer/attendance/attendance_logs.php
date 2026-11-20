@@ -36,6 +36,16 @@ while ($row = $result->fetch_assoc()) {
 }
 
 $stmt->close();
+
+// Total number of scans on record (history is capped at the latest 10).
+$total = count($history);
+$stmt  = db_prepare('SELECT COUNT(*) AS total FROM attendance_logs WHERE student_id = ?');
+$stmt->bind_param('i', $student_id);
+if (db_execute($stmt, 'attendance total')) {
+    $row   = $stmt->get_result()->fetch_assoc();
+    $total = (int) ($row['total'] ?? $total);
+}
+$stmt->close();
 $conn->close();
 
-json_response(['success' => true, 'history' => $history]);
+json_response(['success' => true, 'history' => $history, 'total' => $total]);

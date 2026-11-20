@@ -1,0 +1,8 @@
+/* Registration page: tweaks on top of login/login.css */
+.is-wide .login-aside { justify-content: space-between; }
+.is-wide .login-head { margin-bottom: 1.25rem; }
+.is-wide .login-head p { max-width: 44ch; }
+.is-wide .login-main { align-content: start; }
+@media (min-width: 721px) {
+  .is-wide .login-aside > div { margin-block: auto; }
+}

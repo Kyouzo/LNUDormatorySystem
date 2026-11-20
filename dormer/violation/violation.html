@@ -1,4 +1,85 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><meta name="theme-color" content="#102f3d"><title>Violations | Leyte National University</title><link rel="stylesheet" href="../../assets/css/portal.css"></head>
-<body><a class="skip-link" href="#main-content">Skip to content</a><div class="app-shell"><aside class="sidebar"><div class="brand"><img class="brand-mark" src="../../assets/images/lnu-logo.png" alt="Leyte National University logo"><span>Leyte National University<br>Dormitory portal</span></div><nav class="nav" aria-label="Student navigation"><a href="../dashboard/dashboard.html">Overview</a><a href="../attendance/attendance.html">Attendance</a><a href="../payment_receipt/paymentReceipt.html">Payments</a><a href="violation.html" aria-current="page">Violations</a></nav><div class="sidebar-footer">Student workspace<br>© <span data-current-year></span> Leyte National University</div></aside>
-<main class="main-content" id="main-content"><header class="topbar"><div class="page-heading"><h1>Violations</h1><p>Review the disciplinary and curfew records associated with your student account.</p></div></header><div class="content-stack"><section class="violation-grid"><article class="panel"><h2>Offenses</h2><p>Current recorded offense</p><strong class="violation-value" id="offenses">Loading…</strong></article><article class="panel"><h2>Absences</h2><p>Recorded absence count</p><strong class="violation-value" id="absent">Loading…</strong></article></section><section class="panel"><h2>Curfew records</h2><p>Entries appear here when your account has a recorded curfew event.</p><div class="table-wrap"><table><thead><tr><th scope="col">Date</th><th scope="col">Time</th></tr></thead><tbody id="curfewRecords"><tr><td colspan="2" class="empty-state">Loading curfew records…</td></tr></tbody></table></div></section></div></main></div><script src="../../assets/js/portal.js"></script><script src="violation.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#00006e">
+  <link rel="icon" type="image/png" href="../../assets/images/lnu-logo.png">
+  <title>Violations | Leyte Normal University Dormitory</title>
+  <meta name="description" content="Your LNU dormitory conduct record: offenses, roll-call absences and curfew entries.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../../assets/css/portal.css">
+  <link rel="stylesheet" href="../attendance/student-kit.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+  <script src="../../assets/js/portal.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><img class="brand-mark" src="../../assets/images/lnu-logo.png" alt="Leyte Normal University logo"><span>Leyte Normal University<br>Dormitory portal</span></div>
+    <nav class="nav" aria-label="Student navigation">
+      <a href="../dashboard/dashboard.html">Overview</a>
+      <a href="../attendance/attendance.html">Attendance</a>
+      <a href="../payment_receipt/paymentReceipt.html">Payments</a>
+      <a href="violation.html" aria-current="page">Violations</a>
+    </nav>
+    <a class="sidebar-logout" href="../../login/logout.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>Sign out</a>
+    <div class="sidebar-footer">Student workspace<br>© <span data-current-year></span> Leyte Normal University</div>
+  </aside>
+
+  <main class="main-content" id="main-content">
+    <section class="hero-band dorm-hero" data-hero aria-labelledby="page-title">
+      <span class="eyebrow">Conduct record</span>
+      <h1 id="page-title">Your standing in the dormitory</h1>
+      <p>Every entry the Dormitory Office has logged on your account: offenses, roll-call absences and curfew breaches. Nothing here is hidden from you.</p>
+      <p class="hero-meta" aria-live="polite">
+        <span>Signed in as <strong class="skeleton" data-student-name>Loading</strong></span>
+        <span>Questions? Visit the Dormitory Office.</span>
+      </p>
+    </section>
+
+    <div class="content-stack">
+      <section class="summary-grid" aria-label="Record summary">
+        <article class="panel stat-card"><span class="stat-label">Entries on record</span><span class="stat-value skeleton" id="statTotal">0</span><p class="stat-note" id="statTotalNote">Offenses and notices combined.</p></article>
+        <article class="panel stat-card"><span class="stat-label">Absences</span><span class="stat-value skeleton" id="absent">0</span><p class="stat-note">Missed roll calls logged by staff.</p></article>
+        <article class="panel stat-card"><span class="stat-label">Curfew entries</span><span class="stat-value skeleton" id="statCurfew">0</span><p class="stat-note">Late returns after curfew.</p></article>
+      </section>
+
+      <section class="panel latest-note" aria-labelledby="latest-title">
+        <span class="eyebrow">Latest entry</span>
+        <h2 id="latest-title">What was last recorded</h2>
+        <p id="offenses"><span class="skeleton skeleton-text"></span></p>
+      </section>
+
+      <section class="panel" aria-labelledby="records-title">
+        <div class="panel-head">
+          <div><span class="eyebrow">Full record</span><h2 id="records-title">Logged entries</h2><p>Newest first. Each row is one entry made by dormitory staff.</p></div>
+          <button class="button outline small" type="button" id="refreshRecords">Refresh</button>
+        </div>
+        <div class="data-table table-wrap" id="recordsWrap" aria-live="polite" aria-busy="true">
+          <table>
+            <caption class="sr-only">Violation and curfew records</caption>
+            <thead><tr><th scope="col">Logged</th><th scope="col">Type</th><th scope="col">Details</th><th scope="col">Absence</th><th scope="col">Curfew time</th></tr></thead>
+            <tbody id="curfewRecords"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="callout" aria-labelledby="appeal-title" data-reveal>
+        <span class="eyebrow">Think an entry is wrong?</span>
+        <h3 id="appeal-title">Talk to the Dormitory Office</h3>
+        <p>Bring your student ID and any proof, such as a signed pass slip or an excuse letter, and ask the dormitory staff to review the entry.</p>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script src="../attendance/student-kit.js"></script>
+<script src="violation.js"></script>
+</body>
+</html>

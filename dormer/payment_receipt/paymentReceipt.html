@@ -1,5 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"><meta name="theme-color" content="#102f3d"><title>Payments | Leyte National University</title><link rel="stylesheet" href="../../assets/css/portal.css"></head>
-<body><a class="skip-link" href="#main-content">Skip to content</a><div class="app-shell"><aside class="sidebar"><div class="brand"><img class="brand-mark" src="../../assets/images/lnu-logo.png" alt="Leyte National University logo"><span>Leyte National University<br>Dormitory portal</span></div><nav class="nav" aria-label="Student navigation"><a href="../dashboard/dashboard.html">Overview</a><a href="../attendance/attendance.html">Attendance</a><a href="paymentReceipt.html" aria-current="page">Payments</a><a href="../violation/violation.html">Violations</a></nav><div class="sidebar-footer">Student workspace<br>© <span data-current-year></span> Leyte National University</div></aside>
-<main class="main-content" id="main-content"><header class="topbar"><div class="page-heading"><h1>Payment proofs</h1><p>Upload a clear image of your receipt and keep your submission history in one place.</p></div></header><div class="content-stack"><section class="panel"><h2>Submit a payment proof</h2><p>JPG and PNG images up to 5 MB are accepted.</p><form id="paymentForm" action="payment_receipt.php" method="POST" enctype="multipart/form-data"><div class="upload-zone"><label for="proofImage"><strong>Select a payment receipt</strong><br><span>Choose an image from your device.</span></label><input type="file" id="proofImage" name="proof_image" accept="image/jpeg,image/png,image/jpg" required></div><div class="preview-container" id="previewContainer"><img id="previewImage" src="" alt="Selected payment receipt preview"></div><div class="date-time"><p><b>Date</b><br><span id="currentDate"></span></p><p><b>Time</b><br><span id="currentTime"></span></p></div><button type="submit" class="button primary full">Submit payment proof</button></form></section><details class="history-drawer" id="historyDrawer"><summary>My payment history</summary><div class="history-content"><div id="paymentProofList"><p class="empty-state">Loading payment history…</p></div></div></details></div></main></div><script src="../../assets/js/portal.js"></script><script src="paymentReceipt.js"></script></body></html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#00006e">
+  <link rel="icon" type="image/png" href="../../assets/images/lnu-logo.png">
+  <title>Payments | Leyte Normal University Dormitory</title>
+  <meta name="description" content="Upload proof of your LNU dormitory fee payment and track its review status.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../../assets/css/portal.css">
+  <link rel="stylesheet" href="../attendance/student-kit.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+  <script src="../../assets/js/portal.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><img class="brand-mark" src="../../assets/images/lnu-logo.png" alt="Leyte Normal University logo"><span>Leyte Normal University<br>Dormitory portal</span></div>
+    <nav class="nav" aria-label="Student navigation">
+      <a href="../dashboard/dashboard.html">Overview</a>
+      <a href="../attendance/attendance.html">Attendance</a>
+      <a href="paymentReceipt.html" aria-current="page">Payments</a>
+      <a href="../violation/violation.html">Violations</a>
+    </nav>
+    <a class="sidebar-logout" href="../../login/logout.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>Sign out</a>
+    <div class="sidebar-footer">Student workspace<br>© <span data-current-year></span> Leyte Normal University</div>
+  </aside>
+
+  <main class="main-content" id="main-content">
+    <section class="hero-band dorm-hero" data-hero aria-labelledby="page-title">
+      <span class="eyebrow">Payments · Dormitory fees</span>
+      <h1 id="page-title">Send your receipt, skip the queue</h1>
+      <p>Upload a clear photo of the official receipt you received from the University Cashier. The Dormitory Office checks every proof and marks it verified here.</p>
+      <p class="hero-meta" aria-live="polite">
+        <span>Signed in as <strong class="skeleton" data-student-name>Loading</strong></span>
+        <span>JPG or PNG · up to 5 MB</span>
+      </p>
+    </section>
+
+    <div class="content-stack">
+      <section class="panel" aria-labelledby="upload-title">
+        <div class="panel-head">
+          <div><span class="eyebrow">New submission</span><h2 id="upload-title">Upload a payment proof</h2><p>Make sure the receipt number, amount and date are readable. Crop out anything else.</p></div>
+        </div>
+        <form id="paymentForm" action="payment_receipt.php" method="POST" enctype="multipart/form-data" novalidate>
+          <label class="dropzone" id="dropzone" for="proofImage">
+            <span class="dropzone-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg></span>
+            <span class="dropzone-title">Drag your receipt here or <u>browse files</u></span>
+            <span class="dropzone-hint" id="proofHint">JPG or PNG, 5 MB or smaller. One receipt per upload.</span>
+            <input type="file" id="proofImage" name="proof_image" accept="image/jpeg,image/png,.jpg,.jpeg,.png" aria-describedby="proofHint proofError" required>
+          </label>
+
+          <div class="file-preview" id="filePreview" hidden>
+            <img id="previewImage" alt="Preview of the selected receipt">
+            <div><strong id="fileName">receipt.jpg</strong><span id="fileMeta">—</span></div>
+            <button class="button ghost small" type="button" id="clearFile">Remove</button>
+          </div>
+
+          <p class="form-error" id="proofError" role="alert" aria-live="assertive"></p>
+
+          <div class="upload-actions">
+            <button type="submit" class="button primary" id="submitProof" disabled>Submit payment proof</button>
+            <small>Reviews usually take up to two working days.</small>
+          </div>
+        </form>
+      </section>
+
+      <section class="summary-grid" aria-label="Submission summary">
+        <article class="panel stat-card"><span class="stat-label">Submitted</span><span class="stat-value skeleton" id="statTotal">0</span><p class="stat-note">All proofs you have uploaded.</p></article>
+        <article class="panel stat-card"><span class="stat-label">Verified</span><span class="stat-value skeleton" id="statVerified">0</span><p class="stat-note">Accepted by the Dormitory Office.</p></article>
+        <article class="panel stat-card"><span class="stat-label">Awaiting review</span><span class="stat-value skeleton" id="statPending">0</span><p class="stat-note" id="statPendingNote">Still in the review queue.</p></article>
+      </section>
+
+      <section class="panel" aria-labelledby="history-title">
+        <div class="panel-head">
+          <div><span class="eyebrow">History</span><h2 id="history-title">Your submitted receipts</h2><p>Newest first. Select a receipt to open the full image.</p></div>
+          <button class="button outline small" type="button" id="refreshHistory">Refresh</button>
+        </div>
+        <div id="paymentProofList" class="receipt-grid" aria-live="polite" aria-busy="true"></div>
+      </section>
+
+      <section class="callout" aria-labelledby="help-title" data-reveal>
+        <span class="eyebrow">If a proof is rejected</span>
+        <h3 id="help-title">Upload a clearer photo, or bring the original</h3>
+        <p>Rejected proofs are usually blurry, cropped or the wrong document. Upload a new photo here, or show the original receipt at the Dormitory Office.</p>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script src="../attendance/student-kit.js"></script>
+<script src="paymentReceipt.js"></script>
+</body>
+</html>

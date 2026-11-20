@@ -42,8 +42,14 @@ foreach ($records as $i => $record) {
     $absentTotal += (int) $record['absent'];
 }
 
-$latest   = $records[0]['offenses'] ?? null;
-$offenses = ($latest !== null && $latest !== '') ? $latest : 'No offenses';
+// Newest record that actually has text ("No offenses" only if none does).
+$offenses = 'No offenses';
+foreach ($records as $record) {
+    if (trim((string) $record['offenses']) !== '') {
+        $offenses = $record['offenses'];
+        break;
+    }
+}
 
 json_response([
     'success'  => true,

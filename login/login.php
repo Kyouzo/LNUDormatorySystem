@@ -195,7 +195,7 @@ if ($kind === 'staff') {
     login_session('staff', [
         'staff_id'     => (int) $account['staff_id'],
         'staff_role'   => (string) $account['role'],
-        'display_name' => (string) $account['full_name'],
+        'display_name' => (trim((string) $account['full_name']) !== '') ? trim((string) $account['full_name']) : $email,
     ]);
 
     $stmt = db_prepare('UPDATE staff_accounts SET last_login = NOW() WHERE staff_id = ?');
@@ -209,7 +209,9 @@ if ($kind === 'staff') {
 } else {
     login_session('student', [
         'student_id'   => (int) $account['student_id'],
-        'display_name' => trim($account['first_name'] . ' ' . $account['last_name']),
+        'display_name' => (trim($account['first_name'] . ' ' . $account['last_name']) !== '')
+            ? trim($account['first_name'] . ' ' . $account['last_name'])
+            : $email,
     ]);
 
     $target = app_url('dormer/dashboard/dashboard.html');
