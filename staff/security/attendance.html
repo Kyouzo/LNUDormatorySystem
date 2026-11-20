@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#00006e">
+  <link rel="icon" type="image/png" href="../../assets/images/lnu-logo.png">
+  <title>Attendance | LNU Dormitory Security</title>
+  <meta name="description" content="Scan dormer QR passes for attendance and curfew, and review today's records.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../../assets/css/portal.css">
+  <link rel="stylesheet" href="../../dormer/attendance/student-kit.css">
+  <link rel="stylesheet" href="security.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+  <script src="../../assets/js/portal.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><img class="brand-mark" src="../../assets/images/lnu-logo.png" alt="Leyte Normal University logo"><span>Leyte Normal University<br>Security desk</span></div>
+    <nav class="nav nav-main" aria-label="Security navigation">
+      <a href="home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</a>
+      <a href="attendance.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2M20 14v6M14 18v2h2"/></svg>Attendance</a>
+      <a class="nav-bottom" href="settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</a>
+    </nav>
+    <a class="sidebar-logout" href="../../login/logout.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>Sign out</a>
+    <div class="sidebar-footer">Security personnel<br>© <span data-current-year></span> Leyte Normal University</div>
+  </aside>
+
+  <main class="main-content" id="main-content">
+    <section class="hero-band dorm-hero" data-hero aria-labelledby="page-title">
+      <span class="eyebrow">Lobby desk · <span data-today>Today</span></span>
+      <h1 id="page-title">Attendance and curfew</h1>
+      <p>Scan a dormer's QR pass to record time in or out, or use the curfew scanner for night check-ins. Late curfew scans add a warning automatically.</p>
+      <div class="scan-modes">
+        <button class="button secondary" type="button" id="mode-attendance" aria-controls="panel-attendance" aria-pressed="false">Scan QR</button>
+        <button class="button outline" type="button" id="mode-curfew" aria-controls="panel-curfew" aria-pressed="false">Scan QR For Curfew</button>
+      </div>
+    </section>
+
+    <p class="page-alert" id="page-alert" role="alert" hidden></p>
+
+    <div class="content-stack">
+      <div class="scanner-pair">
+        <section class="panel" id="panel-attendance" aria-labelledby="scan-title">
+          <div class="panel-head"><div><span class="eyebrow">Camera</span><h2 id="scan-title">Scanner</h2><p>Time in / time out. Repeat scans within 30 seconds are ignored.</p></div></div>
+          <div class="reader-box" id="reader-attendance"><p class="reader-idle">Camera off. Press <strong>Scan QR</strong> to start.</p></div>
+          <div class="scanner-actions"><button class="button outline small" type="button" data-stop="attendance" hidden>Stop camera</button></div>
+          <div class="scan-result" id="result-attendance" role="status" aria-live="polite"><h3>Waiting for a QR pass</h3><p>Results appear here as soon as a code is read.</p></div>
+        </section>
+
+        <section class="panel" id="panel-curfew" aria-labelledby="curfew-scan-title">
+          <div class="panel-head"><div><span class="eyebrow">Camera</span><h2 id="curfew-scan-title">Curfew Scanner</h2><p>Night check-in. Curfew is <strong id="curfew-time">10:00 PM</strong>; later scans get a warning.</p></div></div>
+          <div class="reader-box" id="reader-curfew"><p class="reader-idle">Camera off. Press <strong>Scan QR For Curfew</strong> to start.</p></div>
+          <div class="scanner-actions"><button class="button outline small" type="button" data-stop="curfew" hidden>Stop camera</button></div>
+          <div class="scan-result" id="result-curfew" role="status" aria-live="polite"><h3>Waiting for a QR pass</h3><p>Results appear here as soon as a code is read.</p></div>
+        </section>
+      </div>
+
+      <section class="panel" aria-labelledby="att-title">
+        <div class="panel-head">
+          <div><span class="eyebrow">Today</span><h2 id="att-title">Attendance</h2><p><strong id="att-total">—</strong> dormers present today.</p></div>
+          <button class="button outline small" type="button" id="att-refresh">Refresh</button>
+        </div>
+        <div class="data-table table-wrap">
+          <table>
+            <caption class="sr-only">Dormers who scanned in today</caption>
+            <thead><tr><th scope="col">Name</th><th scope="col">Year level</th><th scope="col">Floor &amp; room</th><th scope="col">Status</th></tr></thead>
+            <tbody id="att-rows"><tr><td colspan="4" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="cur-title">
+        <div class="panel-head">
+          <div><span class="eyebrow">Tonight</span><h2 id="cur-title">Curfew violations</h2><p><strong id="cur-total">—</strong> late of <strong id="cur-checked">—</strong> curfew check-ins.</p></div>
+          <button class="button outline small" type="button" id="cur-refresh">Refresh</button>
+        </div>
+        <div class="data-table table-wrap">
+          <table>
+            <caption class="sr-only">Curfew violations for tonight</caption>
+            <thead><tr><th scope="col">Name</th><th scope="col">Year level</th><th scope="col">Floor &amp; room</th><th scope="col">Violation / curfew</th></tr></thead>
+            <tbody id="cur-rows"><tr><td colspan="4" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="../../assets/js/api.js"></script>
+<script src="security.js"></script>
+<script src="attendance.js"></script>
+</body>
+</html>

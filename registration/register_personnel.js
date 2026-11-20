@@ -1,4 +1,4 @@
-/* Registration page: inline validation, JSON submit, "pending approval" success state. */
+/* Dorm personnel registration: inline validation, JSON submit, "pending approval" success state. */
 (function () {
   'use strict';
 
@@ -14,32 +14,26 @@
   form.noValidate = true;
   LNU.passwordToggles(form);
 
+  const TYPE_LABEL = { admin: 'Dorm Administrator', security: 'Security Personnel' };
+
+  // Mirrors registration/register_personnel.php.
   const RULES = {
     last_name: (v) => (v.trim() ? '' : 'Enter your last name.'),
     first_name: (v) => (v.trim() ? '' : 'Enter your first name.'),
-    student_id: (v) => {
-      const s = v.trim();
-      if (!s) return 'Enter your student ID.';
-      if (!/^\d{1,10}$/.test(s) || Number(s) > 4294967295) return 'Use digits only, without dashes or spaces.';
-      return '';
-    },
+    middle_name: (v) => (!v.trim() || /^[\p{L}]\.?$/u.test(v.trim()) ? '' : 'Enter one letter, e.g. M.'),
     age: (v) => {
       if (!v.trim()) return 'Enter your age.';
       const n = Number(v);
-      return Number.isInteger(n) && n >= 15 && n <= 99 ? '' : 'Enter an age between 15 and 99.';
+      return Number.isInteger(n) && n >= 18 && n <= 99 ? '' : 'Enter an age between 18 and 99.';
     },
     gender: (v) => (v ? '' : 'Select an option.'),
+    personnel_type: (v) => (TYPE_LABEL[v] ? '' : 'Choose Dorm Administrator or Security Personnel.'),
     email: (v) => {
       if (!v.trim()) return 'Enter your email address.';
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) ? '' : 'That email address does not look right.';
     },
-    address: (v) => (v.trim() ? '' : 'Enter your permanent address.'),
-    password: (v) => (v === '' || v.length >= 8 ? '' : 'Use at least 8 characters, or leave it blank.'),
-    password_confirm: (v) => {
-      const pw = el('password').value;
-      if (!pw) return '';
-      return v === pw ? '' : 'The passwords do not match.';
-    },
+    password: (v) => (v.length >= 8 ? '' : 'Use at least 8 characters.'),
+    password_confirm: (v) => (v === el('password').value ? '' : 'The passwords do not match.'),
   };
 
   function setError(name, message) {
@@ -52,44 +46,27 @@
   }
 
   function check(name) {
-    const input = el(name);
-    const msg = RULES[name](input ? input.value : '');
+    const msg = RULES[name](el(name).value);
     setError(name, msg);
     return msg;
   }
 
-  // Validate on blur once touched; clear as soon as the value becomes valid.
   Object.keys(RULES).forEach((name) => {
     const input = el(name);
-    if (!input) return;
     input.addEventListener('blur', () => { if (input.value !== '' || input.dataset.touched) { input.dataset.touched = '1'; check(name); } });
     input.addEventListener('input', () => { if (input.getAttribute('aria-invalid') === 'true') check(name); });
     input.addEventListener('change', () => { if (input.tagName === 'SELECT') check(name); });
   });
-  el('password').addEventListener('input', () => {
-    if (el('password_confirm').value) check('password_confirm');
-  });
+  el('password').addEventListener('input', () => { if (el('password_confirm').value) check('password_confirm'); });
 
-  function payload() {
-    const data = {};
-    ['last_name', 'first_name', 'middle_name', 'student_id', 'age', 'gender', 'year_level', 'email', 'address'].forEach((k) => {
-      data[k] = String(el(k).value || '').trim();
-    });
-    if (el('password').value) data.password = el('password').value;
-    return data;
-  }
-
-  function success(hasPassword, name) {
-    const first = LNU.escape(name);
-    const howToSignIn = hasPassword
-      ? 'Once approved, sign in with your email and the password you just set.'
-      : 'Once approved, the dormitory office will give you a temporary password to sign in with.';
+  function success(name, type) {
     body.innerHTML =
       '<div class="login-success" role="status" tabindex="-1" id="register-success">' +
         '<span class="login-success-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' +
-        '<span class="badge badge-warning">Pending staff approval</span>' +
-        '<h2>Registration received' + (first ? ', ' + first : '') + '</h2>' +
-        '<p>The dormitory office will review your details and assign your room. ' + howToSignIn + '</p>' +
+        '<span class="badge badge-warning">Pending administrator approval</span>' +
+        '<h2>Request received' + (name ? ', ' + LNU.escape(name) : '') + '</h2>' +
+        '<p>Your ' + LNU.escape(TYPE_LABEL[type] || 'personnel') + ' account must be approved by a dorm administrator. ' +
+        'Once approved, sign in with your email and the password you just set.</p>' +
         '<a class="button primary" href="' + LNU.escape(LNU.url('login/login.html')) + '">Go to sign in</a>' +
       '</div>';
     const box = document.getElementById('register-success');
@@ -105,29 +82,34 @@
 
     const failed = Object.keys(RULES).filter((name) => check(name));
     if (failed.length) {
-      alertBox.textContent = failed.length === 1
-        ? 'One field needs your attention.'
-        : failed.length + ' fields need your attention.';
+      alertBox.textContent = failed.length === 1 ? 'One field needs your attention.' : failed.length + ' fields need your attention.';
       el(failed[0]).focus();
       return;
     }
 
+    const data = {};
+    ['last_name', 'first_name', 'middle_name', 'age', 'gender', 'personnel_type', 'email'].forEach((k) => { data[k] = el(k).value.trim(); });
+    data.middle_name = data.middle_name.replace(/\.$/, '');
+    data.password = el('password').value;
+
     sending = true;
     LNU.busy(submit, true, 'Submitting');
-    const data = payload();
     try {
-      await LNU.post('registration/register.php', data, { auth: false });
-      success(!!data.password, data.first_name);
+      await LNU.post('registration/register_personnel.php', data, { auth: false });
+      success(data.first_name, data.personnel_type);
       return;
     } catch (err) {
       if (err.kind === 'format' && err.status >= 200 && err.status < 300) {
-        // The server stored the record but answered with its HTML notice page.
-        // Re-posting would create a duplicate, so treat it as success.
-        success(!!data.password, data.first_name);
+        success(data.first_name, data.personnel_type); // stored, but answered with the HTML notice
         return;
       }
       if (err.status === 409) {
+        setError('email', 'This email is already registered or waiting for approval.');
         alertBox.innerHTML = LNU.escape(err.message) + ' <a href="' + LNU.escape(LNU.url('login/login.html')) + '">Sign in</a>';
+      } else if (err.status === 422) {
+        alertBox.textContent = err.message || 'Some details were not accepted. Check the form and try again.';
+      } else if (err.kind === 'format' || err.kind === 'network') {
+        alertBox.textContent = 'The registration server is not available right now. If you are running the portal locally, make sure Apache and MySQL are started.';
       } else {
         alertBox.textContent = err.message;
       }

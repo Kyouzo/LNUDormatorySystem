@@ -65,7 +65,11 @@ if ($action === 'approve') {
          UNION ALL SELECT 1 FROM validated_dormers WHERE email = ? LIMIT 1'
     );
     $stmt->bind_param('ss', $reg['email'], $reg['email']);
-    db_execute($stmt, 'staff approve duplicate check');
+    if (!db_execute($stmt, 'staff approve duplicate check')) {
+        $stmt->close();
+        $conn->rollback();
+        json_error('Unable to check for duplicates.', 500);
+    }
     $duplicate = $stmt->get_result()->num_rows > 0;
     $stmt->close();
 

@@ -61,37 +61,111 @@
     s.note.textContent = 'Could not load right now.';
   }
 
-  function payments(data) {
-    const list = Array.isArray(data.payments) ? data.payments : [];
-    const pending = list.filter((p) => (p.status || 'pending') === 'pending').length;
-    const rejected = list.filter((p) => p.status === 'rejected').length;
-    let note = 'No receipts uploaded yet.';
-    if (list.length) {
-      if (rejected) note = rejected + ' rejected. Please upload a clearer copy.';
-      else if (pending) note = pending + (pending === 1 ? ' receipt is' : ' receipts are') + ' awaiting verification.';
-      else note = 'All receipts verified.';
+  const plural = (n, word) => n + ' ' + word + (n === 1 ? '' : 's');
+
+  /* ---------- From dashboard_summary.php ---------- */
+  function room(student) {
+    const value = $('roomValue');
+    value.classList.remove('skeleton');
+    value.classList.toggle('is-muted', !student.room_label);
+    value.textContent = student.room_label ? 'Room ' + student.room_label : 'Not yet assigned';
+    $('roomNote').textContent = student.room_label
+      ? 'Floor ' + student.floor + ', room ' + student.room + ' · ' + (student.status || 'Enrolled') + '.'
+      : 'The Dormitory Office will assign your floor and room.';
+  }
+
+  function payments(p) {
+    const notes = {
+      pending: 'Latest receipt is awaiting verification.',
+      verified: 'Latest receipt was recorded by the office.',
+      rejected: 'Latest receipt was rejected. Please upload a clearer copy.',
+    };
+    fillStat('payments', Number(p.count) || 0, notes[p.last_status] || 'No receipts uploaded yet.');
+  }
+
+  function violations(v) {
+    const total = Number(v.total) || 0;
+    const extra = [];
+    if (v.absent) extra.push(plural(Number(v.absent), 'absence'));
+    if (v.curfew) extra.push(Number(v.curfew) === 1 ? '1 curfew entry' : v.curfew + ' curfew entries');
+    fillStat('violations', total, total ? (extra.length ? extra.join(', ') + ' logged.' : 'Entries logged by dormitory staff.') : 'A clean record. Keep it up.');
+  }
+
+  function attendance(a) {
+    const last = parseDate(a.last_scan_at);
+    fillStat('attendance', Number(a.days_present) || 0, last
+      ? 'Last scan ' + fmtDate(last) + ' at ' + fmtTime(last) + '.'
+      : 'No scans yet. Show your QR pass at the lobby.');
+  }
+
+  const STATUS = {
+    IN: { cls: 'badge-success', text: 'IN', note: 'You are inside the dormitory.' },
+    OUT: { cls: 'badge-navy', text: 'OUT', note: 'You timed out. Scan again when you return.' },
+  };
+  function today(t, dateLabel) {
+    const status = STATUS[t.status] || { cls: 'badge-outline', text: t.status || 'Not yet in', note: 'No scan yet today.' };
+    ['todayDate', 'todayTime', 'todayStatus'].forEach((id) => $(id).classList.remove('skeleton'));
+    $('todayDate').textContent = dateLabel || t.date || '—';
+    $('todayTime').textContent = t.time || '—';
+    const badge = document.createElement('span');
+    badge.className = 'badge ' + status.cls;
+    badge.textContent = status.text;
+    $('todayStatus').replaceChildren(badge);
+    $('todayNote').textContent = status.note + (t.time_in ? ' Time in ' + t.time_in + (t.time_out ? ', time out ' + t.time_out : '') + '.' : '');
+  }
+
+  function news(list) {
+    const ul = $('newsList');
+    ul.setAttribute('aria-busy', 'false');
+    if (!list.length) {
+      ul.innerHTML = '<li class="is-empty">No announcements yet. Notices from the Dormitory Office will show here.</li>';
+      return;
     }
-    fillStat('payments', list.length, note);
+    ul.innerHTML = list.map((a) => {
+      const body = String(a.body || '');
+      const title = a.title || (body.length > 70 ? body.slice(0, 67).trimEnd() + '…' : body);
+      const meta = [a.date, a.time].filter(Boolean).join(' · ') + (a.posted_by ? ' · Posted by ' + a.posted_by : '');
+      return '<li><div class="news-head"><strong>' + LNU.escape(title) + '</strong>' +
+        (a.is_new ? '<span class="badge badge-gold">New</span>' : '') + '</div>' +
+        (a.title && body ? '<p>' + LNU.escape(body) + '</p>' : '') +
+        '<span class="news-meta">' + LNU.escape(meta) + '</span></li>';
+    }).join('');
   }
 
-  function violations(data) {
-    const records = Array.isArray(data.records) ? data.records : [];
-    const absences = Number(data.absent) || 0;
-    let note = records.length ? 'Latest: ' + (records[0].violation_type || 'Recorded offense') + '.' : 'A clean record. Keep it up.';
-    if (absences) note += ' ' + absences + (absences === 1 ? ' absence' : ' absences') + ' logged.';
-    fillStat('violations', records.length, note);
+  function failSummary(message) {
+    ['payments', 'violations', 'attendance'].forEach(failStat);
+    const value = $('roomValue');
+    value.classList.remove('skeleton');
+    value.textContent = '—';
+    $('roomNote').classList.add('is-error');
+    $('roomNote').textContent = 'Could not load right now.';
+    ['todayDate', 'todayTime', 'todayStatus'].forEach((id) => { $(id).classList.remove('skeleton'); $(id).textContent = '—'; });
+    $('todayNote').classList.add('is-error');
+    $('todayNote').textContent = 'Today\'s attendance is unavailable.';
+    $('newsList').setAttribute('aria-busy', 'false');
+    $('newsList').innerHTML = '<li class="is-error">' + LNU.escape(message) + '</li>';
+    ['meta-room', 'meta-year', 'meta-id'].forEach((id) => { $(id).classList.remove('skeleton'); $(id).textContent = '—'; });
   }
 
-  function attendance(data) {
+  function summary(d) {
+    const s = d.student || {};
+    setName(s.first_name || s.name);
+    setMeta('meta-room', s.room_label);
+    setMeta('meta-year', s.year_level);
+    setMeta('meta-id', s.student_id);
+    room(s);
+    payments(d.payment || {});
+    violations(d.violations || {});
+    attendance(d.attendance || {});
+    today(d.today || {}, d.date_label);
+    news(Array.isArray(d.announcements) ? d.announcements : []);
+  }
+
+  function activity(data) {
     const history = (Array.isArray(data.history) ? data.history : [])
       .map((h) => ({ type: String(h.attendance_type || '').toUpperCase(), at: parseDate(h.scan_datetime) }))
       .filter((h) => h.at)
       .sort((a, b) => b.at - a.at);
-    const ins = history.filter((h) => h.type === 'IN').length;
-    const last = history[0];
-    fillStat('attendance', ins, last
-      ? 'Last scan: time ' + (last.type === 'IN' ? 'in' : 'out') + ', ' + fmtDate(last.at) + ' at ' + fmtTime(last.at) + '.'
-      : 'No scans yet. Show your QR pass at the lobby.');
     renderActivity(history.slice(0, 5));
   }
 
@@ -121,28 +195,18 @@
       me = await LNU.me();
     } catch (err) {
       showProblem(err.message);
-      ['payments', 'violations', 'attendance'].forEach(failStat);
-      ['meta-room', 'meta-year', 'meta-id'].forEach((id) => { $(id).classList.remove('skeleton'); $(id).textContent = '—'; });
+      failSummary('Announcements are unavailable while the server cannot be reached.');
       failActivity('Activity is unavailable while the server cannot be reached.');
       return;
     }
     if (!me.authenticated) { LNU.goLogin(); return; }
-    if (me.role === 'staff') { location.replace(LNU.url('staff/violations.html')); return; }
+    // Staff (admin / security) belong on their own landing page.
+    if (me.role !== 'student') { location.replace(LNU.url(me.home || 'login/login.html')); return; }
     setName(me.name);
 
     const jobs = [
-      LNU.get('dormer/attendance/attendance.php').then((p) => {
-        setName(p.first_name || p.full_name);
-        setMeta('meta-room', p.room_assignment);
-        setMeta('meta-year', p.year_level);
-        setMeta('meta-id', p.student_id);
-      }).catch(() => ['meta-room', 'meta-year', 'meta-id'].forEach((id) => { $(id).classList.remove('skeleton'); $(id).textContent = '—'; })),
-      LNU.get('dormer/payment_receipt/paymentDisplay.php').then(payments).catch(() => failStat('payments')),
-      LNU.get('dormer/violation/violation.php').then(violations).catch(() => failStat('violations')),
-      LNU.get('dormer/attendance/attendance_logs.php').then(attendance).catch((err) => {
-        failStat('attendance');
-        failActivity(err.message);
-      }),
+      LNU.get('dormer/dashboard/dashboard_summary.php').then(summary).catch((err) => failSummary(err.message)),
+      LNU.get('dormer/attendance/attendance_logs.php').then(activity).catch((err) => failActivity(err.message)),
     ];
     await Promise.all(jobs);
     if (document.querySelector('.stat-note.is-error')) {

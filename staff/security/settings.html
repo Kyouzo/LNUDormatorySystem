@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#00006e">
+  <link rel="icon" type="image/png" href="../../assets/images/lnu-logo.png">
+  <title>Settings | LNU Dormitory Security</title>
+  <meta name="description" content="Security personnel account settings.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../../assets/css/portal.css">
+  <link rel="stylesheet" href="../../dormer/attendance/student-kit.css">
+  <link rel="stylesheet" href="security.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+  <script src="../../assets/js/portal.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><img class="brand-mark" src="../../assets/images/lnu-logo.png" alt="Leyte Normal University logo"><span>Leyte Normal University<br>Security desk</span></div>
+    <nav class="nav nav-main" aria-label="Security navigation">
+      <a href="home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</a>
+      <a href="attendance.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2M20 14v6M14 18v2h2"/></svg>Attendance</a>
+      <a class="nav-bottom" href="settings.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</a>
+    </nav>
+    <a class="sidebar-logout" href="../../login/logout.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>Sign out</a>
+    <div class="sidebar-footer">Security personnel<br>© <span data-current-year></span> Leyte Normal University</div>
+  </aside>
+
+  <main class="main-content" id="main-content">
+    <section class="hero-band dorm-hero" data-hero aria-labelledby="page-title">
+      <span class="eyebrow">Account</span>
+      <h1 id="page-title">Settings</h1>
+      <p>Signed in as <strong data-me-name>…</strong> · <span data-me-role>Security Personnel</span></p>
+    </section>
+
+    <p class="page-alert" id="page-alert" role="alert" hidden></p>
+
+    <section class="panel" aria-labelledby="pw-title">
+      <div class="panel-head"><div><span class="eyebrow">Security</span><h2 id="pw-title">Change password</h2><p>Use at least 8 characters. You stay signed in on this device.</p></div></div>
+      <form class="settings-form" id="pw-form" novalidate>
+        <div class="form-alert" id="pw-alert" role="alert" aria-live="assertive"></div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="current_password">Current password</label>
+            <span class="input-affix">
+              <input type="password" id="current_password" name="current_password" autocomplete="current-password" maxlength="1024" required aria-describedby="current_password-error">
+              <button class="affix-button" type="button" data-password-toggle aria-controls="current_password" aria-pressed="false" aria-label="Show password" hidden><span data-toggle-label>Show</span></button>
+            </span>
+            <span class="field-error" id="current_password-error"></span>
+          </div>
+          <div class="field">
+            <label for="new_password">New password</label>
+            <span class="input-affix">
+              <input type="password" id="new_password" name="new_password" autocomplete="new-password" minlength="8" maxlength="1024" required aria-describedby="new_password-error">
+              <button class="affix-button" type="button" data-password-toggle aria-controls="new_password" aria-pressed="false" aria-label="Show password" hidden><span data-toggle-label>Show</span></button>
+            </span>
+            <span class="field-error" id="new_password-error"></span>
+          </div>
+          <div class="field">
+            <label for="confirm_password">Confirm new password</label>
+            <span class="input-affix">
+              <input type="password" id="confirm_password" name="confirm_password" autocomplete="new-password" maxlength="1024" required aria-describedby="confirm_password-error">
+              <button class="affix-button" type="button" data-password-toggle aria-controls="confirm_password" aria-pressed="false" aria-label="Show password" hidden><span data-toggle-label>Show</span></button>
+            </span>
+            <span class="field-error" id="confirm_password-error"></span>
+          </div>
+        </div>
+        <button class="button primary" type="submit" id="pw-submit">Update password</button>
+      </form>
+    </section>
+  </main>
+</div>
+
+<script src="../../assets/js/api.js"></script>
+<script src="security.js"></script>
+<script src="settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+/* Admin pages: shared additions on top of portal.css + ../violations.css (tokens only, no new colours). */
+
+/* ---------- Sidebar: MANAGE group + bottom Settings ---------- */
+.admin-sidebar .nav a svg, .nav-group-toggle svg { width: 1.1rem; height: 1.1rem; flex: none; }
+.nav-group { display: grid; gap: .25rem; }
+.nav-group-toggle { display: flex; align-items: center; gap: .7rem; width: 100%; min-height: 44px; padding: .65rem .9rem; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--on-navy-muted); font: inherit; font-weight: 500; text-align: left; cursor: pointer; transition: color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out); }
+.nav-group-toggle:hover { color: #fff; background: rgb(255 255 255 / .06); }
+.nav-group.has-current > .nav-group-toggle { color: #fff; }
+.nav-group-toggle .chev { margin-left: auto; width: 1rem; height: 1rem; transition: rotate var(--dur) var(--ease-out); }
+.nav-group-toggle[aria-expanded="false"] .chev { rotate: -90deg; }
+.nav-sub { display: grid; gap: .15rem; margin-left: 1.15rem; padding-left: .55rem; border-left: 1px solid rgb(255 255 255 / .14); }
+.nav-sub[hidden] { display: none; }
+.nav-sub a { min-height: 40px; padding: .5rem .8rem; font-size: .92rem; }
+.nav-bottom { margin-top: auto; padding-top: .9rem; }
+.admin-sidebar .nav-bottom + .sidebar-logout { margin-top: .25rem; }
+
+@media (max-width: 760px) {
+  .nav-group, .nav-sub, .nav-sub[hidden] { display: contents !important; } /* toggle is hidden on phones: always show the links */
+  .nav-group-toggle { display: none; }
+  .nav-sub a { font-size: inherit; min-height: 40px; padding: .5rem .85rem; }
+  .nav-bottom { display: none; } /* Settings stays reachable from the main row below */
+}
+/* On phones the bottom Settings link is hidden, so show a copy in the scrolling row. */
+.nav-mobile-only { display: none !important; }
+@media (max-width: 760px) {
+  .nav-mobile-only { display: flex !important; }
+  .nav a.nav-mobile-only[data-current] { color: #fff; font-weight: 600; background: rgb(255 255 255 / .1); }
+}
+
+/* ---------- Hero meta on admin pages ---------- */
+.staff-hero .hero-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.25rem; }
+
+/* ---------- Tiles (home) ---------- */
+.tile { display: grid; gap: .25rem; }
+.tile .tile-icon { width: 2.6rem; height: 2.6rem; display: grid; place-items: center; border-radius: 50%; background: var(--indigo-soft); color: var(--navy-700); }
+.tile .tile-icon svg { width: 1.25rem; height: 1.25rem; }
+.tile h2 { margin: .9rem 0 0; font-size: 1.05rem; }
+.tile .stat-value { margin-top: .4rem; }
+.tile p { margin: 0; color: var(--muted); font-size: .88rem; }
+.tile-secondary .stat-value { font-size: clamp(1.4rem, 3vw, 1.9rem); }
+
+/* ---------- Simple lists inside panels ---------- */
+.item-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.item-list > li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .4rem 1rem; padding: .8rem 0; border-bottom: 1px solid var(--line); }
+.item-list > li:last-child { border-bottom: 0; }
+.item-list .item-main { display: grid; gap: .15rem; min-width: 0; }
+.item-list .item-main strong { color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
+.item-list .item-main small { color: var(--muted); font-size: .82rem; overflow-wrap: anywhere; }
+.list-heading { margin: 1rem 0 .2rem; font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.list-heading:first-child { margin-top: 0; }
+.panel-foot { margin-top: 1rem; }
+.muted { color: var(--muted); }
+[hidden] { display: none !important; } /* .button / .badge / .form-grid set display and would beat the UA rule */
+
+/* Announcement entries */
+.announce { display: grid; gap: .35rem; padding: 1rem 0; border-bottom: 1px solid var(--line); }
+.announce:last-child { border-bottom: 0; }
+.announce h3 { margin: 0; font-size: 1rem; letter-spacing: -.01em; }
+.announce p { margin: 0; color: var(--ink-2); white-space: pre-line; overflow-wrap: anywhere; }
+.announce .meta { font-size: .68rem; }
+
+/* ---------- View dialog facts + forms ---------- */
+.dialog.wide { width: min(calc(100% - 2rem), 640px); }
+.view-facts { margin-bottom: 1rem; }
+.dialog-section { margin-top: 1.25rem; padding-top: 1.1rem; border-top: 1px solid var(--line); }
+.dialog-section h3 { margin: 0 0 .75rem; font-size: 1rem; }
+.dialog .form-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 520px) { .dialog .form-grid.two { grid-template-columns: 1fr; } }
+.field select option:disabled { color: var(--muted); }
+.count-hint { justify-self: end; }
+
+/* ---------- Proof image ---------- */
+.proof-frame { display: grid; place-items: center; min-height: 220px; margin: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper-2); overflow: hidden; }
+.proof-frame img { display: block; width: 100%; max-height: 60dvh; object-fit: contain; background: var(--paper); }
+.proof-frame figcaption { width: 100%; padding: .6rem .9rem; border-top: 1px solid var(--line); background: var(--paper); color: var(--muted); font-size: .85rem; }
+.proof-frame .empty-state { border: 0; }
+.proof-history { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
+.proof-history .chip { display: inline-flex; align-items: center; gap: .4rem; }
+
+/* ---------- Rooms accordion ---------- */
+.content-stack > * { min-width: 0; }
+.floor { border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); box-shadow: var(--shadow-sm); overflow: hidden; }
+.floor + .floor { margin-top: 1rem; }
+.floor > summary { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; min-height: 56px; padding: 1rem 1.25rem; cursor: pointer; list-style: none; font-weight: 600; color: var(--ink); }
+.floor > summary::-webkit-details-marker { display: none; }
+.floor > summary::after { content: ""; width: .6rem; height: .6rem; margin-left: auto; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); rotate: 45deg; transition: rotate var(--dur) var(--ease-out); }
+.floor[open] > summary::after { rotate: 225deg; }
+.floor > summary:hover { background: var(--paper-2); }
+.floor > summary h2 { margin: 0; font-size: 1.1rem; }
+.floor .data-table { border: 0; border-top: 1px solid var(--line); border-radius: 0; }
+.occupant-list li { padding: .65rem 0; }
+@media (max-width: 440px) { .floor .data-table th, .floor .data-table td { padding: .65rem .4rem; } .floor .data-table th { letter-spacing: .06em; } }
+
+/* ---------- Filters row ---------- */
+.toolbar-row { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; }
+.toolbar-row .search-field { flex: 1 1 260px; }
+.field.inline { display: inline-grid; grid-auto-flow: column; align-items: center; gap: .6rem; }
+.field.inline input { min-height: 40px; padding: .45rem .8rem; }
+
+/* ---------- Settings ---------- */
+.settings-form { max-width: 520px; display: grid; gap: 1rem; }
+.password-wrap { position: relative; }
+.password-wrap input { padding-right: 4.8rem; }
+.password-wrap .toggle { position: absolute; right: .35rem; top: 50%; translate: 0 -50%; min-height: 36px; padding: .3rem .8rem; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--navy-700); font: inherit; font-size: .8rem; font-weight: 600; cursor: pointer; }
+.password-wrap .toggle:hover { background: var(--indigo-soft); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-group-toggle .chev, .floor > summary::after { transition: none; }
+}

@@ -19,13 +19,13 @@ if (!in_array($status, ['pending', 'approved', 'rejected'], true)) {
 }
 
 $stmt = db_prepare(
-    'SELECT id, student_id, last_name, first_name, middle_name, age, gender, email, address,
+    "SELECT id, student_id, last_name, first_name, middle_name, age, gender, email, address,
             year_level, status, created_at, reviewed_at,
             (entrance_slip IS NOT NULL AND entrance_slip <> '') AS has_entrance_slip
        FROM validation_dormers
       WHERE status = ?
       ORDER BY created_at ASC, id ASC
-      LIMIT 500'
+      LIMIT 500"
 );
 $stmt->bind_param('s', $status);
 

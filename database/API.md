@@ -26,7 +26,7 @@ Role landing pages (project-root-relative, also returned as `home` by `me.php`):
 | role | landing page |
 |---|---|
 | student | `dormer/dashboard/dashboard.html` |
-| admin | `staff/violations.html` (for now) |
+| admin | `staff/admin/home.html` |
 | security | `staff/security/home.html` |
 
 **IMPORTANT change:** `role` in `login.php` and `me.php` is now `"student" | "admin" | "security"` (it used to be
@@ -156,7 +156,7 @@ labels: pending -> "Pending", verified -> "Recorded", rejected -> "Rejected".
 
 | Method | Path | Roles | Params | Success response |
 |---|---|---|---|---|
-| POST | `/dormer/attendance/process_scan.php` ("Scan QR") | security, admin | JSON: `{token}` (QR content = student `qr_token`; plain student ID only if `QR_ALLOW_STUDENT_ID=1`) | `{success, message, name, student_id, room ("3-5"\|null), year_level, scan_time, attendance_type:"IN"\|"OUT"}`; 404 invalid QR, 429 within 30 s of the previous scan. IN/OUT alternate per student per day |
+| POST | `/dormer/attendance/process_scan.php` ("Scan QR") | security, admin | JSON: `{qr_token}` (alias `token`; `qr_token` preferred) (QR content = student `qr_token`; plain student ID only if `QR_ALLOW_STUDENT_ID=1`) | `{success, message, name, student_id, room ("3-5"\|null), year_level, scan_time, attendance_type:"IN"\|"OUT"}`; 404 invalid QR, 429 within 30 s of the previous scan. IN/OUT alternate per student per day |
 | GET | `/staff/api/attendance_today.php` | security, admin | - | `{success, date, attendance:[{student_id, name, year_level, floor, room, room_label, status:"PRESENT", time_in, time, last_type:"IN"\|"OUT", last_scan_at, scans}], total_present}` - one row per student with at least one scan today, most recent first (`floor/room/room_label` null when not enrolled; `time_in` = first scan, `time` = latest) |
 | POST | `/staff/api/curfew_scan.php` ("Scan QR For Curfew") | security, admin | form or JSON: `qr_token` (alias `token`), csrf | see below |
 | GET | `/staff/api/curfew_log.php` | security, admin | `date?` (YYYY-MM-DD curfew night; default = tonight) | `{success, date, curfew_time:"10:00 PM", violations:[{violation_id, student_id, name, year_level, floor, room, room_label, violation:"Curfew", warning_no:int\|null, warning:"1st warning"\|... \| "Curfew", time, curfew_at}], total, checked_in, late_count}` |
@@ -165,7 +165,7 @@ labels: pending -> "Pending", verified -> "Recorded", rejected -> "Rejected".
 
 Security home: latest announcements (`/connection/announcements.php`) + attendance (`attendance_today.php`).
 Security attendance page: two tables (attendance_today, curfew_log) and two camera scanners
-(`process_scan.php`, `curfew_scan.php`). Use `POST` with JSON `{"qr_token": "<decoded QR text>"}`.
+(`process_scan.php`, `curfew_scan.php`). Use `POST` with JSON `{"qr_token": "<decoded QR text>"}` (`token` also accepted; `qr_token` preferred).
 
 **Curfew rules.** Curfew time = env `CURFEW_TIME` (default `22:00`). A curfew scan is **late** when the time of day is
 `>= CURFEW_TIME` or `< CURFEW_END` (default `04:00`, so after-midnight arrivals are late too). Each student has one curfew
@@ -178,7 +178,7 @@ labels "1st warning", "2nd warning", "3rd warning", "4th warning", ...). The war
 ("3-5"|null), floor, room_no, curfew_time ("10:00 PM"), late (bool), scan_time ("10:45 PM"), warning_no (int|null),
 warning ("1st warning"|null), violation_id (int|null)}`. On time: `late:false`, no warning. Scanning the same
 student again the same night returns 200 with `already_scanned:true` and the original result (nothing new is
-created). Errors: 400 missing token, 404 invalid QR.
+created). Errors: 400 missing token, 404 invalid QR, 422 `{code:"too_early"}` when the scan is between `CURFEW_END` and 3 hours before `CURFEW_TIME` (nothing is stored).
 
 ---
 

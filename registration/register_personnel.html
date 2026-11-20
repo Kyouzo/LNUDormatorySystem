@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+  <title>Personnel registration | LNU Dormitory Portal</title>
+  <meta name="description" content="Request a dorm administrator or security personnel account for the LNU Dormitory Portal.">
+  <meta name="theme-color" content="#00006e">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../assets/css/portal.css">
+  <link rel="stylesheet" href="../login/login.css">
+  <link rel="stylesheet" href="register.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+  <script src="../assets/js/portal.js"></script>
+</head>
+<body class="login-page">
+  <div class="login-shell is-wide">
+    <main class="login-card">
+      <aside class="login-aside" data-hero data-hero-lines aria-label="How personnel registration works">
+        <p class="eyebrow">Leyte Normal University</p>
+        <div>
+          <p class="login-aside-title">Dorm personnel account</p>
+          <ol class="login-steps">
+            <li><span><strong>Send your details</strong>Choose Dorm Administrator or Security Personnel and set your password.</span></li>
+            <li><span><strong>Administrator approval</strong>An existing dorm administrator reviews and approves your request.</span></li>
+            <li><span><strong>Sign in</strong>Use the email and password you set here.</span></li>
+          </ol>
+        </div>
+        <p class="tagline">Integrity | Excellence | Service</p>
+      </aside>
+
+      <section class="login-main" aria-labelledby="register-title">
+        <header class="login-head">
+          <img class="login-logo" src="../assets/images/lnu-logo.png" alt="Leyte Normal University seal" width="76" height="76">
+          <h1 id="register-title">Register as dorm personnel</h1>
+          <p>All fields are required unless marked optional.</p>
+        </header>
+
+        <div id="register-body">
+          <form class="login-form" id="register-form" action="register_personnel.php" method="POST">
+            <div class="form-alert" id="register-alert" role="alert" aria-live="assertive"></div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="last_name">Last name</label>
+                <input type="text" id="last_name" name="last_name" autocomplete="family-name" maxlength="80" required aria-describedby="last_name-error">
+                <span class="field-error" id="last_name-error"></span>
+              </div>
+              <div class="field">
+                <label for="first_name">First name</label>
+                <input type="text" id="first_name" name="first_name" autocomplete="given-name" maxlength="80" required aria-describedby="first_name-error">
+                <span class="field-error" id="first_name-error"></span>
+              </div>
+              <div class="field">
+                <label for="middle_name"><span class="field-label-row">Middle initial <span class="field-optional">Optional</span></span></label>
+                <input type="text" id="middle_name" name="middle_name" autocomplete="additional-name" maxlength="3" placeholder="e.g. M" aria-describedby="middle_name-error">
+                <span class="field-error" id="middle_name-error"></span>
+              </div>
+              <div class="field">
+                <label for="age">Age</label>
+                <input type="number" id="age" name="age" min="18" max="99" step="1" inputmode="numeric" required aria-describedby="age-error">
+                <span class="field-error" id="age-error"></span>
+              </div>
+              <div class="field">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" required aria-describedby="gender-error">
+                  <option value="">Select</option>
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
+                  <option value="Other">Other</option>
+                </select>
+                <span class="field-error" id="gender-error"></span>
+              </div>
+              <div class="field">
+                <label for="personnel_type">Personnel type</label>
+                <select id="personnel_type" name="personnel_type" required aria-describedby="personnel_type-error">
+                  <option value="">Select</option>
+                  <option value="admin">Dorm Administrator</option>
+                  <option value="security">Security Personnel</option>
+                </select>
+                <span class="field-error" id="personnel_type-error"></span>
+              </div>
+              <div class="field full">
+                <label for="email">Email address</label>
+                <input type="email" id="email" name="email" autocomplete="email" autocapitalize="none" spellcheck="false" maxlength="190" placeholder="you@lnu.edu.ph" required aria-describedby="email-error">
+                <span class="field-error" id="email-error"></span>
+              </div>
+              <div class="field">
+                <label for="password">Password</label>
+                <span class="input-affix">
+                  <input type="password" id="password" name="password" autocomplete="new-password" minlength="8" maxlength="1024" required aria-describedby="password-hint password-error">
+                  <button class="affix-button" type="button" data-password-toggle aria-controls="password" aria-pressed="false" aria-label="Show password" hidden><span data-toggle-label>Show</span></button>
+                </span>
+                <span class="field-hint" id="password-hint">At least 8 characters.</span>
+                <span class="field-error" id="password-error"></span>
+              </div>
+              <div class="field">
+                <label for="password_confirm">Confirm password</label>
+                <span class="input-affix">
+                  <input type="password" id="password_confirm" autocomplete="new-password" maxlength="1024" required aria-describedby="password_confirm-error">
+                  <button class="affix-button" type="button" data-password-toggle aria-controls="password_confirm" aria-pressed="false" aria-label="Show password" hidden><span data-toggle-label>Show</span></button>
+                </span>
+                <span class="field-error" id="password_confirm-error"></span>
+              </div>
+            </div>
+            <button class="button outline full" type="submit" id="register-submit">Submit for approval</button>
+          </form>
+          <p class="login-alt"><a href="register.html">Back to registration choices</a> · Already approved? <a href="../login/login.html">Sign in</a></p>
+        </div>
+      </section>
+    </main>
+    <p class="login-footer">LNU Dormitory Portal - Copyright © <span data-current-year>2026</span> Leyte Normal University. All Rights Reserved.</p>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="register_personnel.js"></script>
+</body>
+</html>

@@ -13,7 +13,7 @@
  * Response: {success, message, already_scanned, name, student_id, year_level, room, floor,
  *            room_no, late (bool), scan_time ("10:45 PM"), curfew_time ("10:00 PM"),
  *            warning_no (int|null), warning ("1st warning"|null), violation_id (int|null)}
- * Errors: 400 missing token, 404 invalid QR.
+ * Errors: 400 missing token, 404 invalid QR, 422 code 'too_early' (nothing stored).
  */
 
 require_once __DIR__ . '/../../connection/bootstrap.php';
@@ -70,6 +70,10 @@ $now       = time();
 $nowText   = date('Y-m-d H:i:s', $now);
 $night     = curfew_night_date($now);
 $late      = curfew_is_late($now);
+if (curfew_is_too_early($now)) {
+    $conn->rollback();
+    json_error('Too early for curfew check-in. Curfew scanning opens 3 hours before ' . date('h:i A', strtotime(curfew_time_text())) . '.', 422, ['code' => 'too_early']);
+}
 $curfewTxt = date('h:i A', strtotime(curfew_time_text()));
 
 $base = [

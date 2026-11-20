@@ -53,7 +53,7 @@ function role_home_path($role)
         case 'security':
             return 'staff/security/home.html';
         case 'admin':
-            return 'staff/violations.html';
+            return 'staff/admin/home.html';
     }
     return 'login/login.html';
 }

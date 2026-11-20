@@ -81,7 +81,10 @@ if (array_key_exists('email', $in)) {
              LIMIT 1"
         );
         $stmt->bind_param('sisss', $email, $studentId, $email, $email, $email);
-        db_execute($stmt, 'profile email check');
+        if (!db_execute($stmt, 'profile email check')) {
+            $stmt->close();
+            json_error('Unable to check the email.', 500);
+        }
         $taken = $stmt->get_result()->num_rows > 0;
         $stmt->close();
         if ($taken) {

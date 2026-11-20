@@ -112,6 +112,31 @@ Audit method: file listing + grep (no PHP executed). Findings:
   were assumptions, not in the Canva. Confirm. Also the Canva shows Time in and Time out as separate QR pages while the app uses one
   pass that toggles IN/OUT; kept as-is.
 
+## 5c. STATUS UPDATE 2 (supersedes the "missing" lists in §5/§5b) — 2026-11-21
+**Built since §5b (all UNCOMMITTED in the working tree; commit them):**
+- Registration: `registration/register.html` = choice page; `register_student.html|js` (+ entrance-slip upload); `register_personnel.html|js`.
+- Student: `dormer/{profile,announcements,settings}/`, `dormer/attendance/student-shell.js|css` (sidebar + bell shared), dashboard room tile /
+  Today Attendance / Latest Announcements, attendance room pill + "Your status".
+- Admin: `staff/admin/{home,students,payments,rooms,announcements,attendance,settings}.html|js`, `admin.js|css`, `registrations.js`;
+  `staff/violations.*` has the admin sidebar. Admin lands on `staff/admin/home.html` (auth.php + login.js map).
+- Security: `staff/security/{home,attendance,settings}.html|js`, `security.js|css`.
+- `README-LOCAL.md` recreated.
+- Independent review done (static): found+fixed a parse error in `staff/api/registrations.php`, rejected-student re-registration bug,
+  `process_scan.php` now reads `qr_token` (falls back to `token`), db_execute-failure crashes, early daytime curfew scans rejected
+  (`code: too_early`), `[hidden]` CSS bugs. Reviewer confirmed: SQL columns/bind types match schema, seed valid, roles consistent,
+  every endpoint guarded (except logout), no XSS/path traversal found, room-capacity + double-scan are race-safe.
+**Still open / not done:**
+- NEVER RUN: no PHP executed, no MySQL import, no camera test. First XAMPP run is the real test; expect runtime bugs. (JS passes
+  `node --check`; PHP only checked by a brace-balance script, not `php -l` — run `php -l` on every file first.)
+- `logout.php` is GET (CSRF-able logout) — make POST+token. CSRF enforcement still lenient (`CSRF_ENFORCE=0`).
+- Cleanups the reviewer suggested but we skipped: merge 3 near-identical change-password scripts, DormKit vs `LNU` fetch helpers,
+  duplicate email-uniqueness SQL (4 PHP files) and QR lookup (process_scan/curfew_scan), `staff/api/announcements_list.php` duplicates
+  `connection/announcements.php`, legacy `dormer/attendance/scan_qr.php|js` page now unlinked.
+- Minor caveats: rejected-row cleanup in register.php isn't in a transaction with the insert; `curfew_is_too_early` is inert if
+  CURFEW_TIME < 03:00; no notification bell on admin/security pages; Payments page not re-checked with sample data/server-down;
+  settings = password change only (no preferences endpoint); 4 beds/room and 22:00 curfew are assumptions to confirm with the owner.
+- `login.html` links register to the choice page; PHP no-JS fallback "back" links in register*.php point at the choice page.
+
 ## 6. Known issues / decisions / ideas
 - CSRF enforcement left lenient (`CSRF_ENFORCE=0`) because the no-JS form fallbacks can't send tokens; flip to 1 once fallbacks are dropped/updated.
 - Logout is a plain GET link; CDN scripts have no SRI hashes (couldn't verify hashes offline). Camera scanner needs HTTPS or localhost.

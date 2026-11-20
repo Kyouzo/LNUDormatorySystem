@@ -14,9 +14,11 @@
   form.noValidate = true; // we show our own messages
   LNU.passwordToggles(form);
 
+  // Landing page per role (project-root-relative, resolved with LNU.url). The one place to change a role's home.
   const FALLBACK = {
     student: 'dormer/dashboard/dashboard.html',
-    staff: 'staff/violations.html',
+    admin: 'staff/admin/home.html',
+    security: 'staff/security/home.html',
   };
 
   function setFieldError(input, message) {

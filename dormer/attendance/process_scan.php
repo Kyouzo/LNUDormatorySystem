@@ -24,7 +24,7 @@ csrf_require();
 const SCAN_COOLDOWN_SECONDS = 30;
 
 $data  = request_input();
-$token = trim((string) ($data['token'] ?? ''));
+$token = trim((string) ($data['qr_token'] ?? ($data['token'] ?? '')));
 
 if ($token === '') {
     json_error('QR token is missing.', 400);

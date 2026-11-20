@@ -57,7 +57,7 @@
     box.textContent = error.message;
     box.hidden = false;
     $('reloadProfile').hidden = error.kind === 'auth';
-    ['studentID', 'studentRoom', 'studentYear', 'studentAddress', 'heroRoom'].forEach((id) => setText(id, null));
+    ['studentID', 'studentRoom', 'studentYear', 'studentAddress', 'heroRoom', 'qrRoom'].forEach((id) => setText(id, null));
     setText('studentName', 'Profile unavailable');
     setText('heroName', 'your account');
     const frame = $('qrInline');
@@ -78,6 +78,9 @@
       setText('studentID', data.student_id);
       setText('studentRoom', data.room_assignment, 'Not yet assigned');
       setText('heroRoom', data.room_assignment, 'Not yet assigned');
+      const roomLabel = data.room_assignment ? 'Room ' + data.room_assignment : 'Room not yet assigned';
+      setText('qrRoom', roomLabel);
+      setText('qrRoomLarge', roomLabel);
       setText('studentYear', data.year_level, 'Not set');
       setText('studentAddress', data.address, 'Not set');
       const ok = renderQr($('qrInline'), 184);
@@ -116,19 +119,24 @@
     return K.h('span', { class: 'badge ' + (isIn ? 'badge-success' : 'badge-navy'), text: isIn ? 'Time in' : 'Time out' });
   }
 
+  /** "Your status" from today's scans: IN | OUT | Not yet in (attendance_logs.php `today`). */
+  function updateToday(today) {
+    const t = today || {};
+    const status = t.status || 'Not yet in';
+    const word = { IN: 'IN · Inside the dorm', OUT: 'OUT · Signed out' }[status] || 'Not yet in';
+    setText('statStatus', word);
+    $('statStatusNote').textContent = 'Today · Time in ' + (t.time_in || '—') + ' · Time out ' + (t.time_out || '—');
+  }
+
   function updateStats(history, data) {
     K.countTo($('statCount'), Number(data && data.total) || history.length);
+    updateToday(data && data.today);
     const latest = history[0];
     if (!latest) {
-      setText('statStatus', 'No scans yet');
-      $('statStatusNote').textContent = 'Your first scan sets this.';
       setText('statLast', '—');
       $('statLastNote').textContent = 'Nothing recorded so far.';
       return;
     }
-    const isIn = String(latest.attendance_type).toUpperCase() === 'IN';
-    setText('statStatus', isIn ? 'Inside the dorm' : 'Signed out');
-    $('statStatusNote').textContent = isIn ? 'You timed in on your latest scan.' : 'Remember to time in when you return.';
     const d = K.parseDateTime(latest.scan_datetime);
     setText('statLast', d ? K.relative(d) : latest.scan_datetime);
     $('statLastNote').textContent = d ? K.fmtDate(d) + ' at ' + K.fmtTime(d) : 'Lobby scanner';

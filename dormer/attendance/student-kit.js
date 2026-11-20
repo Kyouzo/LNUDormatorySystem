@@ -100,8 +100,9 @@
         window.location.href = LOGIN_URL;
         return null;
       }
-      if (me.role === 'staff' && !(opts && opts.allowStaff)) {
-        window.location.href = STAFF_URL;
+      // role is student | admin | security; staff go to their own landing page (me.home).
+      if (me.role !== 'student' && !(opts && opts.allowStaff)) {
+        window.location.href = me.home ? '../../' + me.home : STAFF_URL;
         return null;
       }
       return me;

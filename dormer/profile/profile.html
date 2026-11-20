@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#00006e">
+  <link rel="icon" type="image/png" href="../../assets/images/lnu-logo.png">
+  <title>Profile | Leyte Normal University Dormitory</title>
+  <meta name="description" content="Your LNU dormitory profile: personal details, room and contact information.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../../assets/css/portal.css">
+  <link rel="stylesheet" href="../attendance/student-kit.css">
+  <link rel="stylesheet" href="../attendance/student-shell.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+  <script src="../../assets/js/portal.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><img class="brand-mark" src="../../assets/images/lnu-logo.png" alt="Leyte Normal University logo"><span>Leyte Normal University<br>Dormitory portal</span></div>
+    <nav class="nav" aria-label="Student navigation">
+      <a href="../dashboard/dashboard.html">Overview</a>
+      <a href="../profile/profile.html" aria-current="page">Profile</a>
+      <a href="../attendance/attendance.html">Attendance</a>
+      <a href="../payment_receipt/paymentReceipt.html">Payments</a>
+      <a href="../violation/violation.html">Violations</a>
+      <a href="../announcements/announcements.html">Announcements</a>
+      <a class="nav-settings" href="../settings/settings.html">Settings</a>
+    </nav>
+    <a class="sidebar-logout" href="../../login/logout.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>Sign out</a>
+    <div class="sidebar-footer">Student workspace<br>© <span data-current-year></span> Leyte Normal University</div>
+  </aside>
+
+  <main class="main-content" id="main-content">
+    <div class="student-bell">
+      <button class="bell-button" type="button" id="bellButton" aria-expanded="false" aria-controls="bellPanel" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span class="bell-count" aria-hidden="true" hidden>0</span>
+      </button>
+      <div class="bell-panel" id="bellPanel" role="region" aria-label="Latest announcements" hidden data-lenis-prevent>
+        <div class="bell-head"><span class="eyebrow">Notifications</span><h2>Latest announcements</h2></div>
+        <ul class="bell-list" aria-live="polite"></ul>
+        <a class="bell-all" href="../announcements/announcements.html">View all announcements</a>
+      </div>
+    </div>
+    <section class="hero-band dorm-hero" data-hero aria-labelledby="page-title">
+      <span class="eyebrow">Profile</span>
+      <h1 id="page-title">Your dormitory profile</h1>
+      <p>The details the Dormitory Office has on file for you. You can update your email and home address here; for anything else, visit the office.</p>
+      <p class="hero-meta" aria-live="polite">
+        <span>Signed in as <strong class="skeleton" data-student-name>Loading</strong></span>
+        <span>Status <strong id="heroStatus">—</strong></span>
+      </p>
+    </section>
+
+    <div class="content-stack">
+      <p class="field-error" id="loadError" role="alert" hidden></p>
+
+      <div class="profile-grid">
+        <section class="panel" aria-labelledby="details-title">
+          <div class="panel-head">
+            <div><span class="eyebrow">Personal details</span><h2 id="details-title">On record</h2><p>Managed by the dorm administrator.</p></div>
+            <span class="badge badge-outline" id="statusBadge">Loading</span>
+          </div>
+          <dl class="detail-list">
+            <div class="full"><dt>Full name</dt><dd class="skeleton" id="pName">—</dd></div>
+            <div><dt>Student ID</dt><dd class="skeleton tabular" id="pId">—</dd></div>
+            <div><dt>Year level</dt><dd class="skeleton" id="pYear">—</dd></div>
+            <div><dt>Room</dt><dd class="skeleton" id="pRoom">—</dd></div>
+            <div><dt>Floor</dt><dd class="skeleton" id="pFloor">—</dd></div>
+            <div><dt>Age</dt><dd class="skeleton" id="pAge">—</dd></div>
+            <div><dt>Gender</dt><dd class="skeleton" id="pGender">—</dd></div>
+            <div><dt>Email</dt><dd class="skeleton" id="pEmail">—</dd></div>
+            <div><dt>Member since</dt><dd class="skeleton" id="pSince">—</dd></div>
+            <div class="full"><dt>Home address</dt><dd class="skeleton" id="pAddress">—</dd></div>
+          </dl>
+        </section>
+
+        <section class="panel" aria-labelledby="edit-title">
+          <div class="panel-head">
+            <div><span class="eyebrow">Contact details</span><h2 id="edit-title">Update your contact info</h2><p>Your email is also your sign-in name.</p></div>
+          </div>
+          <form class="stack-form" id="profileForm" novalidate>
+            <label class="field" for="email">Email address
+              <input type="email" id="email" name="email" autocomplete="email" maxlength="190" required aria-describedby="emailError" disabled>
+              <span class="field-error" id="emailError"></span>
+            </label>
+            <label class="field" for="address">Home address
+              <textarea id="address" name="address" maxlength="255" rows="3" autocomplete="street-address" required aria-describedby="addressHint addressError" disabled></textarea>
+              <span class="field-hint" id="addressHint">Up to 255 characters.</span>
+              <span class="field-error" id="addressError"></span>
+            </label>
+            <label class="field" for="currentPassword" id="passwordField" hidden>Current password
+              <span class="input-affix">
+                <input type="password" id="currentPassword" name="current_password" autocomplete="current-password" aria-describedby="passwordHint passwordError">
+                <button class="affix-button" type="button" data-password-toggle aria-controls="currentPassword" aria-pressed="false" aria-label="Show password" hidden><span data-toggle-label>Show</span></button>
+              </span>
+              <span class="field-hint" id="passwordHint">Needed because you are changing your sign-in email.</span>
+              <span class="field-error" id="passwordError"></span>
+            </label>
+            <p class="form-error" id="formError" role="alert"></p>
+            <div class="form-actions">
+              <button class="button primary" type="submit" id="saveProfile" disabled>Save changes</button>
+              <small>Name, year level, room, age and gender are changed by the Dormitory Office.</small>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../../assets/js/api.js"></script>
+<script src="../attendance/student-kit.js"></script>
+<script src="../attendance/student-shell.js"></script>
+<script src="profile.js"></script>
+</body>
+</html>

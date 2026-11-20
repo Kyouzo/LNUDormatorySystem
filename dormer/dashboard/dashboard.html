@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="../../assets/css/portal.css">
   <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="../attendance/student-shell.css">
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
@@ -22,16 +23,30 @@
   <aside class="sidebar">
     <div class="brand"><img class="brand-mark" src="../../assets/images/lnu-logo.png" alt="Leyte Normal University logo"><span>Leyte Normal University<br>Dormitory portal</span></div>
     <nav class="nav" aria-label="Student navigation">
-      <a href="dashboard.html" aria-current="page">Overview</a>
+      <a href="../dashboard/dashboard.html" aria-current="page">Overview</a>
+      <a href="../profile/profile.html">Profile</a>
       <a href="../attendance/attendance.html">Attendance</a>
       <a href="../payment_receipt/paymentReceipt.html">Payments</a>
       <a href="../violation/violation.html">Violations</a>
+      <a href="../announcements/announcements.html">Announcements</a>
+      <a class="nav-settings" href="../settings/settings.html">Settings</a>
     </nav>
     <a class="sidebar-logout" href="../../login/logout.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>Sign out</a>
     <div class="sidebar-footer">Student workspace<br>© <span data-current-year></span> Leyte Normal University</div>
   </aside>
 
   <main class="main-content" id="main-content">
+    <div class="student-bell">
+      <button class="bell-button" type="button" id="bellButton" aria-expanded="false" aria-controls="bellPanel" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span class="bell-count" aria-hidden="true" hidden>0</span>
+      </button>
+      <div class="bell-panel" id="bellPanel" role="region" aria-label="Latest announcements" hidden data-lenis-prevent>
+        <div class="bell-head"><span class="eyebrow">Notifications</span><h2>Latest announcements</h2></div>
+        <ul class="bell-list" aria-live="polite"></ul>
+        <a class="bell-all" href="../announcements/announcements.html">View all announcements</a>
+      </div>
+    </div>
     <section class="hero-band dash-hero" data-hero aria-labelledby="page-title">
       <span class="eyebrow" id="hero-date">Dormitory portal</span>
       <h1 id="page-title"><span id="hero-greeting">Welcome back,</span> <span id="hero-name">dormer.</span></h1>
@@ -49,7 +64,13 @@
     </section>
 
     <div class="content-stack">
-      <section class="summary-grid" aria-label="Your dormitory record at a glance">
+      <section class="summary-grid stats-4" aria-label="Your dormitory record at a glance">
+        <article class="panel stat-card" data-stat="room">
+          <span class="stat-label">Room number</span>
+          <span class="stat-room skeleton" id="roomValue">—</span>
+          <p class="stat-note" id="roomNote" aria-live="polite">Loading…</p>
+          <a class="stat-link" href="../profile/profile.html">View profile</a>
+        </article>
         <article class="panel stat-card" data-stat="payments">
           <span class="stat-label">Payment receipts</span>
           <span class="stat-value skeleton" data-stat-value>0</span>
@@ -63,12 +84,37 @@
           <a class="stat-link" href="../violation/violation.html">View record</a>
         </article>
         <article class="panel stat-card" data-stat="attendance">
-          <span class="stat-label">Recent check-ins</span>
+          <span class="stat-label">Days present</span>
           <span class="stat-value skeleton" data-stat-value>0</span>
           <p class="stat-note" data-stat-note aria-live="polite">Loading…</p>
           <a class="stat-link" href="../attendance/attendance.html">View attendance</a>
         </article>
       </section>
+
+      <div class="dash-today">
+        <section class="panel today-card" aria-labelledby="today-title">
+          <div class="panel-head">
+            <div><span class="eyebrow">Today attendance</span><h2 id="today-title">Your status today</h2></div>
+            <a class="stat-link" href="../attendance/attendance.html">Open QR pass</a>
+          </div>
+          <dl class="today-list" id="todayList" aria-live="polite">
+            <div><dt>Date</dt><dd class="skeleton" id="todayDate">—</dd></div>
+            <div><dt>Time</dt><dd class="skeleton tabular" id="todayTime">—</dd></div>
+            <div><dt>Status</dt><dd class="skeleton" id="todayStatus">—</dd></div>
+          </dl>
+          <p class="stat-note" id="todayNote"></p>
+        </section>
+
+        <section class="panel" aria-labelledby="news-title">
+          <div class="panel-head">
+            <div><span class="eyebrow">From the dormitory office</span><h2 id="news-title">Latest announcements</h2></div>
+            <a class="stat-link" href="../announcements/announcements.html">View all</a>
+          </div>
+          <ul class="news-list" id="newsList" aria-live="polite" aria-busy="true">
+            <li><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text short"></span></li>
+          </ul>
+        </section>
+      </div>
 
       <div class="section-title"><h2>Quick actions</h2></div>
       <section class="summary-grid" aria-label="Quick actions">
@@ -123,6 +169,7 @@
 </div>
 
 <script src="../../assets/js/api.js"></script>
+<script src="../attendance/student-shell.js"></script>
 <script src="dashboard.js"></script>
 </body>
 </html>

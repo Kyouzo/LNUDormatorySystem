@@ -102,7 +102,10 @@ $stmt = db_prepare(
      LIMIT 1"
 );
 $stmt->bind_param('ssss', $email, $email, $email, $email);
-db_execute($stmt, 'personnel duplicate check');
+if (!db_execute($stmt, 'personnel duplicate check')) {
+    $stmt->close();
+    respond_error('Registration failed. Please try again later.', 500, $formPage, 'Back to registration');
+}
 $exists = $stmt->get_result()->num_rows > 0;
 $stmt->close();
 

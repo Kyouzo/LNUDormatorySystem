@@ -91,6 +91,13 @@ function curfew_is_late($ts)
     return $tod >= curfew_start_seconds() || $tod < curfew_end_seconds();
 }
 
+/** True for a scan in the quiet window between CURFEW_END and 3 hours before CURFEW_TIME (too early to be a curfew check-in). */
+function curfew_is_too_early($ts)
+{
+    $tod = ((int) date('G', $ts)) * 3600 + ((int) date('i', $ts)) * 60 + (int) date('s', $ts);
+    return $tod >= curfew_end_seconds() && $tod < curfew_start_seconds() - 3 * 3600;
+}
+
 /** The "curfew night" a moment belongs to (Y-m-d): scans after midnight count for the previous evening. */
 function curfew_night_date($ts)
 {

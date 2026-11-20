@@ -103,10 +103,14 @@ $stmt = db_prepare(
     "SELECT 1 FROM validated_dormers WHERE student_id = ? OR email = ?
      UNION ALL SELECT 1 FROM staff_accounts WHERE email = ?
      UNION ALL SELECT 1 FROM staff_registrations WHERE email = ? AND status = 'pending'
+     UNION ALL SELECT 1 FROM validation_dormers WHERE (student_id = ? OR email = ?) AND status = 'pending'
      LIMIT 1"
 );
-$stmt->bind_param('isss', $student_id, $email, $email, $email);
-db_execute($stmt, 'registration duplicate check');
+$stmt->bind_param('isssis', $student_id, $email, $email, $email, $student_id, $email);
+if (!db_execute($stmt, 'registration duplicate check')) {
+    $stmt->close();
+    respond_error('Registration failed. Please try again later.', 500, $formPage, 'Back to registration');
+}
 $exists = $stmt->get_result()->num_rows > 0;
 $stmt->close();
 
@@ -117,6 +121,35 @@ if ($exists) {
         app_url('login/login.html'),
         'Go to sign in'
     );
+}
+
+// A rejected student may re-register: drop the old rejected row (UNIQUE student_id/email) and its slip file.
+$stmt = db_prepare("SELECT id, entrance_slip FROM validation_dormers WHERE (student_id = ? OR email = ?) AND status = 'rejected'");
+$stmt->bind_param('is', $student_id, $email);
+$oldSlips = [];
+if (db_execute($stmt, 'rejected registration lookup')) {
+    $res = $stmt->get_result();
+    while ($old = $res->fetch_assoc()) {
+        $oldSlips[] = (string) $old['entrance_slip'];
+    }
+}
+$stmt->close();
+if ($oldSlips) {
+    $stmt = db_prepare("DELETE FROM validation_dormers WHERE (student_id = ? OR email = ?) AND status = 'rejected'");
+    $stmt->bind_param('is', $student_id, $email);
+    $deleted = db_execute($stmt, 'rejected registration delete');
+    $stmt->close();
+    if (!$deleted) {
+        respond_error('Registration failed. Please try again later.', 500, $formPage, 'Back to registration');
+    }
+    $slipDir = realpath(__DIR__ . '/uploads/entrance_slips');
+    foreach ($oldSlips as $f) {
+        $f = basename($f);
+        $p = ($slipDir !== false && $f !== '') ? realpath($slipDir . '/' . $f) : false;
+        if ($p !== false && strpos($p, $slipDir . DIRECTORY_SEPARATOR) === 0) {
+            @unlink($p);
+        }
+    }
 }
 
 // Entrance slip (optional unless required): validated by content, stored under a random name.

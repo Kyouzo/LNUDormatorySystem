@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#00006e">
+  <link rel="icon" type="image/png" href="../../assets/images/lnu-logo.png">
+  <title>Settings | Leyte Normal University Dormitory</title>
+  <meta name="description" content="Change your LNU dormitory account password.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../../assets/css/portal.css">
+  <link rel="stylesheet" href="../attendance/student-kit.css">
+  <link rel="stylesheet" href="../attendance/student-shell.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+  <script src="../../assets/js/portal.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><img class="brand-mark" src="../../assets/images/lnu-logo.png" alt="Leyte Normal University logo"><span>Leyte Normal University<br>Dormitory portal</span></div>
+    <nav class="nav" aria-label="Student navigation">
+      <a href="../dashboard/dashboard.html">Overview</a>
+      <a href="../profile/profile.html">Profile</a>
+      <a href="../attendance/attendance.html">Attendance</a>
+      <a href="../payment_receipt/paymentReceipt.html">Payments</a>
+      <a href="../violation/violation.html">Violations</a>
+      <a href="../announcements/announcements.html">Announcements</a>
+      <a class="nav-settings" href="../settings/settings.html" aria-current="page">Settings</a>
+    </nav>
+    <a class="sidebar-logout" href="../../login/logout.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>Sign out</a>
+    <div class="sidebar-footer">Student workspace<br>© <span data-current-year></span> Leyte Normal University</div>
+  </aside>
+
+  <main class="main-content" id="main-content">
+    <div class="student-bell">
+      <button class="bell-button" type="button" id="bellButton" aria-expanded="false" aria-controls="bellPanel" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span class="bell-count" aria-hidden="true" hidden>0</span>
+      </button>
+      <div class="bell-panel" id="bellPanel" role="region" aria-label="Latest announcements" hidden data-lenis-prevent>
+        <div class="bell-head"><span class="eyebrow">Notifications</span><h2>Latest announcements</h2></div>
+        <ul class="bell-list" aria-live="polite"></ul>
+        <a class="bell-all" href="../announcements/announcements.html">View all announcements</a>
+      </div>
+    </div>
+    <section class="hero-band dorm-hero" data-hero aria-labelledby="page-title">
+      <span class="eyebrow">Settings</span>
+      <h1 id="page-title">Account settings</h1>
+      <p>Keep your dormitory account safe. Use a password you do not use anywhere else.</p>
+      <p class="hero-meta" aria-live="polite">
+        <span>Signed in as <strong class="skeleton" data-student-name>Loading</strong></span>
+      </p>
+    </section>
+
+    <div class="content-stack">
+      <section class="panel narrow-panel" aria-labelledby="password-title">
+        <div class="panel-head">
+          <div><span class="eyebrow">Security</span><h2 id="password-title">Change password</h2><p>At least 8 characters. You stay signed in after the change.</p></div>
+        </div>
+        <form class="stack-form" id="passwordForm" novalidate>
+          <label class="field" for="currentPassword">Current password
+            <span class="input-affix">
+              <input type="password" id="currentPassword" name="current_password" autocomplete="current-password" required aria-describedby="currentError">
+              <button class="affix-button" type="button" data-password-toggle aria-controls="currentPassword" aria-pressed="false" aria-label="Show password" hidden><span data-toggle-label>Show</span></button>
+            </span>
+            <span class="field-error" id="currentError"></span>
+          </label>
+          <label class="field" for="newPassword">New password
+            <span class="input-affix">
+              <input type="password" id="newPassword" name="new_password" autocomplete="new-password" minlength="8" required aria-describedby="newHint newError">
+              <button class="affix-button" type="button" data-password-toggle aria-controls="newPassword" aria-pressed="false" aria-label="Show password" hidden><span data-toggle-label>Show</span></button>
+            </span>
+            <span class="field-hint" id="newHint">8 characters or more. Mix words, numbers and symbols.</span>
+            <span class="field-error" id="newError"></span>
+          </label>
+          <label class="field" for="confirmPassword">Confirm new password
+            <span class="input-affix">
+              <input type="password" id="confirmPassword" name="confirm_password" autocomplete="new-password" required aria-describedby="confirmError">
+              <button class="affix-button" type="button" data-password-toggle aria-controls="confirmPassword" aria-pressed="false" aria-label="Show password" hidden><span data-toggle-label>Show</span></button>
+            </span>
+            <span class="field-error" id="confirmError"></span>
+          </label>
+          <p class="form-error" id="formError" role="alert"></p>
+          <div class="form-actions">
+            <button class="button primary" type="submit" id="savePassword">Update password</button>
+            <small>Forgot your password? Ask the Dormitory Office to reset it.</small>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script src="../../assets/js/api.js"></script>
+<script src="../attendance/student-kit.js"></script>
+<script src="../attendance/student-shell.js"></script>
+<script src="settings.js"></script>
+</body>
+</html>

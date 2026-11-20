@@ -4,31 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="theme-color" content="#00006e">
-  <title>Conduct and registrations | LNU Dormitory Office</title>
+  <title>Student Violation | LNU Dorm Administrator</title>
   <meta name="description" content="Dormitory office tools: student violations and pending registrations.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="../assets/css/portal.css">
   <link rel="stylesheet" href="violations.css">
+  <link rel="stylesheet" href="admin/admin.css">
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
   <script src="../assets/js/portal.js"></script>
 </head>
-<body>
+<body data-admin-page="violations">
 <a class="skip-link" href="#main-content">Skip to content</a>
 <div class="app-shell">
-  <aside class="sidebar">
-    <div class="brand"><img class="brand-mark" src="../assets/images/lnu-logo.png" alt="Leyte Normal University logo"><span>Leyte Normal University<br>Dormitory office</span></div>
-    <nav class="nav" aria-label="Staff navigation">
-      <a href="#students" aria-current="page">Conduct</a>
-      <a href="#registrations">Registrations</a>
-      <a href="../dormer/attendance/scan_qr.php">QR scanner</a>
-    </nav>
-    <a class="sidebar-logout" href="../login/logout.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>Sign out</a>
-    <div class="sidebar-footer">Staff workspace<br>© <span data-current-year></span> Leyte Normal University</div>
-  </aside>
+  <aside class="sidebar" data-admin-sidebar></aside>
 
   <main class="main-content" id="main-content">
     <section class="hero-band staff-hero" data-hero aria-labelledby="page-title">
@@ -36,11 +28,11 @@
       <h1 id="page-title">Student conduct and registrations</h1>
       <p>Log violations and absences, review each dormer's record, and approve new residents.</p>
       <p class="hero-meta" aria-live="polite">
-        <span>Signed in as <strong id="staff-name">staff</strong></span>
+        <span>Signed in as <strong id="staff-name" data-admin-name>Administrator</strong></span>
         <span>Dormers <strong id="meta-dormers">—</strong></span>
         <span>Pending registrations <strong id="meta-pending">—</strong></span>
       </p>
-      <p class="hero-alert" id="hero-alert" role="alert" hidden></p>
+      <p class="hero-alert" id="page-alert" role="alert" hidden></p>
     </section>
 
     <div class="content-stack">
@@ -57,7 +49,7 @@
         <div class="toolbar">
           <label class="field search-field" for="q"><span class="sr-only">Search dormers</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-            <input id="q" type="search" placeholder="Name, student ID or room" autocomplete="off" spellcheck="false">
+            <input id="q" type="search" placeholder="Name, student ID or room (3-5)" autocomplete="off" spellcheck="false">
           </label>
           <div class="chips" role="group" aria-label="Filter by record" id="chips">
             <button class="chip" type="button" aria-pressed="true" data-filter="all">All</button>
@@ -80,7 +72,7 @@
                 <th scope="col">Name</th>
                 <th scope="col" class="col-id">Student ID</th>
                 <th scope="col" class="col-year">Year</th>
-                <th scope="col" class="col-room">Room</th>
+                <th scope="col" class="col-room">Floor &amp; room</th>
                 <th scope="col">Record</th>
                 <th scope="col"><span class="sr-only">Actions</span></th>
               </tr>
@@ -156,33 +148,10 @@
   </div>
 </dialog>
 
-<!-- Confirm rejection -->
-<dialog class="dialog" id="reject-dialog" aria-labelledby="rj-title">
-  <div class="dialog-header">
-    <h2 id="rj-title">Reject this registration?</h2>
-    <button class="icon-button" type="button" data-dialog-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  </div>
-  <div class="dialog-body"><p id="rj-text">The applicant will not get an account. This cannot be undone from this page.</p></div>
-  <div class="dialog-actions">
-    <button class="button ghost" type="button" data-dialog-close>Keep pending</button>
-    <button class="button danger" type="button" id="rj-confirm">Reject</button>
-  </div>
-</dialog>
-
-<!-- Temporary password after approval -->
-<dialog class="dialog" id="temp-dialog" aria-labelledby="tp-title">
-  <div class="dialog-header">
-    <div><span class="eyebrow">Account created</span><h2 id="tp-title">Hand over this password</h2></div>
-    <button class="icon-button" type="button" data-dialog-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  </div>
-  <div class="dialog-body">
-    <p id="tp-text">This dormer did not choose a password. Give them this temporary one in person. It is shown only once.</p>
-    <div class="temp-password"><code id="tp-code"></code><button class="button secondary small" type="button" id="tp-copy">Copy</button></div>
-  </div>
-  <div class="dialog-actions"><button class="button primary" type="button" data-dialog-close>Done</button></div>
-</dialog>
 
 <script src="../assets/js/api.js"></script>
+<script src="admin/admin.js"></script>
+<script src="admin/registrations.js"></script>
 <script src="violations.js"></script>
 </body>
 </html>

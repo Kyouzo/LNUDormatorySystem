@@ -1,0 +1,56 @@
+/* Security personnel pages: small additions on top of portal.css + dormer/attendance/student-kit.css */
+
+/* Sidebar: SETTINGS sits at the bottom on desktop, just above Sign out. */
+@media (min-width: 761px) {
+  .sidebar .nav-main { flex: 1; display: flex; flex-direction: column; }
+  .sidebar .nav-main .nav-bottom { margin-top: auto; }
+  .sidebar .nav-main + .sidebar-logout { margin-top: .25rem; }
+}
+.nav svg { width: 1.05rem; height: 1.05rem; flex: none; }
+
+.page-alert { margin: 0 0 1.25rem; padding: .85rem 1.1rem; border-radius: var(--radius-sm); background: var(--danger-soft); color: var(--danger); font-weight: 500; }
+
+/* Home cards */
+.sec-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; align-items: start; }
+@media (max-width: 960px) { .sec-grid { grid-template-columns: 1fr; } }
+.ann-list, .mini-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.ann-list li { padding: .9rem 0; border-top: 1px solid var(--line); }
+.ann-list li:first-child { border-top: 0; padding-top: 0; }
+.ann-list h3 { margin: .25rem 0 .2rem; font-size: 1rem; letter-spacing: -.01em; }
+.ann-list p { margin: 0; color: var(--ink-2); white-space: pre-line; overflow-wrap: anywhere; }
+.ann-meta { color: var(--muted); font-size: .8rem; }
+.mini-list li { display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .6rem 0; border-top: 1px solid var(--line); }
+.mini-list li:first-child { border-top: 0; }
+.mini-list .cell-strong { color: var(--ink); font-weight: 600; }
+.mini-list .cell-sub { display: block; color: var(--muted); font-size: .82rem; }
+.big-count { display: flex; align-items: baseline; gap: .6rem; margin: .2rem 0 1rem; }
+.big-count .stat-value { margin: 0; }
+.list-state { margin: 0; padding: 1rem 0; color: var(--muted); }
+.list-state.is-error { color: var(--danger); }
+.panel-foot { margin: 1rem 0 0; }
+
+/* Attendance: mode buttons + two scanner panels */
+.scan-modes { display: flex; flex-wrap: wrap; gap: .75rem; margin: 0; }
+.scan-modes .button[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--gold-soft); }
+.scanner-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; align-items: start; }
+@media (max-width: 960px) { .scanner-pair { grid-template-columns: 1fr; } }
+.reader-box { position: relative; min-height: 220px; display: grid; place-items: center; overflow: hidden; border-radius: var(--radius-sm); background: var(--paper-2); border: 1px dashed var(--line-strong); }
+.reader-box.is-live { border-style: solid; border-color: var(--navy-700); }
+.reader-box video { display: block; width: 100% !important; height: auto !important; border-radius: var(--radius-sm); }
+.reader-idle { margin: 0; padding: 1.25rem; color: var(--muted); text-align: center; font-size: .92rem; }
+.scanner-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin: .9rem 0; }
+.scan-result { min-height: 7rem; }
+
+/* Settings */
+.settings-form { max-width: 34rem; }
+.settings-form .form-grid { grid-template-columns: 1fr; }
+.settings-form .button { margin-top: 1.25rem; }
+.input-affix { position: relative; display: block; }
+.input-affix input { padding-right: 4.75rem; }
+.affix-button { position: absolute; top: 50%; right: .4rem; translate: 0 -50%; min-height: 36px; padding: 0 .8rem; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--navy-700); font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+.affix-button:hover { background: var(--indigo-soft); }
+.field .field-error:empty { display: none; }
+.field input[aria-invalid="true"] { border-color: var(--danger); }
+.form-alert { margin: 0 0 1rem; padding: .8rem 1rem; border-radius: var(--radius-sm); background: var(--danger-soft); color: var(--danger); font-weight: 500; }
+.form-alert.is-ok { background: var(--success-soft); color: var(--success); }
+.form-alert:empty { display: none; }

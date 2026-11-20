@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#00006e">
+  <title>Dashboard | LNU Dorm Administrator</title>
+  <meta name="description" content="Dorm Administrator dashboard: students, attendance, announcements and personnel approvals.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../../assets/css/portal.css">
+  <link rel="stylesheet" href="../violations.css">
+  <link rel="stylesheet" href="admin.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+  <script src="../../assets/js/portal.js"></script>
+</head>
+<body data-admin-page="home">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="app-shell">
+  <aside class="sidebar" data-admin-sidebar></aside>
+
+  <main class="main-content" id="main-content">
+    <section class="hero-band staff-hero" data-hero aria-labelledby="page-title">
+      <span class="eyebrow">Dorm Administrator Dashboard</span>
+      <h1 id="page-title">Welcome, <span data-admin-name>Administrator</span></h1>
+      <p class="hero-meta" aria-live="polite">
+        <time id="today-label"></time>
+        <span>Pending registrations <strong id="meta-students">—</strong></span>
+        <span>Pending personnel <strong id="meta-personnel">—</strong></span>
+      </p>
+      <p class="hero-alert" id="page-alert" role="alert" hidden></p>
+    </section>
+
+    <div class="content-stack">
+      <div class="summary-grid" aria-label="Shortcuts">
+        <a class="panel tile" href="students.html">
+          <span class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1"/><circle cx="9" cy="7" r="4"/><path d="M22 19v-1a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
+          <h2>Manage Students</h2>
+          <strong class="stat-value" id="tile-students">—</strong>
+          <p id="tile-students-note">Waiting for approval or a room</p>
+        </a>
+        <a class="panel tile" href="attendance.html">
+          <span class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 15l2 2 4-4"/></svg></span>
+          <h2>Attendance</h2>
+          <strong class="stat-value" id="tile-present">—</strong>
+          <p>Dormers present today</p>
+        </a>
+        <a class="panel tile" href="announcements.html">
+          <span class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11v2a2 2 0 0 0 2 2h2l5 4V5L7 9H5a2 2 0 0 0-2 2z"/><path d="M16 8a5 5 0 0 1 0 8"/></svg></span>
+          <h2>Announcements</h2>
+          <strong class="stat-value" id="tile-news">—</strong>
+          <p>Recent posts · write a new one</p>
+        </a>
+        <a class="panel tile tile-secondary" href="payments.html">
+          <span class="stat-label">Proof of payment</span>
+          <strong class="stat-value" id="tile-payments">—</strong>
+          <p>Proofs waiting to be recorded</p>
+        </a>
+        <a class="panel tile tile-secondary" href="rooms.html">
+          <span class="stat-label">Room management</span>
+          <strong class="stat-value" id="tile-rooms">—</strong>
+          <p id="tile-rooms-note">Rooms not checked today</p>
+        </a>
+        <a class="panel tile tile-secondary" href="students.html#enrolled">
+          <span class="stat-label">Enrolled dormers</span>
+          <strong class="stat-value" id="tile-enrolled">—</strong>
+          <p>Students placed in a room</p>
+        </a>
+      </div>
+
+      <div class="violation-grid">
+        <section class="panel" aria-labelledby="ms-title">
+          <div class="panel-head">
+            <div>
+              <span class="eyebrow">Admissions</span>
+              <h2 id="ms-title">Manage Students</h2>
+              <p>New registrations and validated students waiting for a room.</p>
+            </div>
+          </div>
+          <div id="ms-body" aria-live="polite" aria-busy="true">
+            <span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text short"></span>
+          </div>
+          <p class="panel-foot"><a class="button outline small" href="students.html">Open Manage Students</a></p>
+        </section>
+
+        <section class="panel" aria-labelledby="news-title">
+          <div class="panel-head">
+            <div>
+              <span class="eyebrow">Notice board</span>
+              <h2 id="news-title">Latest Announcements</h2>
+            </div>
+          </div>
+          <div id="news-body" aria-live="polite" aria-busy="true">
+            <span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text short"></span>
+          </div>
+          <p class="panel-foot"><a class="button outline small" href="announcements.html">Post an announcement</a></p>
+        </section>
+      </div>
+
+      <section class="panel" id="personnel" aria-labelledby="pr-title">
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">Dorm personnel</span>
+            <h2 id="pr-title">Personnel registrations <span class="badge badge-gold" id="pr-count" hidden>0</span></h2>
+            <p>Approving creates a staff account. They sign in with the email and password they registered.</p>
+          </div>
+          <button class="button outline small" type="button" id="pr-refresh">Refresh</button>
+        </div>
+        <div class="reg-list" id="pr-list" aria-live="polite" aria-busy="true">
+          <div class="reg-card" aria-hidden="true"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-text short"></span></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script src="../../assets/js/api.js"></script>
+<script src="admin.js"></script>
+<script src="home.js"></script>
+</body>
+</html>

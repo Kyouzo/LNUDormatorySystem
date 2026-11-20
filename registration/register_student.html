@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+  <title>Student registration | LNU Dormitory Portal</title>
+  <meta name="description" content="Create your Leyte Normal University dormitory record.">
+  <meta name="theme-color" content="#00006e">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../assets/css/portal.css">
+  <link rel="stylesheet" href="../login/login.css">
+  <link rel="stylesheet" href="register.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+  <script src="../assets/js/portal.js"></script>
+</head>
+<body class="login-page">
+  <div class="login-shell is-wide">
+    <main class="login-card">
+      <aside class="login-aside" data-hero data-hero-lines aria-label="How registration works">
+        <p class="eyebrow">Leyte Normal University</p>
+        <div>
+          <p class="login-aside-title">Your dormitory record</p>
+          <ol class="login-steps">
+            <li><span><strong>Send your details</strong>Use the name and student ID on your LNU registration form.</span></li>
+            <li><span><strong>Staff review</strong>The dormitory office checks your record and assigns your room.</span></li>
+            <li><span><strong>Sign in</strong>Use your email and the password you set here, or the temporary one the office gives you.</span></li>
+          </ol>
+        </div>
+        <p class="tagline">Integrity | Excellence | Service</p>
+      </aside>
+
+      <section class="login-main" aria-labelledby="register-title">
+        <header class="login-head">
+          <img class="login-logo" src="../assets/images/lnu-logo.png" alt="Leyte Normal University seal" width="76" height="76">
+          <h1 id="register-title">Create your record</h1>
+          <p>Register for the LNU dormitory. Fields marked optional can be left blank.</p>
+        </header>
+
+        <div id="register-body">
+          <form class="login-form" id="register-form" action="register.php" method="POST" enctype="multipart/form-data">
+            <div class="form-alert" id="register-alert" role="alert" aria-live="assertive"></div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="last_name">Last name</label>
+                <input type="text" id="last_name" name="last_name" autocomplete="family-name" maxlength="80" required aria-describedby="last_name-error">
+                <span class="field-error" id="last_name-error"></span>
+              </div>
+              <div class="field">
+                <label for="first_name">First name</label>
+                <input type="text" id="first_name" name="first_name" autocomplete="given-name" maxlength="80" required aria-describedby="first_name-error">
+                <span class="field-error" id="first_name-error"></span>
+              </div>
+              <label class="field" for="middle_name"><span class="field-label-row">Middle name <span class="field-optional">Optional</span></span>
+                <input type="text" id="middle_name" name="middle_name" autocomplete="additional-name" maxlength="80">
+              </label>
+              <div class="field">
+                <label for="student_id">Student ID</label>
+                <input type="text" id="student_id" name="student_id" inputmode="numeric" pattern="[0-9]{1,10}" maxlength="10" autocomplete="off" placeholder="Digits only, e.g. 2400123" required aria-describedby="student_id-error">
+                <span class="field-error" id="student_id-error"></span>
+              </div>
+
+              <div class="field">
+                <label for="age">Age</label>
+                <input type="number" id="age" name="age" min="15" max="99" step="1" inputmode="numeric" required aria-describedby="age-error">
+                <span class="field-error" id="age-error"></span>
+              </div>
+              <div class="field">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" required aria-describedby="gender-error">
+                  <option value="">Select</option>
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
+                  <option value="Other">Other</option>
+                </select>
+                <span class="field-error" id="gender-error"></span>
+              </div>
+              <label class="field" for="year_level"><span class="field-label-row">Year level <span class="field-optional">Optional</span></span>
+                <select id="year_level" name="year_level">
+                  <option value="">Select</option>
+                  <option>1st year</option>
+                  <option>2nd year</option>
+                  <option>3rd year</option>
+                  <option>4th year</option>
+                  <option>Graduate</option>
+                </select>
+              </label>
+              <div class="field">
+                <label for="email">Email address</label>
+                <input type="email" id="email" name="email" autocomplete="email" autocapitalize="none" spellcheck="false" maxlength="190" placeholder="you@lnu.edu.ph" required aria-describedby="email-error">
+                <span class="field-error" id="email-error"></span>
+              </div>
+              <div class="field full">
+                <label for="address">Permanent address</label>
+                <input type="text" id="address" name="address" autocomplete="street-address" maxlength="255" placeholder="Barangay, town or city, province" required aria-describedby="address-error">
+                <span class="field-error" id="address-error"></span>
+              </div>
+
+              <div class="field full">
+                <label for="entrance_slip"><span class="field-label-row">Entrance slip <span class="field-optional">JPG, PNG or PDF · max 5 MB</span></span></label>
+                <input type="file" id="entrance_slip" name="entrance_slip" class="file-input" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" aria-describedby="entrance_slip-hint entrance_slip-error">
+                <span class="field-hint" id="entrance_slip-hint">A photo or scan of the entrance slip from the LNU admissions office.</span>
+                <div class="slip-preview" id="slip-preview" hidden>
+                  <img id="slip-thumb" alt="" hidden>
+                  <span class="slip-icon" id="slip-pdf" aria-hidden="true" hidden>PDF</span>
+                  <span class="slip-meta"><strong id="slip-name"></strong><span id="slip-size"></span></span>
+                  <button class="button ghost small" type="button" id="slip-clear">Remove</button>
+                </div>
+                <span class="field-error" id="entrance_slip-error"></span>
+              </div>
+
+              <div class="field">
+                <label for="password"><span class="field-label-row">Password <span class="field-optional">Optional</span></span></label>
+                <span class="input-affix">
+                  <input type="password" id="password" name="password" autocomplete="new-password" minlength="8" maxlength="1024" aria-describedby="password-hint password-error">
+                  <button class="affix-button" type="button" data-password-toggle aria-controls="password" aria-pressed="false" aria-label="Show password" hidden><span data-toggle-label>Show</span></button>
+                </span>
+                <span class="field-hint" id="password-hint">At least 8 characters. Leave blank and the office will give you a temporary one.</span>
+                <span class="field-error" id="password-error"></span>
+              </div>
+              <div class="field">
+                <label for="password_confirm">Confirm password</label>
+                <span class="input-affix">
+                  <input type="password" id="password_confirm" autocomplete="new-password" maxlength="1024" aria-describedby="password_confirm-error">
+                  <button class="affix-button" type="button" data-password-toggle aria-controls="password_confirm" aria-pressed="false" aria-label="Show password" hidden><span data-toggle-label>Show</span></button>
+                </span>
+                <span class="field-error" id="password_confirm-error"></span>
+              </div>
+            </div>
+            <button class="button outline full" type="submit" id="register-submit">Submit registration</button>
+          </form>
+          <p class="login-alt"><a href="register.html">Back to registration choices</a> · Already registered? <a href="../login/login.html">Sign in</a></p>
+        </div>
+      </section>
+    </main>
+    <p class="login-footer">LNU Dormitory Portal - Copyright © <span data-current-year>2026</span> Leyte Normal University. All Rights Reserved.</p>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="register_student.js"></script>
+</body>
+</html>
