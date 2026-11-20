@@ -8,6 +8,42 @@ For local development, the intended setup is XAMPP (Apache + MySQL), served at
 > information. The Render Docker deployment rebuilds its database at every container start and does not provide durable
 > storage for uploaded files. It is not configured for production use.
 
+## How the proposed LNU Dormitory System works
+
+The proposed system provides students, dorm administrators, and security personnel with role-specific tools for
+managing dormitory records and daily operations. A user signs in to reach the pages allowed for their role; account
+sessions, role checks, and server-side validation protect actions and records.
+
+### Main workflows
+
+1. **Register and approve accounts.** A student submits their personal and student details and, when required, an
+   entrance slip. The registration remains pending until a dorm administrator reviews it. The administrator approves
+   or rejects the request; approved students can then be assigned a floor and room. Dorm personnel can also request an
+   account, with an administrator reviewing the request before the person can sign in.
+2. **Manage rooms and student records.** Administrators can find student records, update eligible details, assign or
+   move enrolled students, and review room capacity. Room checks record which administrator checked a room and when.
+3. **Record attendance and curfew.** Students use their QR pass as their dorm gate pass. Security personnel scan it to
+   record alternating IN/OUT attendance and curfew checks. The system shows current attendance, scan history, and
+   curfew records; administrators can also review attendance and curfew activity.
+4. **Handle payments and conduct records.** Students can upload a payment receipt and check its status. Administrators
+   review proofs and mark payments recorded or unrecorded. Staff can record attendance-related absences and other
+   violations; students can view their own records.
+5. **Share dorm updates.** Administrators publish announcements for student and security dashboards. Posts can be
+   manually deleted or given an optional expiration date and time; an expired post is removed the next time an
+   announcement feed is requested.
+
+### Features by role
+
+| Role | Main features |
+| --- | --- |
+| **Student** | View a dashboard with room and account status, announcements, attendance and payment summaries; open a QR gate pass; review attendance history, payment submissions, violations, and profile details; update permitted contact information; change password. |
+| **Dorm Administrator** | Review student and personnel registrations; manage student records, enrollment, and room assignments; check rooms; review attendance and curfew records; verify payment proofs; record violations; publish, expire, and delete announcements; manage their account settings. |
+| **Security Personnel** | View dorm announcements and the day's attendance; scan student QR passes for IN/OUT attendance and curfew checks; review attendance and curfew logs; manage their account settings. |
+
+This repository is a working proposal/demo of those workflows, not a connection to an official university system. Seeded
+accounts and records are sample data; the Render demo resets its database on container restart. See the [API reference](./database/API.md)
+for endpoint details and the [setup instructions](#1-local-setup-with-xampp) to run the application.
+
 ## 1. Local setup with XAMPP
 
 1. Install XAMPP and copy the project to `C:\xampp\htdocs\LNUDormatorySystem\`.
