@@ -1,15 +1,35 @@
 # HANDOFF — LNU Dormitory Portal (read this first)
 
-Written for the next AI/developer. State as of 2026-11-20. Stack: plain HTML + vanilla JS + PHP 7.4+/8 + MySQL, no build step.
-Intended local run: XAMPP (Apache + MySQL), served at `http://localhost/LNUDormatorySystem/`. **PHP is not installed on the
-authoring machine, so NO PHP has ever been executed and nothing has been tested against MySQL.** Everything was verified by
-reading code, `node --check` on JS, and browser checks of static HTML with faked fetch data. The first real test is yours.
+Written for the next AI/developer. Current snapshot: 2026-11-21. Stack: plain HTML + vanilla JS + PHP + MySQL/MariaDB; no frontend build step.
+Use XAMPP for local development or the root Dockerfile for the Apache/PHP 8.2/MariaDB container. See `README.md` for current setup,
+demo accounts, Docker, Render, and demo-notice instructions; see `DEPLOY-RENDER.md` for deployment caveats.
+
+## Current snapshot — 2026-11-21 (read first)
+
+- The student, admin, security, and registration pages described in §5c are present; the login redirects map to
+  `dormer/dashboard/dashboard.html`, `staff/admin/home.html`, and `staff/security/home.html`.
+- `README.md` is the current combined project/local setup guide. `README-LOCAL.md` is currently absent; do not recreate it
+  unless requested. `DEPLOY-RENDER.md` remains the focused Render guide and links back to demo accounts in `README.md`.
+- Render is configured via `render.yaml` as a Docker web service. The container runs Apache + PHP 8.2 + MariaDB; its
+  entrypoint rebuilds the database from `database/schema.sql` and `database/seed.sql` at every start. Database contents
+  and uploaded files are ephemeral; treat Render as demo/testing only, not production.
+- The login page has a native `<dialog id="demo-notice">` styled with the shared `.dialog` system. `login/login.js` opens
+  it on first visit, stores dismissal in browser `localStorage` under
+  `lnu-dormitory-demo-notice-dismissed-v1`, then focuses the email field. Clearing site storage or using another browser
+  profile causes it to appear again. The notice includes a demo/mock-data disclaimer and an author credit.
+- For a production release, remove the marked `<dialog id="demo-notice">` block in `login/login.html` and the marked
+  `FIRST-VISIT DEMO NOTICE` block near the top of `login/login.js`; both files identify the removal points in comments.
+- The current demo notice's author credit should be checked against the intended public wording before release. The
+  notice text is presentation-only; it does not make seeded or user-submitted data safe for production.
+- Docker, PHP, and MySQL runtime behavior should be verified in the target environment before relying on the application.
+  The Docker deployment intentionally resets its database on every start.
 
 ## 1. What the owner asked for (in order)
 
 1. "Finish everything from UI to backend", restyle with the **Leyte Normal University** (lnu.edu.ph) colour scheme using
    GSAP, Lenis, React Bits-style effects and the skills in `.agents/skills` (emilkowalski/skills, impeccable, taste-skill).
-   Deploy target chosen: **local XAMPP-style run only** (PHP+MySQL can't run on Vercel; no cloud deploy was done).
+   Local XAMPP development is supported; a Docker-based Render demo deployment is also configured. Render is not persistent
+   and is not a production deployment.
 2. Login/registration page to match a reference screenshot: centered split card (navy gradient left, white right) over the
    full-page background `assets/images/loginbg_light-Dow2JmjG.png`.
 3. Owner's Canva design (https://www.canva.com/design/DAHaAci-Er0/5UYAbdNBUVvzeA5tlodvHg/edit, 18 pages) = the intended
@@ -66,8 +86,8 @@ Front end (restyled, role-aware where noted):
 
 - The last backend agent run was **interrupted** ("stopped") after producing most endpoints, schema and seed. It was resumed once and
   was interrupted again. **Verify**: every endpoint listed in `database/API.md` exists and matches the PHP; schema.sql has columns every
-  query uses; seed.sql inserts match the schema; brace/paren balance of each PHP file (no `php -l` was possible); `README-LOCAL.md`
-  is MISSING from the repo root (it was deleted/lost — recreate it, see §7); login.php role redirect (security → `staff/security/home.html`).
+  query uses; seed.sql inserts match the schema; brace/paren balance of each PHP file (no `php -l` was possible); and login.php role
+  redirects (security → `staff/security/home.html`). `README-LOCAL.md` was absent at the time; current setup documentation is in `README.md`.
 - **No UI exists yet for the new roles/features.** Missing front-end pages (all must use the existing design system and the same layout
   patterns; add, don't redesign):
   - **Student:** tabs PROFILE, ANNOUNCEMENTS, SETTINGS (change password via `connection/change_password.php`), notification bell,
@@ -109,8 +129,8 @@ Audit method: file listing + grep (no PHP executed). Findings:
      approvals, Settings, admin attendance view; `staff/violations.html` still has the old sidebar.
   4. Security: `staff/security/home.html` and the attendance/curfew scanner page (folder `staff/security/` doesn't exist).
   5. Change-password UI for all roles (endpoint `connection/change_password.php` exists).
-- **`README-LOCAL.md` is missing** from the repo root (deleted in a commit by the owner or lost) — recreate from §7. `docs/canva-spec.md`
-  and this file are untracked/uncommitted.
+- **At the time of this audit, `README-LOCAL.md` was missing** from the repo root; it was recreated later, then removed. The current local
+  setup instructions are in `README.md`. `docs/canva-spec.md` and this file were untracked/uncommitted at the time.
 - **Nothing has been reviewed since the new backend landed** (no independent review of the new endpoints, no contract check of the
   new JS↔PHP pairs because the JS doesn't exist yet). Plan: build UI agents → independent reviewer (contract, XSS, role guards, missing
   files) → fix rounds via SendMessage to the same agent.
@@ -159,15 +179,16 @@ Audit method: file listing + grep (no PHP executed). Findings:
   always `git status`/`git log` before assuming what's current.
 - `note.txt` at repo root is the owner's pasted transcript of an earlier session; safe to ignore/delete.
 
-## 7. How to run / verify (recreate README-LOCAL.md from this)
+## 7. How to run / verify
 
-1. Install XAMPP; copy project to `C:\xampp\htdocs\LNUDormatorySystem\`; start Apache + MySQL.
-2. phpMyAdmin → Import `database/schema.sql` then `database/seed.sql` (or `mysql -u root < ...`).
-3. Open `http://localhost/LNUDormatorySystem/login/login.html`, sign in with the demo accounts above.
-4. DB config via env vars or `connection/.env` (copy `.env.example`): DB_HOST/PORT/USER/PASS/NAME (defaults localhost/root/empty/`lnudormatorysystem`).
-5. Errors are logged to `logs/php-error.log`, never shown. Apache needs `AllowOverride All` (XAMPP default) for the `.htaccess` protections.
-   First thing to do: run through every flow end to end (register student → admin approve → enroll → student login → QR scan → payment upload → violation → announcements)
-   and fix whatever the never-executed PHP breaks.
+Use `README.md` as the current local setup guide for XAMPP, the PHP built-in server, and local Docker. Use
+`DEPLOY-RENDER.md` for Render deployment and persistence caveats. The old `README-LOCAL.md` is absent and is not required.
+
+After starting a PHP/MySQL-backed environment, verify the full flow: register a student → have an admin approve and enroll
+them → sign in as the student → scan the QR pass as security → test curfew scanning → upload a payment receipt → review
+violations and announcements. Check PHP errors in `logs/php-error.log`. For Apache/XAMPP, ensure `AllowOverride All` is
+enabled so the `.htaccess` protections apply. Do not treat a successful static-page check as verification of PHP or database
+behavior.
 
 ## 8. Process notes (how this was built)
 
