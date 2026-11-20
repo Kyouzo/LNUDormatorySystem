@@ -175,7 +175,7 @@
           "</dd>" +
           "</dl>" +
           '<div class="reg-actions">' +
-          '<label class="field" for="pt-' +
+          '<label class="field personnel-role-field" for="pt-' +
           id +
           '">Approve as<select id="pt-' +
           id +

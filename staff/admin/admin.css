@@ -251,6 +251,13 @@
   height: 48px;
   min-height: 48px;
 }
+.reg-actions .personnel-role-field {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+.reg-actions .personnel-role-field select {
+  min-height: 44px;
+}
 @media (max-width: 520px) {
   .dialog .form-grid.two {
     grid-template-columns: 1fr;
