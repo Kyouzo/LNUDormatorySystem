@@ -15,23 +15,46 @@ esac
 
 export APACHE_PORT="${PORT:-10000}"
 
+# Low-memory, sandbox-safe options. --no-defaults ignores Debian's /etc/mysql/* (log files, syslog, etc).
+# Native AIO/io_uring off: Render's sandbox may block io_uring. Errors go to stderr = Render logs.
+DB_OPTS="--no-defaults --user=mysql --datadir=/var/lib/mysql
+  --innodb-use-native-aio=0 --innodb-buffer-pool-size=16M --innodb-buffer-pool-size-max=64M
+  --innodb-log-file-size=8M --innodb-log-buffer-size=2M --performance-schema=OFF
+  --skip-name-resolve --max-connections=30 --key-buffer-size=1M --tmp-table-size=8M
+  --max-heap-table-size=8M --aria-pagecache-buffer-size=1M"
+
 mkdir -p /run/mysqld
 chown mysql:mysql /run/mysqld
-[ -d /var/lib/mysql/mysql ] || mariadb-install-db --user=mysql --datadir=/var/lib/mysql >/dev/null
 
-mariadbd --user=mysql --datadir=/var/lib/mysql --bind-address=127.0.0.1 --port=3306 \
-  --innodb-buffer-pool-size=32M --performance-schema=OFF --max-connections=40 &
+# Rebuild the datadir every boot (data is ephemeral; avoids stale build-time state).
+rm -rf /var/lib/mysql
+mkdir -p /var/lib/mysql
+chown -R mysql:mysql /var/lib/mysql
+# shellcheck disable=SC2086
+mariadb-install-db $DB_OPTS --skip-test-db --auth-root-authentication-method=socket
+
+# shellcheck disable=SC2086
+mariadbd $DB_OPTS --socket="$SOCK" --pid-file=/run/mysqld/mysqld.pid \
+  --bind-address=127.0.0.1 --port=3306 &
 DB_PID=$!
 
 i=0
 until mariadb-admin --socket="$SOCK" ping >/dev/null 2>&1; do
+  if ! kill -0 "$DB_PID" 2>/dev/null; then
+    st=0
+    wait "$DB_PID" || st=$?
+    echo "MariaDB process died (exit status $st); see its output above" >&2
+    exit 1
+  fi
   i=$((i + 1))
-  if [ "$i" -gt 60 ] || ! kill -0 "$DB_PID" 2>/dev/null; then
-    echo "MariaDB did not become ready" >&2
+  if [ "$i" -gt 90 ]; then
+    echo "MariaDB still starting after 90s; giving up" >&2
     exit 1
   fi
   sleep 1
 done
+echo "MariaDB ready after ${i}s"
+
 
 # Fresh DB every boot (data is intentionally ephemeral). 127.0.0.1 account covers skip-name-resolve.
 mariadb --socket="$SOCK" -uroot <<SQL
