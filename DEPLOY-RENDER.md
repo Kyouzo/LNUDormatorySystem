@@ -11,7 +11,7 @@ One Docker container runs Apache + PHP + MariaDB. The database is rebuilt from `
    and add env vars `CSRF_ENFORCE=0`, `QR_ALLOW_STUDENT_ID=0` (`DB_PASS` is optional: one is generated at boot if missing).
 3. Deploy, then open `https://<name>.onrender.com/login/login.html`.
 
-Demo logins: see `README-LOCAL.md` section 3.
+Demo logins: see [README.md](./README.md#5-demo-accounts-seed-data-only).
 
 ## Caveats
 

@@ -1,12 +1,14 @@
-# Running the LNU Dormitory Portal locally
+# LNU Dormitory Portal
 
-Plain HTML + vanilla JS + PHP 7.4+/8 + MySQL. No build step. The intended local setup is XAMPP
-(Apache + MySQL), served at `http://localhost/LNUDormatorySystem/`.
+Demo dormitory portal built with HTML, CSS, vanilla JavaScript, PHP, and MySQL/MariaDB. There is no frontend build step.
+For local development, the intended setup is XAMPP (Apache + MySQL), served at
+`http://localhost/LNUDormatorySystem/`. The Docker deployment uses PHP 8.2 with Apache.
 
-> The PHP has never been executed by the people who wrote it (no PHP on the authoring machine).
-> Expect runtime bugs on the first real run; `logs/php-error.log` is the first place to look.
+> **Demo only:** Seeded records and the login-page notice are for demonstration. Do not enter real resident or payment
+> information. The Render Docker deployment rebuilds its database at every container start and does not provide durable
+> storage for uploaded files. It is not configured for production use.
 
-## 1. XAMPP setup
+## 1. Local setup with XAMPP
 
 1. Install XAMPP and copy the project to `C:\xampp\htdocs\LNUDormatorySystem\`.
 2. Open the XAMPP Control Panel and start **Apache** and **MySQL**.
@@ -34,7 +36,37 @@ php -S localhost:8000
 Then open `http://localhost:8000/login/login.html`. The built-in server **ignores `.htaccess`**, so the upload,
 `connection/` and `logs/` folders are not protected. Use it for local testing only.
 
-## 3. Demo accounts (seed data, demo only)
+## 3. Run locally with Docker
+
+The root `Dockerfile` builds a single container with Apache, PHP 8.2, and MariaDB. From the repository root:
+
+```sh
+docker build -t lnu-dormitory-portal .
+docker run --rm -p 8080:10000 lnu-dormitory-portal
+```
+
+Open `http://localhost:8080/login/login.html`. The entrypoint initializes MariaDB and imports
+`database/schema.sql` and `database/seed.sql` every time the container starts. Without an external database and
+persistent file storage, account changes, registrations, and uploads are temporary and will be lost on restart.
+
+## 4. Deploy to Render (demo/testing only)
+
+The repository includes a Render Blueprint in `render.yaml`. In Render, create a **Blueprint** from the GitHub
+repository; alternatively, create a **Web Service** using the **Docker** runtime. For a manually configured service,
+set the health check path to `/login/login.html`. The container listens on Render's `PORT` (falling back to `10000`
+locally).
+
+The Blueprint selects the Free plan, generates `DB_PASS`, and sets `CSRF_ENFORCE=0` and `QR_ALLOW_STUDENT_ID=0`.
+The entrypoint creates the database user, rebuilds the database from the schema and seed files, and starts Apache.
+After deployment, visit `https://<service-name>.onrender.com/login/login.html`.
+
+**Data is ephemeral:** every container start recreates the database from the seed. User-created accounts, registrations,
+payment records, announcements, and uploaded files are not durable. Free services may spin down while idle, so the first
+request after inactivity can be delayed. Do not use this deployment for real resident data or production workloads.
+
+See [DEPLOY-RENDER.md](./DEPLOY-RENDER.md) for additional deployment notes and persistence considerations.
+
+## 5. Demo accounts (seed data only)
 
 | Role               | Email                 | Password        |
 | ------------------ | --------------------- | --------------- |
@@ -48,10 +80,20 @@ Other seeded students (`maria.santos@…`, `pedro.reyes@…`, `ana.villanueva@�
 share the student password hash. The seed also has one pending student registration (`liza.navarro@lnu.edu.ph`) and one
 pending personnel registration (`rosa.garcia@lnu.edu.ph`, Security) to try the approval screens.
 
-Landing page after sign-in: student → `dormer/dashboard/dashboard.html`, admin → `staff/violations.html` (for now),
-security → `staff/security/home.html`.
+After sign-in, students go to `dormer/dashboard/dashboard.html`, dorm administrators to `staff/admin/home.html`, and
+security personnel to `staff/security/home.html`.
 
-## 4. Registration flows
+## 6. First-visit demo notice
+
+The login page displays a modal explaining that this is a demo and that the displayed records are mock data. It includes
+an author credit and appears the first time the login page is opened in a browser profile. Dismissing it stores a flag in
+that browser's `localStorage`; clearing site storage or using another browser/profile will make it appear again.
+
+For a production release, remove the `<dialog id="demo-notice">` block from `login/login.html` and the marked
+**FIRST-VISIT DEMO NOTICE** block near the top of `login/login.js`. The adjacent comments in both files identify the
+removal points. Replace the demo disclaimer with any required official notice before public production use.
+
+## 7. Registration flows
 
 `registration/register.html` asks **Register as Student** or **Register as Dorm Personnel**.
 
@@ -64,20 +106,25 @@ security → `staff/security/home.html`.
   row in `staff_registrations`. An existing admin approves it (`staff/api/staff_registration_review.php`); the person
   then signs in with the email and password they registered. The first admin comes from the seed.
 
-## 5. Things to check end to end
+## 8. Configuration defaults
 
-Register student → admin approves → admin enrols into a room → student signs in → student opens the QR pass →
-security scans it (`staff/security/attendance.html`, **Scan QR**) → curfew scan (**Scan QR For Curfew**) →
-payment upload → violation → announcements. Fix whatever the never-executed PHP breaks.
+These values can be changed in `connection/.env` or through environment variables:
 
-Not done:
+- `ROOM_CAPACITY=4` is used when a room is created automatically.
+- `CURFEW_TIME=22:00` and `CURFEW_END=04:00` define the curfew window.
+- `ENTRANCE_SLIP_REQUIRED=0` makes the student entrance-slip upload optional.
+- `CSRF_ENFORCE=0` is the lenient default; set it to `1` to require valid CSRF tokens on state-changing requests.
+- `QR_ALLOW_STUDENT_ID=0` means QR scans require a token rather than accepting a plain student ID.
+- `SESSION_IDLE_SECONDS=7200` sets the default idle-session timeout.
 
-Logout is still a plain link, and CSRF checking is still lenient.
-I skipped the cleanup merges, such as the three change-password scripts.
-Room capacity of 4 and the 22:00 curfew are my assumptions. Please confirm them.
-The camera scanner has never been tried.
+## 9. Things to verify end to end
 
-## 6. Troubleshooting
+Register a student → have an admin approve and enrol them into a room → sign in as the student and open the QR pass →
+scan it from `staff/security/attendance.html` (**Scan QR**) → test a curfew scan (**Scan QR For Curfew**) → upload a
+payment receipt → review a violation → check announcements. Verify this flow against a running PHP/MySQL-backed
+environment.
+
+## 10. Troubleshooting
 
 - **Blank data / "server not reachable" messages:** Apache or MySQL is not running, or the page was opened as a
   `file://` URL. Always open it through `http://localhost/...`.
@@ -92,4 +139,3 @@ The camera scanner has never been tried.
   there. Also allow the camera permission prompt and close other apps using the camera.
 - **Scanner says "could not load":** the scanner library comes from unpkg.com (`html5-qrcode@2.3.8`); it needs internet.
 - **"Already scanned":** attendance ignores the same pass within 30 seconds; curfew allows one check-in per night.
-- **Security login lands on a 404:** make sure `staff/security/home.html` exists in your copy.
