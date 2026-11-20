@@ -2,6 +2,40 @@
 (function () {
   "use strict";
 
+  // FIRST-VISIT DEMO NOTICE: Remove this block and the marked dialog in login.html for production.
+  const demoNotice = document.getElementById("demo-notice");
+  if (demoNotice) {
+    const noticeKey = "lnu-dormitory-demo-notice-dismissed-v1";
+    let noticeDismissed = false;
+    try {
+      noticeDismissed = window.localStorage.getItem(noticeKey) === "true";
+    } catch (error) {
+      console.warn("Unable to read the demo notice preference.", error);
+    }
+
+    demoNotice
+      .querySelector("[data-demo-notice-dismiss]")
+      .addEventListener("click", () => {
+        if (window.Portal && window.Portal.closeDialog)
+          window.Portal.closeDialog(demoNotice);
+        else demoNotice.close();
+      });
+    demoNotice.addEventListener("close", () => {
+      try {
+        window.localStorage.setItem(noticeKey, "true");
+      } catch (error) {
+        console.warn("Unable to save the demo notice preference.", error);
+      }
+      document.getElementById("username").focus({ preventScroll: true });
+    });
+
+    if (!noticeDismissed) {
+      if (window.Portal && window.Portal.openDialog)
+        window.Portal.openDialog(demoNotice);
+      else demoNotice.showModal();
+    }
+  }
+
   const LNU = window.LNU;
   const form = document.getElementById("login-form");
   if (!form || !LNU) return; // no helper -> the form posts normally

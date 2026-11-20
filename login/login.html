@@ -48,8 +48,6 @@
             <p class="login-aside-title">Dormitory Portal</p>
             <p class="login-aside-copy">
               Your gate pass, receipts and records.
-              Note that all data are mock data and are not real. 
-              This is a demo version of the Leyte Normal University Dormitory Portal Most Info are My assumptions Only Lol
             </p>
           </div>
           <p class="tagline">Integrity | Excellence | Service</p>
@@ -141,6 +139,36 @@
         Reserved.
       </p>
     </div>
+
+    <!-- PRODUCTION RELEASE: Remove this dialog and the FIRST-VISIT DEMO NOTICE block in login.js. -->
+    <dialog
+      class="dialog"
+      id="demo-notice"
+      aria-labelledby="demo-notice-title"
+      aria-describedby="demo-notice-copy"
+    >
+      <div class="dialog-header">
+        <h2 id="demo-notice-title">Demo Notice</h2>
+      </div>
+      <div class="dialog-body">
+        <p id="demo-notice-copy">
+          This is a demo version of the Leyte Normal University Dormitory
+          Portal. All data shown are mock data and do not represent real
+          records. Some details are based on the author's assumptions and may
+          not reflect official university policies or procedures.
+        </p>
+        <p><strong>Author:</strong> Kyouzo, also known as Lucas</p>
+      </div>
+      <div class="dialog-actions">
+        <button
+          class="button primary"
+          type="button"
+          data-demo-notice-dismiss
+        >
+          Continue to sign in
+        </button>
+      </div>
+    </dialog>
 
     <script src="../assets/js/api.js"></script>
     <script src="login.js"></script>
