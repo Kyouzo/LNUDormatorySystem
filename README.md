@@ -70,6 +70,13 @@ Register student → admin approves → admin enrols into a room → student sig
 security scans it (`staff/security/attendance.html`, **Scan QR**) → curfew scan (**Scan QR For Curfew**) →
 payment upload → violation → announcements. Fix whatever the never-executed PHP breaks.
 
+Not done:
+
+Logout is still a plain link, and CSRF checking is still lenient.
+I skipped the cleanup merges, such as the three change-password scripts.
+Room capacity of 4 and the 22:00 curfew are my assumptions. Please confirm them.
+The camera scanner has never been tried.
+
 ## 6. Troubleshooting
 
 - **Blank data / "server not reachable" messages:** Apache or MySQL is not running, or the page was opened as a
